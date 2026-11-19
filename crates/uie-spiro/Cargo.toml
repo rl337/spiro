@@ -1,0 +1,17 @@
+[package]
+name = "uie-spiro"
+description = "Spirograph demo workload for uie-core (migrated from spiro.py)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "uie-spiro"
+path = "src/main.rs"
+
+[dependencies]
+uie-core = { path = "../uie-core" }
+image = "0.24"
+tracing = { workspace = true }
+tracing-subscriber = "0.3"
