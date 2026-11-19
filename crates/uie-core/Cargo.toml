@@ -1,0 +1,11 @@
+[package]
+name = "uie-core"
+description = "Universal inference engine — core types, runtime, and backend traits"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+thiserror.workspace = true
+tracing.workspace = true
