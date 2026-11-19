@@ -13,7 +13,7 @@ pub fn format_user_message(model: &LlamaModel, user_message: &str) -> Result<Str
     let msg = LlamaChatMessage::new("user".into(), user_message.into())
         .map_err(|e| Error::Runtime(format!("chat message: {e:?}")))?;
     model
-        .apply_chat_template(&tml, &[msg], true)
+        .apply_chat_template(&tmpl, &[msg], true)
         .map_err(|e| Error::Runtime(format!("apply_chat_template: {e:?}")))
 }
 
