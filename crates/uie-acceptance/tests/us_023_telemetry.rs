@@ -2,7 +2,7 @@
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::telemetry::{assert_phases, ComputeDevice, ExecutionRecorder};
 use uie_core::InferenceRuntime;
-use uie_stub_models::telemetry::{PHASE_POLICY_INFER, PHASE_VALIDATE_INPUTS};
+use uie_stub_models::telemetry::{phase_modality, PHASE_POLICY_INFER, PHASE_VALIDATE_INPUTS};
 use uie_stub_models::telemetry_assert::assert_stub_executor_telemetry;
 use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
 
@@ -35,6 +35,20 @@ fn us_023_stub_infer_emits_required_phases() {
         ],
     );
     assert!(outcome.trace.metrics.total_ms >= 0.0);
+    assert_eq!(
+        outcome.trace.user_story.as_deref(),
+        Some(ModalityKind::LlmTextCompletion.story_id())
+    );
+    assert!(outcome.trace.metrics.prompt_tokens > 0);
+    assert!(outcome.trace.metrics.completion_tokens > 0);
+    assert!(outcome.trace.metrics.ttft_ms.is_some());
+    assert!(
+        outcome
+            .trace
+            .phases
+            .iter()
+            .any(|p| p.name == phase_modality(ModalityKind::LlmTextCompletion))
+    );
 }
 
 #[test]

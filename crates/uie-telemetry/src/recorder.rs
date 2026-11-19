@@ -10,6 +10,7 @@ pub struct ExecutionRecorder {
     run_id: String,
     model_name: Option<String>,
     model_format: Option<String>,
+    user_story: Option<String>,
     backend_id: Option<String>,
     transport: Option<String>,
     started: Instant,
@@ -23,6 +24,7 @@ impl ExecutionRecorder {
             run_id: run_id.into(),
             model_name: None,
             model_format: None,
+            user_story: None,
             backend_id: None,
             transport: None,
             started: Instant::now(),
@@ -48,12 +50,19 @@ impl ExecutionRecorder {
     }
 
     /// Direct executor calls (no runtime) still tag stub/format for acceptance traces.
-    pub fn tag_stub_executor(&mut self, model_name: impl Into<String>) {
+    pub fn tag_stub_executor(
+        &mut self,
+        model_name: impl Into<String>,
+        user_story: impl Into<String>,
+    ) {
         if self.model_format.is_none() {
             self.model_format = Some("stub".into());
         }
         if self.model_name.is_none() {
             self.model_name = Some(model_name.into());
+        }
+        if self.user_story.is_none() {
+            self.user_story = Some(user_story.into());
         }
     }
 
@@ -91,6 +100,7 @@ impl ExecutionRecorder {
             run_id: self.run_id,
             model_name: self.model_name,
             model_format: self.model_format,
+            user_story: self.user_story,
             backend_id: self.backend_id,
             transport: self.transport,
             phases: self.phases,

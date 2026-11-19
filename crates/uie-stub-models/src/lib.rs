@@ -10,6 +10,8 @@ mod loader;
 mod modality;
 mod policy;
 mod samples;
+mod stub_infer_metrics;
+mod stub_input_validate;
 mod validate;
 
 pub use conventions::*;

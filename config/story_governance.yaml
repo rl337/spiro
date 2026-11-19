@@ -4,6 +4,7 @@
 # Rust/Python acceptance sources must include at least one of these substrings.
 observability_markers:
   - assert_stub_executor_telemetry
+  - assert_stub_modality_telemetry
   - assert_phases
   - assert_story_events
   - assert_infer_outcome_trace

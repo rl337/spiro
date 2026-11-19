@@ -1,11 +1,15 @@
 use std::sync::Arc;
+use std::time::Instant;
 
+use tracing::info;
 use uie_core::error::{Error, Result};
 use uie_core::model::{InferenceExecutor, IoSpec, ModelMetadata};
 use uie_core::tensor::{DataType, Shape, Tensor};
 use uie_telemetry::{ComputeDevice, ExecutionRecorder};
 
-use crate::telemetry::{PHASE_POLICY_INFER, PHASE_VALIDATE_INPUTS};
+use crate::stub_infer_metrics::apply_stub_infer_metrics;
+use crate::stub_input_validate::validate_stub_inputs;
+use crate::telemetry::{phase_modality, PHASE_POLICY_INFER, PHASE_VALIDATE_INPUTS};
 
 use crate::conventions::{
     CLIP_HIDDEN_DIM, CLIP_IMAGE_SIZE, CLIP_SEQ_LEN, DIFFUSION_HEIGHT, DIFFUSION_WIDTH,
@@ -146,26 +150,58 @@ impl InferenceExecutor for StubExecutor {
     }
 
     fn infer(&self, inputs: &[Tensor], telemetry: &mut ExecutionRecorder) -> Result<Vec<Tensor>> {
-        telemetry.tag_stub_executor(self.kind.id_str());
+        telemetry.tag_stub_executor(self.metadata.name.clone(), self.kind.story_id());
         telemetry.record_phase_ms(
-            format!("stub_modality_{}", self.kind.id_str()),
+            phase_modality(self.kind),
             ComputeDevice::Cpu,
             0.0,
         );
+
+        if inputs.len() != self.inputs.len() {
+            return Err(Error::Runtime(format!(
+                "stub `{}` expects {} inputs, got {}",
+                self.kind.id_str(),
+                self.inputs.len(),
+                inputs.len()
+            )));
+        }
+
+        let t_validate = Instant::now();
         telemetry.phase(PHASE_VALIDATE_INPUTS, ComputeDevice::Cpu, || {
-            if inputs.len() != self.inputs.len() {
-                return Err(Error::Runtime(format!(
-                    "stub `{}` expects {} inputs, got {}",
-                    self.kind.id_str(),
-                    self.inputs.len(),
-                    inputs.len()
-                )));
-            }
-            Ok(())
+            validate_stub_inputs(self.kind, &self.inputs, inputs)
         })?;
-        telemetry.phase(PHASE_POLICY_INFER, ComputeDevice::Cpu, || {
+        let prefill_ms = t_validate.elapsed().as_secs_f64() * 1000.0;
+
+        let t_policy = Instant::now();
+        let outputs = telemetry.phase(PHASE_POLICY_INFER, ComputeDevice::Cpu, || {
             self.policy.infer(self.kind, inputs)
-        })
+        })?;
+        let decode_ms = t_policy.elapsed().as_secs_f64() * 1000.0;
+
+        apply_stub_infer_metrics(
+            self.kind,
+            inputs,
+            &outputs,
+            telemetry.metrics_mut(),
+            prefill_ms,
+            decode_ms,
+        );
+
+        let m = telemetry.metrics_mut();
+        info!(
+            target: "uie_stub",
+            modality = %self.kind.id_str(),
+            story = self.kind.story_id(),
+            prompt_tokens = m.prompt_tokens,
+            completion_tokens = m.completion_tokens,
+            ttft_ms = ?m.ttft_ms,
+            prefill_ms = m.prefill_ms,
+            decode_ms = m.decode_ms,
+            cpu_time_ms = m.cpu_time_ms,
+            "stub infer complete"
+        );
+
+        Ok(outputs)
     }
 }
 
@@ -173,6 +209,9 @@ impl InferenceExecutor for StubExecutor {
 mod tests {
     use super::*;
     use crate::samples::sample_input;
+    use crate::telemetry::phase_modality;
+    use crate::telemetry_assert::assert_stub_executor_telemetry;
+    use uie_telemetry::ExecutionRecorder;
 
     #[test]
     fn canonical_output_shapes() {
@@ -189,7 +228,32 @@ mod tests {
                 assert_eq!(o.dtype(), spec.dtype, "{:?}", kind);
                 assert_eq!(o.shape().dims(), spec.shape.dims(), "{:?}", kind);
             }
+            let trace = telem.finish();
+            assert_stub_executor_telemetry(&trace);
+            assert_eq!(
+                trace.user_story.as_deref(),
+                Some(kind.story_id()),
+                "{:?}",
+                kind
+            );
+            assert!(
+                trace.phases.iter().any(|p| p.name == phase_modality(kind)),
+                "{:?}",
+                kind
+            );
         }
+    }
+
+    #[test]
+    fn llm_stub_emits_token_metrics() {
+        let stub = StubExecutor::new(ModalityKind::LlmTextCompletion);
+        let inputs = sample_input(ModalityKind::LlmTextCompletion).unwrap();
+        let mut telem = ExecutionRecorder::new("unit-llm-metrics");
+        stub.infer(&inputs, &mut telem).unwrap();
+        let trace = telem.finish();
+        assert!(trace.metrics.prompt_tokens > 0);
+        assert!(trace.metrics.completion_tokens > 0);
+        assert!(trace.metrics.ttft_ms.is_some());
     }
 
     #[test]

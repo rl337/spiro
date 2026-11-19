@@ -4,7 +4,7 @@ mod support;
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::telemetry::ExecutionRecorder;
 use uie_core::InferenceRuntime;
-use uie_stub_models::telemetry_assert::assert_stub_executor_telemetry;
+use uie_stub_models::telemetry_assert::assert_stub_modality_telemetry;
 use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
 
 fn infer_stub(kind: ModalityKind, stub_file: &str) {
@@ -23,7 +23,7 @@ fn infer_stub(kind: ModalityKind, stub_file: &str) {
         )
         .unwrap();
     assert!(!outcome.outputs.is_empty());
-    assert_stub_executor_telemetry(&outcome.trace);
+    assert_stub_modality_telemetry(&outcome.trace, kind);
 }
 
 #[test]
