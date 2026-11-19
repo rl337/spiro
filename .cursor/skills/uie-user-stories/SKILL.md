@@ -22,9 +22,10 @@ Planned work: story `Status: planned` is OK; acceptance test may use `#[ignore]`
 2. Add glossary terms if needed.
 3. Implement the feature.
 4. Add or extend acceptance test(s); update story **Acceptance tests** table and **Acceptance notes**.
-5. Run:
-   - `cargo test -p uie-acceptance`
-   - `python3 -m unittest discover -s python/acceptance -v` (or documented subset)
+5. Run acceptance in the right **mode**:
+   - **CI / stub (default):** `./scripts/acceptance-ci.sh` or `UIE_ACCEPTANCE_MODE=ci cargo test -p uie-acceptance`
+   - **Live (real weights):** `./scripts/acceptance-live.sh` or `UIE_ACCEPTANCE_MODE=live` + see [acceptance-tests.md](../../docs/acceptance-tests.md)
+6. Stub coverage → `us_0NN_*.rs`. Real load/execute → `live_models.rs` (and optional `live-onnx` feature).
 
 ## Story file: required "Acceptance tests" section
 
@@ -44,7 +45,8 @@ After **Acceptance notes**, include:
 - Test function or method names prefix with story id: `us_020_hello_roundtrip`.
 - Use repo-relative paths via `env!("CARGO_MANIFEST_DIR")` or `python/acceptance/repo_root.py`.
 - IPC stories: prefer in-process Rust tests first; Python tests may spawn `uie-serve` when `UIE_ACCEPTANCE_SOCKET` is unset.
-- Modality stories (US-010–US-019): until real loaders ship, acceptance = **stub contract** via `uie-stub-models` samples + `deterministic_policy` or `uie-acceptance`.
+- Modality stories (US-010–US-019): **CI** = stub contract via `us_010_019_modalities.rs`; **live** = `UIE_LIVE_MODEL_PATH` or registry-discovered GGUF when loaders ship.
+- Gate live tests with `support::skip_unless_live(...)`; they no-op in CI (still pass).
 
 ## Do not
 

@@ -10,6 +10,14 @@ publish = false
 [lib]
 path = "src/lib.rs"
 
+[features]
+default = []
+# Enable real ONNX load/infer in live_us_009_* (requires uie-loader-onnx to compile).
+live-onnx = ["dep:uie-loader-onnx"]
+
+[dependencies]
+uie-loader-onnx = { path = "../uie-loader-onnx", optional = true }
+
 [dev-dependencies]
 uie-catalog = { path = "../uie-catalog" }
 uie-core = { path = "../uie-core" }

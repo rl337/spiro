@@ -38,8 +38,8 @@ In-process tests use the same framing via `InProcessChannel` (`cargo test -p uie
 ## Acceptance tests (per user story)
 
 ```bash
-cargo test -p uie-acceptance
-python3 -m unittest discover -s python/acceptance -v
+./scripts/acceptance-ci.sh          # stub mode (CI default)
+./scripts/acceptance-live.sh        # real models on your machine
 ```
 
 Agents and contributors: follow [.cursor/skills/uie-user-stories/SKILL.md](.cursor/skills/uie-user-stories/SKILL.md).

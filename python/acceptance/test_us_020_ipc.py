@@ -20,8 +20,15 @@ sys.path.insert(0, str(REPO / "python"))
 from uie_client import encode_frame, read_frame, roundtrip, UIE_PROTOCOL_VERSION  # noqa: E402
 
 
-def _stub_path(name: str) -> Path:
-    return (REPO / "models/stubs" / f"{name}.stub").resolve()
+def acceptance_mode() -> str:
+    return os.environ.get("UIE_ACCEPTANCE_MODE", "ci").lower()
+
+
+def _model_path_for_infer() -> Path:
+    live = os.environ.get("UIE_LIVE_MODEL_PATH")
+    if acceptance_mode() in ("live", "real", "local") and live:
+        return Path(live).resolve()
+    return (REPO / "models/stubs/llm.stub").resolve()
 
 
 class Us020IpcAcceptance(unittest.TestCase):
@@ -80,12 +87,12 @@ class Us020IpcAcceptance(unittest.TestCase):
         )
         self.assertEqual(hello.get("type"), "hello_ack")
 
-        stub = _stub_path("llm")
-        self.assertTrue(stub.is_file(), str(stub))
+        model = _model_path_for_infer()
+        self.assertTrue(model.is_file(), str(model))
         infer = {
             "type": "infer",
             "request_id": "py-acc-020",
-            "model_path": str(stub),
+            "model_path": str(model),
             "inputs": [
                 {
                     "name": "input_ids",

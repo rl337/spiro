@@ -2,20 +2,70 @@
 
 Every [user story](./stories/README.md) (`US-0NN`) must have at least one automated acceptance test. Agents follow [.cursor/skills/uie-user-stories/SKILL.md](../.cursor/skills/uie-user-stories/SKILL.md).
 
+## Two modes
+
+| Mode | Env | What runs |
+|------|-----|-----------|
+| **CI / stub** (default) | `UIE_ACCEPTANCE_MODE=ci` or unset | `us_0NN_*.rs` — stubs, fixtures, in-process IPC |
+| **Live** | `UIE_ACCEPTANCE_MODE=live` | Above **plus** `live_models.rs` — scan LM Studio / Comfy roots, load `UIE_LIVE_MODEL_PATH`, optional real ONNX |
+
+Scripts:
+
+```bash
+./scripts/acceptance-ci.sh          # CI default
+./scripts/acceptance-live.sh        # laptop / nightly (--features live-onnx when ONNX builds)
+```
+
+Example env: [`config/acceptance.env.example`](../config/acceptance.env.example).
+
+### CI (GitHub)
+
+[`.github/workflows/uie-acceptance-ci.yml`](../.github/workflows/uie-acceptance-ci.yml) sets `UIE_ACCEPTANCE_MODE=ci` and runs `acceptance-ci.sh`.
+
+### Live on your laptop
+
+```bash
+cp config/acceptance.env.example .env.acceptance  # edit paths
+export UIE_ACCEPTANCE_MODE=live
+export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.yaml
+export UIE_LIVE_MODEL_PATH=/path/to/model.gguf   # or .onnx when loader works
+./scripts/acceptance-live.sh
+```
+
+Optional strict checks:
+
+- `UIE_LIVE_REQUIRE_LMSTUDIO=1` — fail if `~/.lmstudio/models` has no `.gguf`
+- `UIE_ACCEPTANCE_RUN_STUBS_IN_LIVE=1` — re-run stub `us_*` tests after live suite
+
+### ONNX live infer
+
+When `uie-loader-onnx` compiles:
+
+```bash
+UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance --features live-onnx --test live_models live_us_009_mnist_onnx_infer
+```
+
 ## Run everything
 
 ```bash
+# CI
 cargo test -p uie-acceptance
 python3 -m unittest discover -s python/acceptance -v
-```
 
-Quick IPC sanity (Rust only):
-
-```bash
-cargo test -p uie-ipc
+# Live (Rust)
+UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 ```
 
 ## Index
+
+| Story | CI (stub) | Live | Python |
+|-------|-----------|------|--------|
+| US-001–008 | `us_001` … `us_008` | — | — |
+| US-009 | `us_009` fixture | `live_us_009_mnist_onnx_infer` (`live-onnx`) | — |
+| US-010–019 | `us_010_019_modalities` | `UIE_LIVE_MODEL_PATH` via `live_us_007_*` | — |
+| US-020 | `us_020_byte_channel` | `UIE_LIVE_MODEL_PATH` + `test_us_020_ipc_live` | stub + live IPC |
+| US-021 | `us_021_model_registry` | `live_us_021_scan_*` | — |
+| US-022 | `us_022_byte_pipeline` | `live_us_022_byte_pipeline_*` | — |
 
 | Story | Rust acceptance | Python acceptance | Notes |
 |-------|-----------------|-------------------|--------|
@@ -27,10 +77,10 @@ cargo test -p uie-ipc
 | US-006 | `us_006_operations.rs` | — | |
 | US-007 | `us_007_model_loader.rs` | — | stub loader |
 | US-008 | `us_008_spiro.rs` | — | workload math |
-| US-009 | `us_009_mnist.rs` | — | `#[ignore]` if ONNX build broken |
+| US-009 | `us_009_mnist.rs` | — | fixture; live ONNX in `live_models.rs` |
 | US-010–019 | `us_010_019_modalities.rs` | — | stub I/O contracts |
-| US-020 | `us_020_byte_channel.rs` (in `uie-ipc` too) | `test_us_020_ipc.py` | socket optional |
-| US-021 | `us_021_model_registry.rs` | — | directory scan |
+| US-020 | `us_020_byte_channel.rs` | `test_us_020_ipc.py`, `test_us_020_ipc_live.py` | |
+| US-021 | `us_021_model_registry.rs` | — | tempdir CI; real roots live |
 | US-022 | `us_022_byte_pipeline.rs` | — | multi-hop IPC |
 
 Additional crate tests (also cited in stories):
@@ -38,11 +88,18 @@ Additional crate tests (also cited in stories):
 - `crates/uie-stub-models/tests/deterministic_policy.rs` — policy overrides per modality
 - `crates/uie-ipc/tests/roundtrip.rs` — US-020 in-process + Unix
 - `crates/uie-catalog/tests/scan.rs` — US-021 layout scan
+- `crates/uie-acceptance/tests/live_models.rs` — live-only paths
 
 ## Environment
 
 | Variable | Purpose |
 |----------|---------|
-| `UIE_ACCEPTANCE_SOCKET` | If set, Python US-020 uses this socket instead of spawning `uie-serve` |
-| `UIE_SOCKET` | Server bind path when spawning `uie-serve` in tests |
-| `SPIRO_MODEL_ROOTS` | Path to `model_roots.yaml` for US-021 (optional) |
+| `UIE_ACCEPTANCE_MODE` | `ci` (default) or `live` |
+| `UIE_ACCEPTANCE_FEATURES` | e.g. `live-onnx` for `acceptance-live.sh` |
+| `UIE_ACCEPTANCE_RUN_STUBS_IN_LIVE` | Re-run stub tests after live suite |
+| `UIE_LIVE_MODEL_PATH` | Real weights to load in live tests (.gguf / .onnx / .stub) |
+| `UIE_LIVE_REQUIRE_LMSTUDIO` | If `1`, require GGUF under `~/.lmstudio/models` |
+| `UIE_ACCEPTANCE_SOCKET` | Python US-020 socket (skip spawn) |
+| `UIE_SOCKET` | Server bind when spawning `uie-serve` |
+| `SPIRO_MODEL_ROOTS` | `model_roots.yaml` for US-021 live scan |
+| `UIE_MNIST_MODEL` / `UIE_MNIST_FIXTURE` | US-009 live ONNX paths |

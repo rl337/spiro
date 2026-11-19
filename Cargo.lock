@@ -1548,6 +1548,7 @@ dependencies = [
  "uie-catalog",
  "uie-core",
  "uie-ipc",
+ "uie-loader-onnx",
  "uie-pipeline",
  "uie-stub-models",
 ]

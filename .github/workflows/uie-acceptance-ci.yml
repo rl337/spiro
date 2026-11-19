@@ -1,0 +1,17 @@
+name: UIE acceptance (CI stub mode)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  acceptance-stub:
+    runs-on: ubuntu-latest
+    env:
+      UIE_ACCEPTANCE_MODE: ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: rustup show
+      - run: chmod +x scripts/acceptance-ci.sh && ./scripts/acceptance-ci.sh
