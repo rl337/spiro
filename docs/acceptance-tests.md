@@ -82,6 +82,7 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 | US-020 | `us_020_byte_channel.rs` | `test_us_020_ipc.py`, `test_us_020_ipc_live.py` | |
 | US-021 | `us_021_model_registry.rs` | — | tempdir CI; real roots live |
 | US-022 | `us_022_byte_pipeline.rs` | — | multi-hop IPC |
+| US-023 | `us_023_telemetry.rs` | — | TTFT / trace phases |
 
 Additional crate tests (also cited in stories):
 

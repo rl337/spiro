@@ -49,7 +49,14 @@ fn main() -> uie_core::Result<()> {
 
     let result = complete_from_prompt(&model_path, &prompt, &opts)?;
     println!("{}", result.text);
-    eprintln!("tokens: {}", result.token_ids.len());
+    eprintln!(
+        "telemetry: total_ms={:.2} ttft_ms={:?} decode_tps={:?} cpu_ms={:.2} gpu_ms={:?}",
+        result.metrics.total_ms,
+        result.metrics.ttft_ms,
+        result.metrics.decode_tokens_per_sec,
+        result.metrics.cpu_time_ms,
+        result.metrics.gpu_time_ms,
+    );
     Ok(())
 }
 

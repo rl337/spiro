@@ -19,6 +19,8 @@ pub enum IpcMessage {
     InferResult {
         request_id: String,
         outputs: Vec<TensorPayload>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        trace: Option<uie_telemetry::TraceSummary>,
     },
     Error { message: String },
 }
@@ -34,6 +36,7 @@ pub struct InferRequest {
 pub struct InferResponse {
     pub request_id: String,
     pub outputs: Vec<TensorPayload>,
+    pub trace: Option<uie_telemetry::TraceSummary>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

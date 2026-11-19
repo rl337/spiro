@@ -10,6 +10,11 @@ pub mod model;
 pub mod ops;
 pub mod runtime;
 pub mod tensor;
+pub mod infer;
+
+pub mod telemetry {
+    pub use uie_telemetry::*;
+}
 
 pub use backend::cpu::CpuBackend;
 pub use backend::{Backend, BackendId, Device, DeviceKind};
@@ -18,5 +23,6 @@ pub use model::{
     InferenceExecutor, InferenceModel, IoSpec, ModelLoader, ModelLoaderRegistry, ModelMetadata,
 };
 pub use ops::{Op, OpKind};
+pub use infer::InferOutcome;
 pub use runtime::{ExecutionPlan, InferenceRuntime, Session, SessionConfig};
 pub use tensor::{DataType, Shape, Tensor, TensorView};

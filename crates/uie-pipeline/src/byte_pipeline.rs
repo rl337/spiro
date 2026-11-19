@@ -1,6 +1,9 @@
 use std::path::PathBuf;
 
+use std::time::Instant;
+
 use tracing::debug;
+use uie_telemetry::ComputeDevice;
 use uie_core::tensor::Tensor;
 use uie_ipc::{ByteChannel, IpcMessage, InProcessChannel, InferenceEngineHost, TensorPayload};
 use uie_core::model::ModelLoader;
@@ -51,11 +54,19 @@ impl ByteChannelPipelineRunner {
         for (idx, hop) in self.hops.iter().enumerate() {
             debug!(stage = %hop.label, hop = idx, "byte channel pipeline hop");
             let rid = format!("{request_id}-s{idx}");
+            let t0 = Instant::now();
             let resp = self.channel.roundtrip(&IpcMessage::Infer {
                 request_id: rid,
                 model_path: hop.model_path.to_string_lossy().into(),
                 inputs: current,
             })?;
+            let hop_ms = t0.elapsed().as_secs_f64() * 1000.0;
+            tracing::info!(
+                hop = %hop.label,
+                hop_ms,
+                device = ?ComputeDevice::Unknown,
+                "byte_channel hop"
+            );
 
             current = match resp {
                 IpcMessage::InferResult { outputs, .. } => outputs,

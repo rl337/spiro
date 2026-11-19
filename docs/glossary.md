@@ -20,6 +20,22 @@ A **completion** is the model-generated text that continues a [prompt](#prompt)â
 
 ---
 
+### Execution trace {#execution-trace}
+
+An **execution trace** is a structured record of one inference run: phase timings, [`InferMetrics`](#infer-metrics) (TTFT, throughput), and CPU vs GPU time. Emitted by [`uie-telemetry`](../crates/uie-telemetry) and optional `UIE_TRACE_JSONL`.
+
+**See also:** [US-023](./stories/023-inference-telemetry.md)
+
+---
+
+### Infer metrics {#infer-metrics}
+
+**Infer metrics** are aggregate numbers for a run: prompt/completion token counts, **time to first token (TTFT)**, prefill vs decode latency, tokens/sec, and summed time on CPU vs GPU. Used to evaluate quantization, batching, and kernel swaps.
+
+**See also:** [US-023](./stories/023-inference-telemetry.md)
+
+---
+
 ### Byte channel {#byte-channel}
 
 A **byte channel** is UIEâ€™s transport for inference: clients and the engine exchange **length-prefixed JSON** frames carrying `infer` requests and tensor payloads. Implementations include in-process [`InProcessChannel`](../crates/uie-ipc) and Unix domain sockets via [`uie-serve`](../crates/uie-serve).

@@ -11,6 +11,7 @@ uie-catalog = { path = "../uie-catalog" }
 uie-core = { path = "../uie-core" }
 uie-ipc = { path = "../uie-ipc" }
 uie-stub-models = { path = "../uie-stub-models" }
+uie-telemetry = { path = "../uie-telemetry" }
 tracing.workspace = true
 
 [dev-dependencies]

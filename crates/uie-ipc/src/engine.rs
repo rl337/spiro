@@ -6,6 +6,7 @@ use tracing::{debug, info};
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::model::{InferenceExecutor, ModelLoader};
 use uie_core::{InferenceRuntime, Session};
+use uie_telemetry::{ExecutionRecorder, TraceSummary};
 
 use crate::message::{InferRequest, IpcMessage, TensorPayload, PROTOCOL_VERSION};
 
@@ -78,20 +79,31 @@ impl InferenceEngineHost {
             session.bind(&payload.name, tensor.clone());
         }
 
-        let outputs = self
-            .runtime
-            .infer(model.as_ref(), &tensors, &mut session)?;
+        let recorder = ExecutionRecorder::new(req.request_id.clone()).with_transport("ipc");
+        let outcome = self.runtime.infer_with_trace(
+            model.as_ref(),
+            &tensors,
+            &mut session,
+            recorder,
+        )?;
 
-        let out_payloads = outputs
+        let out_payloads = outcome
+            .outputs
             .iter()
             .zip(model.outputs())
             .map(|(t, spec)| TensorPayload::from_tensor(&spec.name, t))
             .collect::<uie_core::Result<Vec<_>>>()?;
 
-        debug!(request_id = %req.request_id, "infer complete");
+        debug!(
+            request_id = %req.request_id,
+            total_ms = outcome.trace.metrics.total_ms,
+            ttft_ms = ?outcome.trace.metrics.ttft_ms,
+            "infer complete"
+        );
         Ok(IpcMessage::InferResult {
             request_id: req.request_id,
             outputs: out_payloads,
+            trace: Some(TraceSummary::from(&outcome.trace)),
         })
     }
 

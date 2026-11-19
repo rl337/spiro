@@ -7,7 +7,9 @@ use crate::backend::{Backend, Device};
 use crate::error::{Error, Result};
 use crate::model::{InferenceExecutor, InferenceModel, ModelLoader, ModelLoaderRegistry};
 use crate::ops::{Op, OpKind};
+use crate::infer::{infer_with_trace, InferOutcome};
 use crate::tensor::{DataType, Shape, Tensor};
+use uie_telemetry::ExecutionRecorder;
 
 #[derive(Debug, Clone, Default)]
 pub struct SessionConfig {
@@ -112,6 +114,23 @@ impl InferenceRuntime {
             }
         }
         Ok(outputs)
+    }
+
+    #[instrument(skip(self, model, inputs, session, recorder), fields(backend = %self.backend.id()))]
+    pub fn infer_with_trace(
+        &self,
+        model: &dyn InferenceExecutor,
+        inputs: &[Tensor],
+        session: &mut Session<'_>,
+        recorder: ExecutionRecorder,
+    ) -> Result<InferOutcome> {
+        infer_with_trace(
+            self.backend.as_ref(),
+            model,
+            inputs,
+            session,
+            recorder,
+        )
     }
 
     #[instrument(skip(self, model, session), fields(backend = %self.backend.id()))]

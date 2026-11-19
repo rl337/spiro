@@ -12,6 +12,8 @@ use llama_cpp_2::model::LlamaModel;
 use llama_cpp_2::sampling::LlamaSampler;
 use llama_cpp_2::token::LlamaToken;
 use uie_core::error::{Error, Result};
+use uie_telemetry::{ComputeDevice, InferMetrics};
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
 pub struct CompleteOptions {
@@ -34,6 +36,7 @@ impl Default for CompleteOptions {
 pub struct CompleteResult {
     pub text: String,
     pub token_ids: Vec<i32>,
+    pub metrics: InferMetrics,
 }
 
 pub fn complete_from_prompt(
@@ -57,6 +60,13 @@ fn run_generation(
     tokens: Vec<LlamaToken>,
     opts: &CompleteOptions,
 ) -> Result<CompleteResult> {
+    let run_started = Instant::now();
+    let device = if std::env::var("UIE_GGUF_GPU").is_ok_and(|v| v == "1") {
+        ComputeDevice::Gpu
+    } else {
+        ComputeDevice::Cpu
+    };
+
     let ctx_tokens = NonZeroU32::new(opts.context_tokens.max(256)).ok_or_else(|| {
         Error::InvalidShape("context_tokens must be > 0".into())
     })?;
@@ -80,15 +90,21 @@ fn run_generation(
             .add(token, i, &[0], is_last)
             .map_err(|e| Error::Runtime(format!("batch add: {e}")))?;
     }
+    let prefill_t0 = Instant::now();
     ctx.decode(&mut batch)
         .map_err(|e| Error::Runtime(format!("decode prompt: {e}")))?;
+    let prefill_ms = prefill_t0.elapsed().as_secs_f64() * 1000.0;
 
     let mut sampler = LlamaSampler::greedy();
     let vocab = model.vocab();
 
+    let prompt_tokens = tokens.len() as u32;
     let mut generated: Vec<i32> = tokens.iter().map(|t| t.0).collect();
     let mut output_text = String::new();
     let mut n_cur = batch.n_tokens();
+    let mut ttft_ms = None;
+    let decode_t0 = Instant::now();
+    let mut completion_tokens = 0u32;
 
     for _ in 0..max_gen {
         let token = sampler.sample(&ctx, batch.n_tokens() - 1);
@@ -105,6 +121,10 @@ fn run_generation(
         output_text.push_str(&piece);
 
         generated.push(token.0);
+        completion_tokens += 1;
+        if ttft_ms.is_none() {
+            ttft_ms = Some(run_started.elapsed().as_secs_f64() * 1000.0);
+        }
 
         batch.clear();
         batch
@@ -115,8 +135,27 @@ fn run_generation(
         n_cur += 1;
     }
 
+    let decode_ms = decode_t0.elapsed().as_secs_f64() * 1000.0;
+    let total_ms = run_started.elapsed().as_secs_f64() * 1000.0;
+    let mut metrics = InferMetrics {
+        prompt_tokens,
+        completion_tokens,
+        ttft_ms,
+        prefill_ms,
+        decode_ms,
+        total_ms,
+        cpu_time_ms: 0.0,
+        gpu_time_ms: None,
+        decode_tokens_per_sec: None,
+        overall_tokens_per_sec: None,
+    };
+    metrics.add_phase_time(device, prefill_ms);
+    metrics.add_phase_time(device, decode_ms);
+    metrics.recompute_rates();
+
     Ok(CompleteResult {
         text: output_text,
         token_ids: generated,
+        metrics,
     })
 }

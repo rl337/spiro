@@ -14,6 +14,7 @@ members = [
     "crates/uie-acceptance",
     "crates/uie-loader-gguf",
     "crates/uie-llm",
+    "crates/uie-telemetry",
 ]
 default-members = ["crates/uie-spiro"]
 

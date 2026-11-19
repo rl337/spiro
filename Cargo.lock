@@ -1737,6 +1737,7 @@ checksum = "8f20bdbfc9915686faa18fb5bbe8b4552778505defbf9f12289beefbc44092a6"
 name = "uie-acceptance"
 version = "0.1.0"
 dependencies = [
+ "serde_json",
  "tempfile",
  "uie-catalog",
  "uie-core",
@@ -1768,6 +1769,7 @@ dependencies = [
  "bytemuck",
  "thiserror",
  "tracing",
+ "uie-telemetry",
 ]
 
 [[package]]
@@ -1781,6 +1783,7 @@ dependencies = [
  "tracing",
  "uie-core",
  "uie-stub-models",
+ "uie-telemetry",
 ]
 
 [[package]]
@@ -1806,6 +1809,7 @@ dependencies = [
  "tracing",
  "uie-core",
  "uie-stub-models",
+ "uie-telemetry",
 ]
 
 [[package]]
@@ -1839,6 +1843,7 @@ dependencies = [
  "uie-core",
  "uie-ipc",
  "uie-stub-models",
+ "uie-telemetry",
 ]
 
 [[package]]
@@ -1878,6 +1883,16 @@ dependencies = [
  "tracing-subscriber",
  "uie-core",
  "uie-stub-models",
+]
+
+[[package]]
+name = "uie-telemetry"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
 ]
 
 [[package]]

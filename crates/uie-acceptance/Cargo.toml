@@ -27,4 +27,5 @@ uie-core = { path = "../uie-core" }
 uie-ipc = { path = "../uie-ipc" }
 uie-pipeline = { path = "../uie-pipeline" }
 uie-stub-models = { path = "../uie-stub-models" }
+serde_json = { workspace = true }
 tempfile = "3.14"
