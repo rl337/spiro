@@ -43,9 +43,9 @@ python3 scripts/verify-di-first.py                      # DI-VERIFY-01 env-branc
 |----------|------|
 | [static-checks.yml](../.github/workflows/static-checks.yml) | Rust `fmt`/`clippy`, Python `ruff` |
 | [uie-acceptance-ci.yml](../.github/workflows/uie-acceptance-ci.yml) | Story governance + acceptance tests |
-| [bugbot-gate.yml](../.github/workflows/bugbot-gate.yml) | Waits for **Cursor Bugbot** App check |
+| [bugbot-gate.yml](../.github/workflows/bugbot-gate.yml) | Waits for **Cursor Bugbot** when the App posts a check |
 
-Enable Bugbot on the repo in [Cursor → Automations → Bugbot](https://cursor.com/docs/bugbot). Repo config: [`.cursor/config/bugbot.yaml`](../.cursor/config/bugbot.yaml).
+Enable Bugbot on the repo in [Cursor Agents → Automations → Bugbot](https://cursor.com/docs/bugbot). Repo config: [`.cursor/config/bugbot.yaml`](../.cursor/config/bugbot.yaml). If the gate times out, comment `bugbot run` on the PR; set repo variable `BUGBOT_GATE_STRICT=true` only if you want timeouts to fail CI.
 
 ## Pull requests
 

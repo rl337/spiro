@@ -30,7 +30,12 @@ DI-first lint, and `cargo test -p uie-acceptance`.
 
 Bugbot MUST be enabled for the repository (Cursor GitHub App). PR CI runs
 [`bugbot-gate.yml`](../../.github/workflows/bugbot-gate.yml) to wait for the
-**Cursor Bugbot** check. Hints: [`.cursor/BUGBOT.md`](../../.cursor/BUGBOT.md).
+**Cursor Bugbot** check when it appears. Hints: [`.cursor/BUGBOT.md`](../../.cursor/BUGBOT.md).
+
+The gate is **advisory by default**: if the App never posts a check (oversized diff,
+delay, etc.), the workflow warns and passes. Set GitHub repo variable
+`BUGBOT_GATE_STRICT=true` to fail on timeout. Completed runs with findings use
+check conclusion `neutral` (gate passes); only `failure` fails the job.
 
 ## Related
 
