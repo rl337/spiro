@@ -93,10 +93,11 @@ mod tests {
     #[test]
     fn mnist_inference_digit_one() -> uie_core::Result<()> {
         let model_path = resolve_model_path();
-        if !model_path.exists() {
-            eprintln!("skip: model not at {}", model_path.display());
-            return Ok(());
-        }
+        assert!(
+            model_path.is_file(),
+            "vendored MNIST model missing: {}",
+            model_path.display()
+        );
 
         let backend = Box::new(CpuBackend::new());
         let runtime = InferenceRuntime::new(backend).with_loader(Box::new(OnnxModelLoader::new()));
@@ -107,8 +108,17 @@ mod tests {
             model.as_ref(),
             &[input],
             &mut session,
-            ExecutionRecorder::new("uie-mnist"),
+            ExecutionRecorder::new("us-009-mnist-ci"),
         )?;
+        uie_core::telemetry::assert_phases(
+            &outcome.trace,
+            &["onnx_validate_inputs", "onnx_tract_run"],
+        );
+        assert!(
+            outcome.trace.metrics.gpu_time_ms.is_none(),
+            "CPU ONNX path must not report GPU time"
+        );
+        assert!(outcome.trace.metrics.cpu_time_ms > 0.0);
         let outputs = outcome.outputs;
         let logits = outputs[0].as_f32_slice()?;
         let digit = logits

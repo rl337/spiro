@@ -1,4 +1,4 @@
-//! US-009 (CI stub): fixture shape only. Real ONNX infer → `live_models.rs` + `live-onnx` feature.
+//! US-009 (CI stub): fixture shape. Real ONNX infer → `native-compile` (`uie-mnist` test) and live `live-onnx`.
 mod common;
 
 use uie_acceptance::{assert_story_events, StoryEventLog};

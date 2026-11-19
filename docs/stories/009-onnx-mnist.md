@@ -1,6 +1,6 @@
 # US-009: ONNX MNIST digit classification
 
-**Status:** partial (model vendored; loader crate in progress)  
+**Status:** shipped (vendored model; loader + CI infer in `native-compile`)  
 **Personas:** Liz, Kenneth  
 **Crate / path:** `models/mnist-8.onnx`, `crates/uie-loader-onnx`, `crates/uie-mnist`
 
@@ -45,8 +45,8 @@ See `models/README.md` for input/output shapes and license.
 
 ## Acceptance notes
 
-- **Target command:** `cargo run -p uie-mnist` (when loader build is green).
-- **Test:** `cargo test -p uie-mnist` expects digit `1` on the stroke fixture.
+- **Target command:** `cargo run -p uie-mnist`.
+- **CI infer:** `.github/workflows/native-compile.yml` runs `cargo test -p uie-mnist mnist_inference_digit_one` (digit `1` on stroke fixture + ONNX phases).
 - **Env overrides:** `UIE_MNIST_MODEL`, `UIE_MNIST_FIXTURE`.
 - **Limitation:** Requires Rust **1.96+** in `rust-toolchain.toml` for current Tract dependency chain; ONNX dtypes beyond `F32` not supported yet.
 
@@ -55,6 +55,7 @@ See `models/README.md` for input/output shapes and license.
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_009_mnist.rs` | `cargo test -p uie-acceptance --test us_009_mnist` |
+| Rust (native CI) | `crates/uie-mnist/src/main.rs` | `cargo test -p uie-mnist mnist_inference_digit_one` |
 | Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance --features live-onnx live_us_009_mnist_onnx_infer` |
 
 ## Observability

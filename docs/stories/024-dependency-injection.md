@@ -1,6 +1,6 @@
 # US-024: Dependency injection (uie-iv / pyiv-style)
 
-**Status:** partial  
+**Status:** shipped (composition root + `verify-di-first`; mode via injector)  
 **Personas:** Jack, Pete  
 **Crate / path:** `crates/uie-iv`, `crates/uie-acceptance/src/composition.rs`
 

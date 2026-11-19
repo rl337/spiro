@@ -1,6 +1,6 @@
 # US-021: Model roots and runtime registry scan
 
-**Status:** partial (scan + registry; GGUF executors planned)  
+**Status:** shipped (scan + Comfy family normalization; live scan optional)  
 **Personas:** Jack, Liz  
 **Crate / path:** `crates/uie-catalog`, `config/model_roots.example.yaml`
 

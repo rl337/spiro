@@ -1,6 +1,6 @@
 # US-010: Large language models and text completions
 
-**Status:** partial (GGUF / LM Studio paths; GPU backends later)  
+**Status:** shipped (GGUF completion + `uie-llm`; GPU via `UIE_GGUF_GPU=1`)  
 **Personas:** Liz  
 **Crate / path:** `crates/uie-loader-gguf`, `crates/uie-llm`, `config/model_roots.yaml`
 

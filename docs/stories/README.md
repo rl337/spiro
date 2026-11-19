@@ -12,9 +12,10 @@ Each story has an ID (`US-*`) so you can cite it in issues and PRs. Terms link t
 | [US-004](./004-runtime-sessions.md) | Runtime and named sessions | Liz | shipped |
 | [US-005](./005-execution-plans.md) | Execution plans from graphs | Frank | shipped (scaffold) |
 | [US-006](./006-operations.md) | Operations in the graph | Toofer | shipped (scaffold) |
-| [US-007](./007-models-loaders.md) | Models, loaders, and registries | Jack, Liz | partial |
+| [US-007](./007-models-loaders.md) | Models, loaders, and registries | Jack, Liz | shipped |
 | [US-008](./008-spiro-demo.md) | Spirograph demo workload | Tracy, Jenna | shipped |
-| [US-009](./009-onnx-mnist.md) | ONNX MNIST classification | Liz, Kenneth | partial |
+| [US-009](./009-onnx-mnist.md) | ONNX MNIST classification | Liz, Kenneth | shipped |
+| [US-010](./010-llm-text-completions.md) | LLM text completions & chatbot | Liz | shipped |
 
 ## Modalities (planned)
 
@@ -22,7 +23,6 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 
 | ID | Title | Personas | Modality |
 |----|--------|----------|----------|
-| [US-010](./010-llm-text-completions.md) | LLM text completions & chatbot | Liz | Text → Text |
 | [US-011](./011-judge-system-one-models.md) | System-one / judge models | Jack, Toofer | Text → Text / labels |
 | [US-012](./012-diffusion-text-to-image.md) | Diffusion text-to-image | Tracy, Jenna | Text → Image |
 | [US-013](./013-speech-to-text.md) | Speech-to-text | Kenneth, Pete | Audio → Text |
@@ -32,11 +32,16 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 | [US-017](./017-multimodal-text-image-to-text.md) | Multimodal chat | Liz | Text + Image → Text |
 | [US-018](./018-audio-to-audio.md) | Audio-to-audio | Pete | Audio → Audio |
 | [US-019](./019-image-to-image.md) | Image-to-image / inpainting | Tracy | Image → Image |
-| [US-020](./020-inference-byte-channel.md) | Inference byte channel | Liz, Pete | (transport) |
-| [US-021](./021-model-registry-scan.md) | Model roots & registry scan | Jack, Liz | partial |
-| [US-022](./022-byte-channel-pipeline.md) | Multi-hop byte channel pipeline | Tracy, Pete | partial |
-| [US-023](./023-inference-telemetry.md) | Execution telemetry (TTFT, throughput) | Pete, Jack | partial |
-| [US-024](./024-dependency-injection.md) | Dependency injection (uie-iv / pyiv-style) | Jack, Pete | partial |
+
+## Platform (shipped)
+
+| ID | Title | Personas | Status |
+|----|--------|----------|--------|
+| [US-020](./020-inference-byte-channel.md) | Inference byte channel | Liz, Pete | shipped |
+| [US-021](./021-model-registry-scan.md) | Model roots & registry scan | Jack, Liz | shipped |
+| [US-022](./022-byte-channel-pipeline.md) | Multi-hop byte channel pipeline | Tracy, Pete | shipped |
+| [US-023](./023-inference-telemetry.md) | Execution telemetry (TTFT, throughput) | Pete, Jack | shipped |
+| [US-024](./024-dependency-injection.md) | Dependency injection (uie-iv / pyiv-style) | Jack, Pete | shipped |
 
 ## Acceptance tests
 
