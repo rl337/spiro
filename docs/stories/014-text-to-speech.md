@@ -43,3 +43,8 @@ Pairs with [US-013](./013-speech-to-text.md) for round-trip tests and with Lizâ€
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_014_tts_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_014_tts_stub`
+- **CI test:** `us_010_019_modalities.rs`

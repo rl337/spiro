@@ -48,3 +48,8 @@ Related variants live in [US-015](./015-modality-catalog.md) (image-to-image, in
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_012_diffusion_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_012_diffusion_stub`
+- **CI test:** `us_010_019_modalities.rs`

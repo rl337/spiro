@@ -45,3 +45,9 @@ Sessions survive across steps in one logical “run.” Outputs from `infer` can
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_004_runtime_session.rs` | `cargo test -p uie-acceptance --test us_004_runtime_session` |
+
+## Observability
+
+- **Events:** `session_bind`, `runtime_infer_trace`
+- **Trace:** `assert_infer_outcome_trace` on stub LLM infer (`runtime_session_bind` + executor phases)
+- **CI test:** `us_004_runtime_session.rs`

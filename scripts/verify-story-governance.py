@@ -34,6 +34,25 @@ def glob_match(path: str, pattern: str) -> bool:
     return fnmatch.fnmatch(path.replace("\\", "/"), pattern)
 
 
+def story_doc_path(story_id: str) -> Path | None:
+    n = story_id.split("-")[1]
+    matches = list((REPO / "docs" / "stories").glob(f"{n}-*.md"))
+    return matches[0] if matches else None
+
+
+def verify_story_docs(cfg: dict) -> list[str]:
+    errors: list[str] = []
+    for story_id in (cfg.get("stories") or {}).keys():
+        doc = story_doc_path(story_id)
+        if not doc or not doc.is_file():
+            errors.append(f"{story_id}: missing docs/stories file")
+            continue
+        body = read_text(doc)
+        if "## Observability" not in body:
+            errors.append(f"{story_id}: docs/stories missing ## Observability section")
+    return errors
+
+
 def verify_coverage(cfg: dict) -> list[str]:
     errors: list[str] = []
     markers = cfg.get("observability_markers") or []
@@ -160,7 +179,7 @@ def main() -> int:
         return 2
 
     cfg = load_config()
-    errors = verify_coverage(cfg)
+    errors = verify_story_docs(cfg) + verify_coverage(cfg)
     if not args.skip_diff:
         errors.extend(verify_checkins(cfg, args.diff_base))
 

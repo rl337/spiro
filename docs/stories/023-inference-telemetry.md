@@ -41,3 +41,8 @@
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_023_telemetry.rs` | `cargo test -p uie-acceptance --test us_023_telemetry` |
+
+## Observability
+
+- **Trace:** `assert_phases`, `assert_stub_executor_telemetry`, `TraceSummary` JSON for IPC
+- **CI test:** `us_023_telemetry.rs`

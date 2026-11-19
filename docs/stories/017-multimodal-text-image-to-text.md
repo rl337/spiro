@@ -44,3 +44,8 @@ Combines [US-016](./016-image-to-text.md) encoding with [US-010](./010-llm-text-
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_017_vlm_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_017_vlm_stub`
+- **CI test:** `us_010_019_modalities.rs`

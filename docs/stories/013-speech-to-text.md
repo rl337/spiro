@@ -45,3 +45,8 @@ Pete cares about batch length limits and CPU fallback; Kenneth starts with a 10-
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_013_stt_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_013_stt_stub`
+- **CI test:** `us_010_019_modalities.rs`

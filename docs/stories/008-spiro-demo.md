@@ -45,3 +45,8 @@ The demo does **not** yet express spiro steps as [graph operations](./006-operat
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_008_spiro.rs` | `cargo test -p uie-acceptance --test us_008_spiro` |
+
+## Observability
+
+- **Events:** `spiro_demo_entrypoint`, `spiro_module_sources_present`
+- **CI test:** `us_008_spiro.rs`

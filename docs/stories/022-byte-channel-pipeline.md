@@ -39,3 +39,9 @@
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_022_byte_pipeline.rs` | `cargo test -p uie-acceptance --test us_022_byte_pipeline` |
 | Rust | `crates/uie-pipeline/tests/byte_stack.rs` | `cargo test -p uie-pipeline` |
+
+## Observability
+
+- **Trace:** per-hop `assert_ipc_infer_trace` on pipeline byte channel
+- **CI:** `us_022_byte_pipeline.rs`, `uie-pipeline/tests/byte_stack.rs`
+- **Live:** `live_us_022_byte_pipeline_workspace_onnx_or_stub` (infer trace when run)

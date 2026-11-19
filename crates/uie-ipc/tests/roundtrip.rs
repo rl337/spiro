@@ -38,8 +38,14 @@ fn in_process_stub_llm_roundtrip() {
         })
         .unwrap();
 
-    match resp {
-        IpcMessage::InferResult { outputs, .. } => assert_eq!(outputs.len(), 1),
+    match &resp {
+        IpcMessage::InferResult { outputs, trace, .. } => {
+            assert_eq!(outputs.len(), 1);
+            uie_telemetry::assert_ipc_infer_trace_summary(
+                trace.as_ref().expect("US-020 infer trace"),
+                "US-020",
+            );
+        }
         other => panic!("unexpected {other:?}"),
     }
 }
@@ -74,7 +80,15 @@ fn unix_socket_stub_roundtrip() {
             inputs: payloads,
         })
         .unwrap();
-    assert!(matches!(resp, IpcMessage::InferResult { .. }));
+    match &resp {
+        IpcMessage::InferResult { trace, .. } => {
+            uie_telemetry::assert_ipc_infer_trace_summary(
+                trace.as_ref().expect("US-020 unix infer trace"),
+                "US-020",
+            );
+        }
+        other => panic!("unexpected {other:?}"),
+    }
     drop(client);
     server.join().unwrap();
 }

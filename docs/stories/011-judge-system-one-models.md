@@ -48,3 +48,8 @@ Typical flow:
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_011_judge_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_011_judge_stub`
+- **CI test:** `us_010_019_modalities.rs`

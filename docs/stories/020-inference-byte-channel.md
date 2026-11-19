@@ -43,3 +43,9 @@
 | Rust | `crates/uie-acceptance/tests/us_020_byte_channel.rs` | `cargo test -p uie-acceptance --test us_020_byte_channel` |
 | Rust | `crates/uie-ipc/tests/roundtrip.rs` | `cargo test -p uie-ipc` |
 | Python | `python/acceptance/test_us_020_ipc.py` | `python3 -m unittest python.acceptance.test_us_020_ipc` |
+
+## Observability
+
+- **Trace:** `assert_ipc_infer_trace` / `assert_ipc_infer_trace_summary` on `InferResult.trace`
+- **Python:** `assert_ipc_infer_has_trace`
+- **CI:** `us_020_byte_channel.rs`, `uie-ipc/tests/roundtrip.rs`, `test_us_020_ipc.py`

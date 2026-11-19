@@ -55,3 +55,9 @@ See `models/README.md` for input/output shapes and license.
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_009_mnist.rs` | `cargo test -p uie-acceptance --test us_009_mnist` |
+
+## Observability
+
+- **Events:** `mnist_fixture_present`, `mnist_input_tensor_bytes`
+- **CI test:** `us_009_mnist.rs`
+- **Live:** `live_us_009_mnist_onnx_infer` uses `assert_infer_outcome_trace` (ONNX phases)

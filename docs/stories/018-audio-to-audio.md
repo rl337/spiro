@@ -41,3 +41,8 @@ Flow mirrors [US-013](./013-speech-to-text.md) input binding, but output is wave
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_018_audio_to_audio_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_018_audio_to_audio_stub`
+- **CI test:** `us_010_019_modalities.rs`

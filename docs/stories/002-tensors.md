@@ -45,3 +45,8 @@ If the buffer length does not match the shape, UIE rejects the tensor rather tha
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_002_tensors.rs` | `cargo test -p uie-acceptance --test us_002_tensors` |
+
+## Observability
+
+- **Events:** `tensor_f32_roundtrip`, `dtype_preserved`
+- **CI test:** `us_002_tensors.rs`

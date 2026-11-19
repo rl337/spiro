@@ -40,3 +40,8 @@ An [execution plan](../glossary.md#execution-plan) is simply `Vec<Op>` in order.
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_005_execution_plan.rs` | `cargo test -p uie-acceptance --test us_005_execution_plan` |
+
+## Observability
+
+- **Events:** `execution_plan_emitted`
+- **CI test:** `us_005_execution_plan.rs`

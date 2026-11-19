@@ -42,3 +42,9 @@
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_021_model_registry.rs` | `cargo test -p uie-acceptance --test us_021_model_registry` |
 | Rust | `crates/uie-catalog/tests/scan.rs` | `cargo test -p uie-catalog` |
+
+## Observability
+
+- **Events:** `registry_scan_entry`, `registry_entry_id_prefix`; crate test adds `registry_scan_multi_layout`
+- **CI:** `us_021_model_registry.rs`, `uie-catalog/tests/scan.rs`
+- **Live:** `live_us_021_*` records `registry_live_scan` events (skipped in CI)

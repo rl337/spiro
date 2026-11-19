@@ -8,6 +8,7 @@ observability_markers:
   - assert_story_events
   - assert_infer_outcome_trace
   - assert_ipc_infer_trace
+  - assert_ipc_infer_trace_summary
   - assert_trace_summary
   - StoryEventLog
   - assert_ipc_infer_has_trace
@@ -93,13 +94,16 @@ stories:
   US-020:
     acceptance:
       - crates/uie-acceptance/tests/us_020_byte_channel.rs
+      - crates/uie-ipc/tests/roundtrip.rs
       - python/acceptance/test_us_020_ipc.py
   US-021:
     acceptance:
       - crates/uie-acceptance/tests/us_021_model_registry.rs
+      - crates/uie-catalog/tests/scan.rs
   US-022:
     acceptance:
       - crates/uie-acceptance/tests/us_022_byte_pipeline.rs
+      - crates/uie-pipeline/tests/byte_stack.rs
   US-023:
     acceptance:
       - crates/uie-acceptance/tests/us_023_telemetry.rs

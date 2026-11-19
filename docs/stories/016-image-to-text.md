@@ -43,3 +43,8 @@ Differs from [US-009](./009-onnx-mnist.md): output is language, not a single dig
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_016_image_to_text_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_016_image_to_text_stub`
+- **CI test:** `us_010_019_modalities.rs`

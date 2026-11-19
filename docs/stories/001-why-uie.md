@@ -42,3 +42,8 @@ You do not need to know Rust internals to follow the stories—start with [US-00
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_001_why_uie.rs` | `cargo test -p uie-acceptance --test us_001_why_uie` |
+
+## Observability
+
+- **Events (`StoryEventLog`):** `uie_core_present`, `story_doc_present`
+- **CI test:** `us_001_why_uie.rs`

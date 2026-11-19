@@ -58,3 +58,9 @@ This is **text → text** [modality](./015-modality-catalog.md). It reuses the s
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_010_llm_stub` |
 | Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance --features gguf live_us_010_gguf_text_completion` |
+
+## Observability
+
+- **Trace:** `assert_stub_executor_telemetry` (`stub_validate_inputs`, `stub_policy_infer`, `runtime_session_bind`)
+- **CI test:** `us_010_019_modalities.rs` → `us_010_llm_stub`
+- **Live:** `live_us_010_gguf_text_completion` asserts `CompleteResult.metrics`

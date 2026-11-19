@@ -54,3 +54,10 @@ The [model loader registry](../glossary.md#model-loader-registry) on the [runtim
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_007_model_loader.rs` | `cargo test -p uie-acceptance --test us_007_model_loader` |
+
+## Observability
+
+- **Events:** `stub_executor_loaded`, `loader_infer_trace`
+- **Trace:** `assert_stub_executor_telemetry`, `assert_infer_outcome_trace`
+- **CI test:** `us_007_model_loader.rs`
+- **Live:** `live_us_007_load_path_from_env` records load/infer events when `UIE_LIVE_MODEL_PATH` is set
