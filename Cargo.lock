@@ -1742,6 +1742,7 @@ dependencies = [
  "uie-catalog",
  "uie-core",
  "uie-ipc",
+ "uie-iv",
  "uie-loader-gguf",
  "uie-loader-onnx",
  "uie-pipeline",
@@ -1786,6 +1787,18 @@ dependencies = [
  "uie-core",
  "uie-stub-models",
  "uie-telemetry",
+]
+
+[[package]]
+name = "uie-iv"
+version = "0.1.0"
+dependencies = [
+ "thiserror",
+ "tracing",
+ "uie-core",
+ "uie-loader-gguf",
+ "uie-loader-onnx",
+ "uie-stub-models",
 ]
 
 [[package]]
@@ -1856,6 +1869,7 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uie-ipc",
+ "uie-iv",
  "uie-stub-models",
 ]
 

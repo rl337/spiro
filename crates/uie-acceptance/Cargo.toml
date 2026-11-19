@@ -13,11 +13,12 @@ path = "src/lib.rs"
 [features]
 default = []
 # Enable real ONNX load/infer in live_us_009_* (requires uie-loader-onnx to compile).
-live-onnx = ["dep:uie-loader-onnx"]
+live-onnx = ["dep:uie-loader-onnx", "uie-iv/live-onnx"]
 # Enable US-010 GGUF text completion in live_us_010_* (requires g++, link with g++).
-gguf = ["dep:uie-loader-gguf"]
+gguf = ["dep:uie-loader-gguf", "uie-iv/gguf"]
 
 [dependencies]
+uie-iv = { path = "../uie-iv" }
 uie-core = { path = "../uie-core" }
 uie-ipc = { path = "../uie-ipc" }
 uie-telemetry = { path = "../uie-telemetry" }

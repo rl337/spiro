@@ -1,6 +1,8 @@
 use std::path::PathBuf;
 
-use uie_acceptance::{is_ci_mode, is_live_mode};
+mod composition {
+    pub use uie_acceptance::composition::injector;
+}
 
 pub fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -13,13 +15,11 @@ pub fn stubs_dir() -> PathBuf {
     repo_root().join("models/stubs")
 }
 
-/// Live-only tests return early in CI/stub mode (pass without running).
+/// Live-only tests: delegated to injected [`AcceptanceProfile`], not raw env checks.
 pub fn skip_unless_live(test_name: &str) -> bool {
-    if is_live_mode() {
-        return false;
-    }
-    eprintln!("skip {test_name}: UIE_ACCEPTANCE_MODE is ci (stub); set live to run real models");
-    true
+    composition::injector()
+        .acceptance_profile()
+        .skip_live_test(test_name)
 }
 
 /// Stub-only tests return early in live mode when a dedicated live test exists (optional gate).
@@ -38,3 +38,5 @@ pub fn skip_stub_in_live(test_name: &str) -> bool {
     );
     true
 }
+
+use uie_acceptance::{is_ci_mode, is_live_mode};

@@ -1,16 +1,21 @@
 use std::env;
+
+use uie_iv::uie::profile::serve_loader_mode_from_env;
 use std::path::PathBuf;
 
 use uie_ipc::{InferenceEngineHost, UnixListenerChannel};
-use uie_stub_models::StubModelLoader;
-use uie_core::model::ModelLoader;
 
 fn main() -> uie_core::Result<()> {
     tracing_subscriber::fmt::init();
 
     let socket = socket_path();
-    let host =
-        InferenceEngineHost::new(vec![Box::new(StubModelLoader::default()) as Box<dyn ModelLoader>]);
+    let inj = uie_iv::serve_injector().map_err(|e| uie_core::Error::Runtime(e.to_string()))?;
+    tracing::info!(
+        profile = inj.acceptance_profile().id(),
+        loaders = ?uie_iv::serve_loader_mode_from_env(),
+        "uie-serve composition"
+    );
+    let host = InferenceEngineHost::new(inj.loaders());
 
     tracing::info!(%socket, "listening");
     let server = UnixListenerChannel::bind(&socket, host)?;

@@ -20,6 +20,14 @@ A **completion** is the model-generated text that continues a [prompt](#prompt)â
 
 ---
 
+### Composition root {#composition-root}
+
+A **composition root** wires CI vs live dependencies through [`uie-iv`](../crates/uie-iv/README.md) modules (Guice / [pyiv](https://github.com/rl337/pyiv) style), instead of `if live` at each call site.
+
+**See also:** [US-024](./stories/024-dependency-injection.md)
+
+---
+
 ### Execution trace {#execution-trace}
 
 An **execution trace** is a structured record of one inference run: phase timings, [`InferMetrics`](#infer-metrics) (TTFT, throughput), and CPU vs GPU time. Emitted by [`uie-telemetry`](../crates/uie-telemetry) and optional `UIE_TRACE_JSONL`.
@@ -284,7 +292,13 @@ A **token** is a chunk of text the LLM reads or writes internally. Prompts and [
 
 ---
 
-### UIE {#uie}
+### Composition root (uie-iv)
+
+A **composition root** binds CI vs live implementations through [`uie-iv`](../crates/uie-iv/README.md) modules (analogous to [pyiv](https://github.com/rl337/pyiv)), replacing scattered environment conditionals.
+
+**See also:** [US-024](./stories/024-dependency-injection.md)
+
+## UIE {#uie}
 
 **UIE** (Universal Inference Engine) is the Rust workspace in this repo: shared core (`uie-core`), demos (`uie-spiro`, `uie-mnist`), and loader crates (`uie-loader-onnx`).
 

@@ -1,0 +1,24 @@
+[package]
+name = "uie-iv"
+description = "Guice/pyiv-style dependency injection for UIE (profiles, modules, composition root)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[features]
+default = []
+live-onnx = ["dep:uie-loader-onnx"]
+gguf = ["dep:uie-loader-gguf"]
+
+[dependencies]
+uie-core = { path = "../uie-core" }
+uie-stub-models = { path = "../uie-stub-models" }
+uie-loader-onnx = { path = "../uie-loader-onnx", optional = true }
+uie-loader-gguf = { path = "../uie-loader-gguf", optional = true }
+thiserror.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+uie-telemetry = { path = "../uie-telemetry" }

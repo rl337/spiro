@@ -1,6 +1,7 @@
 //! Per-story acceptance tests live under `crates/uie-acceptance/tests/`.
 //! See `docs/acceptance-tests.md`.
 
+pub mod composition;
 pub mod mode;
 pub mod observability;
 pub mod story_assert;

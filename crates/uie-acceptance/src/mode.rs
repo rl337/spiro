@@ -1,23 +1,13 @@
-//! CI (stub) vs live acceptance modes.
+//! CI (stub) vs live acceptance modes — resolved via [`crate::composition`].
 
-/// `ci` / `stub` — default in automation: stub models only.
-/// `live` — load and run real weights from disk or registry (laptop / nightly).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AcceptanceMode {
-    Ci,
-    Live,
-}
+pub use uie_iv::uie::profile::{
+    acceptance_mode_from_env, AcceptanceMode, AcceptanceProfile, CiAcceptanceProfile,
+    LiveAcceptanceProfile,
+};
 
 /// Reads `UIE_ACCEPTANCE_MODE`. Unset or `ci`/`stub` → [`AcceptanceMode::Ci`].
 pub fn acceptance_mode() -> AcceptanceMode {
-    match std::env::var("UIE_ACCEPTANCE_MODE")
-        .unwrap_or_else(|_| "ci".into())
-        .to_ascii_lowercase()
-        .as_str()
-    {
-        "live" | "real" | "local" => AcceptanceMode::Live,
-        _ => AcceptanceMode::Ci,
-    }
+    acceptance_mode_from_env()
 }
 
 pub fn is_ci_mode() -> bool {

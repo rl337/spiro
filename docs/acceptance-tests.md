@@ -95,6 +95,7 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 | US-021 | `us_021_model_registry.rs` | — | tempdir CI; real roots live |
 | US-022 | `us_022_byte_pipeline.rs` | — | multi-hop IPC |
 | US-023 | `us_023_telemetry.rs` | — | TTFT / trace phases |
+| US-024 | `us_024_dependency_injection.rs` | — | `uie-iv` CI/live injector |
 
 Additional crate tests (also cited in stories):
 

@@ -10,7 +10,13 @@ rust-version.workspace = true
 name = "uie-serve"
 path = "src/main.rs"
 
+[features]
+default = []
+live-onnx = ["uie-iv/live-onnx"]
+gguf = ["uie-iv/gguf"]
+
 [dependencies]
+uie-iv = { path = "../uie-iv" }
 uie-ipc = { path = "../uie-ipc" }
 uie-stub-models = { path = "../uie-stub-models" }
 tracing.workspace = true

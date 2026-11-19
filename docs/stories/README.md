@@ -36,6 +36,7 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 | [US-021](./021-model-registry-scan.md) | Model roots & registry scan | Jack, Liz | partial |
 | [US-022](./022-byte-channel-pipeline.md) | Multi-hop byte channel pipeline | Tracy, Pete | partial |
 | [US-023](./023-inference-telemetry.md) | Execution telemetry (TTFT, throughput) | Pete, Jack | partial |
+| [US-024](./024-dependency-injection.md) | Dependency injection (uie-iv / pyiv-style) | Jack, Pete | partial |
 
 ## Acceptance tests
 

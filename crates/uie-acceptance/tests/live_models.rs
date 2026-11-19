@@ -104,22 +104,11 @@ fn live_us_007_load_path_from_env() {
         path.display()
     );
 
-    use uie_core::backend::cpu::CpuBackend;
+    use uie_acceptance::composition::inference_runtime;
     use uie_core::telemetry::ExecutionRecorder;
-    use uie_core::InferenceRuntime;
-    use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
+    use uie_stub_models::{sample_input, ModalityKind};
 
-    let mut rt = InferenceRuntime::new(Box::new(CpuBackend::new()))
-        .with_loader(Box::new(StubModelLoader::default()));
-
-    #[cfg(feature = "live-onnx")]
-    {
-        if path.extension().is_some_and(|e| e == "onnx") {
-            rt = InferenceRuntime::new(Box::new(CpuBackend::new()))
-                .with_loader(Box::new(uie_loader_onnx::OnnxModelLoader::new()));
-        }
-    }
-
+    let rt = inference_runtime();
     let model = rt.load_model(&path).expect("load live model");
     log.record("live_model_loaded");
     eprintln!(
@@ -169,18 +158,15 @@ fn live_us_009_mnist_onnx_infer() {
         return;
     }
 
-    use uie_core::backend::cpu::CpuBackend;
+    use uie_acceptance::composition::inference_runtime;
     use uie_core::telemetry::ExecutionRecorder;
     use uie_core::tensor::{DataType, Shape, Tensor};
-    use uie_core::InferenceRuntime;
-    use uie_loader_onnx::OnnxModelLoader;
 
     const SHAPE: [usize; 4] = [1, 1, 28, 28];
     let bytes = std::fs::read(&fixture).unwrap();
     let input = Tensor::from_bytes(DataType::F32, Shape::new(SHAPE), bytes).unwrap();
 
-    let rt = InferenceRuntime::new(Box::new(CpuBackend::new()))
-        .with_loader(Box::new(OnnxModelLoader::new()));
+    let rt = inference_runtime();
     let model = rt.load_model(&model_path).unwrap();
     let mut session = rt.create_session();
     let outcome = rt
@@ -258,9 +244,9 @@ fn live_us_022_byte_pipeline_workspace_onnx_or_stub() {
     };
 
     use uie_acceptance::assert_ipc_infer_trace;
+    use uie_acceptance::composition::injector;
     use uie_ipc::{ByteChannel, IpcMessage, InProcessChannel, InferenceEngineHost, TensorPayload};
     use uie_pipeline::{ByteChannelPipelineRunner, PipelineHop};
-    use uie_stub_models::StubModelLoader;
 
     let is_onnx = hop_path.extension().is_some_and(|e| e == "onnx");
     let hops = vec![
@@ -274,34 +260,28 @@ fn live_us_022_byte_pipeline_workspace_onnx_or_stub() {
         },
     ];
 
-    let mut loaders: Vec<Box<dyn uie_core::model::ModelLoader>> =
-        vec![Box::new(StubModelLoader::default())];
-    #[cfg(feature = "live-onnx")]
-    if is_onnx {
-        loaders.push(Box::new(uie_loader_onnx::OnnxModelLoader::new()));
-    }
+    let mut runner = ByteChannelPipelineRunner::from_loaders(injector().loaders(), hops);
 
-    let mut runner = ByteChannelPipelineRunner::from_loaders(loaders, hops);
+    let has_onnx_loader = injector()
+        .loaders()
+        .iter()
+        .any(|l| l.format_id() == "onnx");
 
     if is_onnx {
-        #[cfg(not(feature = "live-onnx"))]
-        {
+        if !has_onnx_loader {
             log.record("live_skipped_onnx_feature");
             assert_story_events(&log, &["live_skipped_onnx_feature"]);
             return;
         }
-        #[cfg(feature = "live-onnx")]
-        {
-            use uie_core::tensor::{DataType, Shape, Tensor};
-            let fixture = support::repo_root().join("models/fixtures/digit_one_f32.bin");
-            let bytes = std::fs::read(fixture).unwrap();
-            let input = Tensor::from_bytes(DataType::F32, Shape::new([1, 1, 28, 28]), bytes).unwrap();
-            let out = runner.run_tensors("live-pipe", &[input]).unwrap();
-            assert!(!out.is_empty());
-            log.record("live_pipeline_onnx_completed");
-            assert_story_events(&log, &["live_pipeline_onnx_completed"]);
-            return;
-        }
+        use uie_core::tensor::{DataType, Shape, Tensor};
+        let fixture = support::repo_root().join("models/fixtures/digit_one_f32.bin");
+        let bytes = std::fs::read(fixture).unwrap();
+        let input = Tensor::from_bytes(DataType::F32, Shape::new([1, 1, 28, 28]), bytes).unwrap();
+        let out = runner.run_tensors("live-pipe", &[input]).unwrap();
+        assert!(!out.is_empty());
+        log.record("live_pipeline_onnx_completed");
+        assert_story_events(&log, &["live_pipeline_onnx_completed"]);
+        return;
     }
 
     use uie_stub_models::{sample_input, ModalityKind};
@@ -309,7 +289,7 @@ fn live_us_022_byte_pipeline_workspace_onnx_or_stub() {
     let out = runner.run_tensors("live-pipe", &[ins[0].clone()]).unwrap();
     assert!(!out.is_empty());
 
-    let host = InferenceEngineHost::new(vec![Box::new(StubModelLoader::default())]);
+    let host = InferenceEngineHost::new(injector().loaders());
     let mut ch = InProcessChannel::new(host);
     let payloads = vec![TensorPayload::from_tensor("input_ids", &ins[0]).unwrap()];
     let resp = ch
