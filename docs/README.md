@@ -23,6 +23,10 @@ The **Universal Inference Engine (UIE)** is this repo’s Rust engine for runnin
 8. [US-008 — Spirograph demo](./stories/008-spiro-demo.md)
 9. [US-009 — ONNX MNIST (in progress)](./stories/009-onnx-mnist.md)
 
+### Modalities (planned)
+
+Use [US-015 — Modality catalog](./stories/015-modality-catalog.md) as the hub, then US-010 – US-019 for LLM chatbots, judges, diffusion, speech, and multimodal I/O.
+
 ## Code map
 
 | Crate | Stories |
@@ -31,3 +35,4 @@ The **Universal Inference Engine (UIE)** is this repo’s Rust engine for runnin
 | `crates/uie-spiro` | US-008 |
 | `crates/uie-loader-onnx`, `crates/uie-mnist` | US-009 |
 | `spiro.py` | US-008 (original reference) |
+| (planned) | US-010 – US-019 modality stories |

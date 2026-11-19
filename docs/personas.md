@@ -26,5 +26,15 @@ User stories use first names from **30 Rock** as stand-ins for who cares about e
 | [US-007](./stories/007-models-loaders.md) | Jack, Liz | Loading files from disk; integrating formats. |
 | [US-008](./stories/008-spiro-demo.md) | Tracy, Jenna | Visual Spirograph demo and JPEG output. |
 | [US-009](./stories/009-onnx-mnist.md) | Liz, Kenneth | Small MNIST model to learn real inference. |
+| [US-010](./stories/010-llm-text-completions.md) | Liz | Chatbot / LLM completions on UIE. |
+| [US-011](./stories/011-judge-system-one-models.md) | Jack, Toofer | Judge and system-one quality passes. |
+| [US-012](./stories/012-diffusion-text-to-image.md) | Tracy, Jenna | Text-to-image diffusion. |
+| [US-013](./stories/013-speech-to-text.md) | Kenneth, Pete | Speech-to-text on device. |
+| [US-014](./stories/014-text-to-speech.md) | Jenna, Kenneth | Spoken output from text. |
+| [US-015](./stories/015-modality-catalog.md) | Liz, Jack | Modality map and planning hub. |
+| [US-016](./stories/016-image-to-text.md) | Frank | Captioning and image→text. |
+| [US-017](./stories/017-multimodal-text-image-to-text.md) | Liz | Image+text chat (VLM). |
+| [US-018](./stories/018-audio-to-audio.md) | Pete | Audio enhancement / conversion. |
+| [US-019](./stories/019-image-to-image.md) | Tracy | Img2img and inpainting. |
 
 When adding a story, pick one or more personas from the table (or justify a new name in this file).
