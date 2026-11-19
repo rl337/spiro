@@ -2,15 +2,14 @@ use std::path::Path;
 use std::sync::Mutex;
 
 use tracing::{info, instrument};
-use tract_onnx::prelude::{RunnableModel, TValue, TypedFact, TypedRunnableModel};
+use tract_core::dim::DimLike;
+use tract_onnx::prelude::*;
 use uie_core::backend::Backend;
 use uie_core::error::{Error, Result};
 use uie_core::model::{InferenceExecutor, IoSpec, ModelLoader, ModelMetadata};
 use uie_core::tensor::{DataType, Shape, Tensor};
 
 use crate::convert::{tensor_to_tvalue, tvalue_to_tensor};
-
-type OnnxRunnable = TypedRunnableModel<TypedFact, Box<dyn TypedFact>, TValue>;
 
 pub struct OnnxModelLoader;
 
@@ -49,12 +48,12 @@ pub struct OnnxModel {
     metadata: ModelMetadata,
     inputs: Vec<IoSpec>,
     outputs: Vec<IoSpec>,
-    runnable: Mutex<OnnxRunnable>,
+    runnable: Mutex<TypedRunnableModel<TypedFact, Box<dyn TypedFact>, TValue>>,
 }
 
 impl OnnxModel {
     pub fn from_path(path: &Path) -> Result<Self> {
-        let runnable: OnnxRunnable = tract_onnx::onnx()
+        let runnable = tract_onnx::onnx()
             .model_for_path(path)
             .map_err(|e| Error::ModelLoad(e.to_string()))?
             .into_optimized()

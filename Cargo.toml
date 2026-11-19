@@ -7,6 +7,8 @@ members = [
     "crates/uie-spiro",
     "crates/uie-stub-models",
     "crates/uie-stubs",
+    "crates/uie-ipc",
+    "crates/uie-serve",
 ]
 default-members = ["crates/uie-spiro"]
 
@@ -20,5 +22,7 @@ rust-version = "1.88"
 [workspace.dependencies]
 thiserror = "2.0"
 tracing = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 ndarray = "0.16"
 tract-onnx = "0.21"

@@ -20,6 +20,14 @@ A **completion** is the model-generated text that continues a [prompt](#prompt)â
 
 ---
 
+### Byte channel {#byte-channel}
+
+A **byte channel** is UIEâ€™s transport for inference: clients and the engine exchange **length-prefixed JSON** frames carrying `infer` requests and tensor payloads. Implementations include in-process [`InProcessChannel`](../crates/uie-ipc) and Unix domain sockets via [`uie-serve`](../crates/uie-serve).
+
+**See also:** [US-020](./stories/020-inference-byte-channel.md)
+
+---
+
 ### Backend {#backend}
 
 A **backend** is the piece that actually runs compute: it allocates memory and (eventually) executes individual operations. UIE talks to backends through a shared interface so the same [runtime](#inference-runtime) can target CPU or accelerators later.

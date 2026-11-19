@@ -11,6 +11,9 @@ This repository began as a small Python Spirograph generator (`spiro.py`). It is
 | `spiro.py` | Original PIL-based spirograph script |
 | `crates/uie-core` | Core engine: tensors, backends, runtime, model traits |
 | `crates/uie-spiro` | Rust port of the spiro workload + demo binary |
+| `crates/uie-ipc` | Byte-channel protocol + in-process / Unix transports |
+| `crates/uie-serve` | Long-running inference on a Unix domain socket |
+| `python/uie_client.py` | Minimal Python client for the socket API |
 | `Cargo.toml` | Rust workspace root |
 
 ## Quick start (Rust demo)
@@ -20,6 +23,17 @@ cargo run -p uie-spiro
 ```
 
 Writes `output.jpg` (same 2048×2048 artwork as the Python script).
+
+## Inference byte channel (IPC)
+
+Run a socket engine and call it from Python (stubs today; ONNX when the loader crate builds):
+
+```bash
+cargo run -p uie-serve
+python3 python/uie_client.py --stub llm
+```
+
+In-process tests use the same framing via `InProcessChannel` (`cargo test -p uie-ipc`). See [US-020](docs/stories/020-inference-byte-channel.md).
 
 ## Architecture (scaffold)
 

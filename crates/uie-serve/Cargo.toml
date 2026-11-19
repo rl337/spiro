@@ -1,0 +1,17 @@
+[package]
+name = "uie-serve"
+description = "UIE inference engine Unix domain socket service"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "uie-serve"
+path = "src/main.rs"
+
+[dependencies]
+uie-ipc = { path = "../uie-ipc" }
+uie-stub-models = { path = "../uie-stub-models" }
+tracing.workspace = true
+tracing-subscriber = "0.3"
