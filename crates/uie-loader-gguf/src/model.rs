@@ -5,31 +5,34 @@ use uie_core::error::{Error, Result};
 use uie_core::model::{InferenceExecutor, IoSpec, ModelMetadata};
 use uie_core::tensor::{DataType, Shape, Tensor};
 use uie_telemetry::{ComputeDevice, ExecutionRecorder};
-const MAX_CONTEXT_TOKENS: usize = 2048;
+
+pub const MAX_PROMPT_BYTES: usize = 2048;
 const MAX_NEW_TOKENS: usize = 128;
 const PAD_TOKEN_ID: i32 = 0;
 
 use crate::complete::{complete_from_prompt, CompleteOptions};
+use crate::engine::GgufEngine;
 
 pub struct GgufLlmExecutor {
-    path: PathBuf,
+    engine: GgufEngine,
     max_new_tokens: usize,
     metadata: ModelMetadata,
     inputs: Vec<IoSpec>,
     outputs: Vec<IoSpec>,
-    /// Serialized load: gguf + llama are not Sync-friendly; one completion at a time.
+    /// Serialized infer: llama context is not thread-safe.
     gate: Mutex<()>,
 }
 
 impl GgufLlmExecutor {
     pub fn from_path(path: &Path, max_new_tokens: usize) -> Result<Self> {
+        let engine = GgufEngine::load(path)?;
         let name = path
             .file_stem()
             .and_then(|s| s.to_str())
             .unwrap_or("gguf")
             .to_string();
         Ok(Self {
-            path: path.to_path_buf(),
+            engine,
             max_new_tokens,
             metadata: ModelMetadata {
                 name,
@@ -38,8 +41,8 @@ impl GgufLlmExecutor {
             },
             inputs: vec![IoSpec {
                 name: "prompt".into(),
-                shape: Shape::new([1, MAX_CONTEXT_TOKENS]),
-                dtype: DataType::I32,
+                shape: Shape::new([MAX_PROMPT_BYTES]),
+                dtype: DataType::U8,
             }],
             outputs: vec![
                 IoSpec {
@@ -58,7 +61,7 @@ impl GgufLlmExecutor {
     }
 
     pub fn path(&self) -> &Path {
-        &self.path
+        &self.engine.path
     }
 }
 
@@ -97,18 +100,17 @@ impl InferenceExecutor for GgufLlmExecutor {
                 max_new_tokens: self.max_new_tokens as u32,
                 ..CompleteOptions::default()
             };
-            let result = complete_from_prompt(&self.path, &prompt, &opts)?;
+            let result = complete_from_prompt(&self.engine, &prompt, &opts)?;
             merge_gguf_metrics(telemetry, &result);
 
-            let text_bytes = result.text.as_bytes().to_vec();
+            let text_bytes = result.text.as_bytes();
             let mut text_buf = vec![0u8; MAX_NEW_TOKENS];
             let copy_len = text_bytes.len().min(MAX_NEW_TOKENS);
             text_buf[..copy_len].copy_from_slice(&text_bytes[..copy_len]);
 
             let mut out_ids = vec![PAD_TOKEN_ID; MAX_NEW_TOKENS];
-            let gen = result.token_ids;
-            let copy_ids = gen.len().min(MAX_NEW_TOKENS);
-            for (i, t) in gen.iter().take(copy_ids).enumerate() {
+            let copy_ids = result.token_ids.len().min(MAX_NEW_TOKENS);
+            for (i, t) in result.token_ids.iter().take(copy_ids).enumerate() {
                 out_ids[i] = *t;
             }
 
@@ -133,9 +135,26 @@ fn prompt_from_tensor(t: &Tensor) -> Result<String> {
             String::from_utf8(bytes[..end].to_vec())
                 .map_err(|e| Error::Runtime(format!("prompt utf8: {e}")))
         }
-        _ => Err(Error::Runtime(
-            "GGUF text completion expects UTF-8 prompt in a U8 tensor".into(),
-        )),
+        DataType::I32 => {
+            let ids = t.as_i32_slice()?;
+            let trimmed: Vec<_> = ids
+                .iter()
+                .take_while(|&&id| id != PAD_TOKEN_ID)
+                .copied()
+                .collect();
+            if trimmed.is_empty() {
+                return Err(Error::Runtime("empty I32 prompt".into()));
+            }
+            Ok(trimmed
+                .iter()
+                .map(|id| id.to_string())
+                .collect::<Vec<_>>()
+                .join(" "))
+        }
+        other => Err(Error::DtypeMismatch {
+            expected: DataType::U8,
+            got: other,
+        }),
     }
 }
 

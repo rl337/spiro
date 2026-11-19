@@ -2,8 +2,8 @@ use std::path::Path;
 use std::sync::Mutex;
 
 use tracing::{info, instrument};
-use tract_core::dim::DimLike;
 use tract_onnx::prelude::*;
+use tract_onnx::tract_hir::internal::DimLike;
 use uie_core::backend::Backend;
 use uie_core::error::{Error, Result};
 use uie_core::model::{InferenceExecutor, IoSpec, ModelLoader, ModelMetadata};
@@ -49,7 +49,7 @@ pub struct OnnxModel {
     metadata: ModelMetadata,
     inputs: Vec<IoSpec>,
     outputs: Vec<IoSpec>,
-    runnable: Mutex<TypedRunnableModel<TypedFact, Box<dyn TypedFact>, TValue>>,
+    runnable: Mutex<TypedRunnableModel<Graph<TypedFact, Box<dyn TypedOp>>>>,
 }
 
 impl OnnxModel {
@@ -106,7 +106,7 @@ fn io_spec_from_fact(fact: &TypedFact, name: String) -> Result<IoSpec> {
             .iter()
             .map(|d| {
                 d.to_usize()
-                    .ok_or_else(|| Error::InvalidShape(format!("dynamic dim in {name}")))
+                    .map_err(|e| Error::InvalidShape(format!("dynamic dim in {name}: {e}")))
             })
             .collect::<Result<Vec<_>>>()?,
     );
@@ -170,7 +170,7 @@ impl InferenceExecutor for OnnxModel {
                 .map(tensor_to_tvalue)
                 .collect::<Result<Vec<_>>>()?;
 
-            let mut model = self
+            let model = self
                 .runnable
                 .lock()
                 .map_err(|_| Error::Runtime("ONNX model lock poisoned".into()))?;

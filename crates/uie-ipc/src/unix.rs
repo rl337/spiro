@@ -3,6 +3,7 @@
 use std::os::unix::net::{UnixListener, UnixStream};
 use std::path::Path;
 
+use tracing::warn;
 use uie_core::error::{Error, Result};
 
 use crate::engine::InferenceEngineHost;
@@ -56,10 +57,25 @@ impl UnixListenerChannel {
             .accept()
             .map_err(|e| Error::Io(e.to_string()))?;
         while let Ok(frame) = FramedTransport::read_frame(&mut stream) {
-            let msg = crate::codec::decode_frame(&frame)?;
+            let msg = match crate::codec::decode_frame(&frame) {
+                Ok(m) => m,
+                Err(e) => {
+                    warn!(%e, "ipc decode error; closing client session");
+                    break;
+                }
+            };
             let reply = self.host.handle_message(msg);
-            let out = crate::codec::encode_frame(&reply)?;
-            FramedTransport::write_frame(&mut stream, &out)?;
+            let out = match crate::codec::encode_frame(&reply) {
+                Ok(f) => f,
+                Err(e) => {
+                    warn!(%e, "ipc encode error; closing client session");
+                    break;
+                }
+            };
+            if let Err(e) = FramedTransport::write_frame(&mut stream, &out) {
+                warn!(%e, "ipc write error; closing client session");
+                break;
+            }
         }
         Ok(())
     }

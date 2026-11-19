@@ -1,19 +1,19 @@
 //! Text completion via llama.cpp (prompt in, token ids + text out).
 
 use std::num::NonZeroU32;
-use std::path::Path;
 
 use encoding_rs::UTF_8;
 use llama_cpp_2::context::params::LlamaContextParams;
 use llama_cpp_2::llama_backend::LlamaBackend;
 use llama_cpp_2::llama_batch::LlamaBatch;
-use llama_cpp_2::model::params::LlamaModelParams;
 use llama_cpp_2::model::LlamaModel;
 use llama_cpp_2::sampling::LlamaSampler;
 use llama_cpp_2::token::LlamaToken;
 use std::time::Instant;
 use uie_core::error::{Error, Result};
 use uie_telemetry::{ComputeDevice, InferMetrics};
+
+use crate::engine::GgufEngine;
 
 #[derive(Debug, Clone)]
 pub struct CompleteOptions {
@@ -39,20 +39,30 @@ pub struct CompleteResult {
     pub metrics: InferMetrics,
 }
 
-pub fn complete_from_prompt(
-    model_path: &Path,
+pub fn complete_with_engine(
+    engine: &GgufEngine,
     prompt: &str,
     opts: &CompleteOptions,
 ) -> Result<CompleteResult> {
-    let backend =
-        LlamaBackend::init().map_err(|e| Error::ModelLoad(format!("llama backend: {e}")))?;
-    let model_params = LlamaModelParams::default();
-    let model = LlamaModel::load_from_file(&backend, model_path, &model_params)
-        .map_err(|e| Error::ModelLoad(format!("load gguf {}: {e}", model_path.display())))?;
-
-    let vocab = model.vocab();
+    let vocab = engine.model.vocab();
     let tokens = vocab.tokenize(prompt.as_bytes(), true, true);
-    run_generation(&backend, &model, tokens, opts)
+    run_generation(&engine.backend, &engine.model, tokens, opts)
+}
+
+pub fn complete_from_prompt(
+    engine: &GgufEngine,
+    prompt: &str,
+    opts: &CompleteOptions,
+) -> Result<CompleteResult> {
+    complete_with_engine(engine, prompt, opts)
+}
+
+fn build_sampler(temperature: f32) -> LlamaSampler {
+    if temperature <= 0.0 {
+        LlamaSampler::greedy()
+    } else {
+        LlamaSampler::chain_simple([LlamaSampler::temp(temperature), LlamaSampler::dist(0)])
+    }
 }
 
 fn run_generation(
@@ -97,11 +107,11 @@ fn run_generation(
         .map_err(|e| Error::Runtime(format!("decode prompt: {e}")))?;
     let prefill_ms = prefill_t0.elapsed().as_secs_f64() * 1000.0;
 
-    let mut sampler = LlamaSampler::greedy();
+    let mut sampler = build_sampler(opts.temperature);
     let vocab = model.vocab();
 
     let prompt_tokens = tokens.len() as u32;
-    let mut generated: Vec<i32> = tokens.iter().map(|t| t.0).collect();
+    let mut new_token_ids: Vec<i32> = Vec::new();
     let mut output_text = String::new();
     let mut n_cur = batch.n_tokens();
     let mut ttft_ms = None;
@@ -122,7 +132,7 @@ fn run_generation(
         let _ = decoder.decode_to_string(&token_bytes, &mut piece, false);
         output_text.push_str(&piece);
 
-        generated.push(token.0);
+        new_token_ids.push(token.0);
         completion_tokens += 1;
         if ttft_ms.is_none() {
             ttft_ms = Some(run_started.elapsed().as_secs_f64() * 1000.0);
@@ -146,18 +156,20 @@ fn run_generation(
         prefill_ms,
         decode_ms,
         total_ms,
-        cpu_time_ms: 0.0,
-        gpu_time_ms: None,
+        cpu_time_ms: prefill_ms + decode_ms,
+        gpu_time_ms: if matches!(device, ComputeDevice::Gpu) {
+            Some(prefill_ms + decode_ms)
+        } else {
+            None
+        },
         decode_tokens_per_sec: None,
         overall_tokens_per_sec: None,
     };
-    metrics.add_phase_time(device, prefill_ms);
-    metrics.add_phase_time(device, decode_ms);
     metrics.recompute_rates();
 
     Ok(CompleteResult {
         text: output_text,
-        token_ids: generated,
+        token_ids: new_token_ids,
         metrics,
     })
 }

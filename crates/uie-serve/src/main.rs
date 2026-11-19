@@ -21,7 +21,13 @@ fn main() -> uie_core::Result<()> {
 }
 
 fn socket_path() -> PathBuf {
-    env::var("UIE_SOCKET")
+    if let Ok(p) = env::var("UIE_SOCKET") {
+        return PathBuf::from(p);
+    }
+    // Per-process path under TMPDIR (not a shared world-writable default).
+    let base = env::var("TMPDIR")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| PathBuf::from("/tmp/uie.sock"))
+        .or_else(|_| env::var("XDG_RUNTIME_DIR").map(PathBuf::from))
+        .unwrap_or_else(|_| PathBuf::from("/tmp"));
+    base.join(format!("uie-serve-{}.sock", std::process::id()))
 }
