@@ -57,6 +57,16 @@ pub fn complete_from_prompt(
     complete_with_engine(engine, prompt, opts)
 }
 
+/// One user chat turn: apply the model's chat template, then generate completion tokens.
+pub fn complete_chat_user_message(
+    engine: &GgufEngine,
+    user_message: &str,
+    opts: &CompleteOptions,
+) -> Result<CompleteResult> {
+    let prompt = crate::chat::format_user_message_engine(engine, user_message)?;
+    complete_with_engine(engine, &prompt, opts)
+}
+
 fn build_sampler(temperature: f32) -> LlamaSampler {
     if temperature <= 0.0 {
         LlamaSampler::greedy()
