@@ -1,0 +1,19 @@
+[package]
+name = "uie-acceptance"
+description = "Per user-story (US-0NN) acceptance tests"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dev-dependencies]
+uie-catalog = { path = "../uie-catalog" }
+uie-core = { path = "../uie-core" }
+uie-ipc = { path = "../uie-ipc" }
+uie-pipeline = { path = "../uie-pipeline" }
+uie-stub-models = { path = "../uie-stub-models" }
+tempfile = "3.14"

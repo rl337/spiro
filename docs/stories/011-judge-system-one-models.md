@@ -42,3 +42,9 @@ Typical flow:
 - **Today:** story only.
 - **Future acceptance:** integration test: fixed prompt → judge returns expected label tensor / string.
 - Judges may share [US-009](./009-onnx-mnist.md) loader path when exported as ONNX.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_011_judge_stub` |

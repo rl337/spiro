@@ -32,5 +32,14 @@
 ## Acceptance notes
 
 - `cargo test -p uie-ipc`
-- `cargo run -p uie-serve` + `python3 python/uie_client.py --stub llm`
+- `cargo test -p uie-acceptance --test us_020_byte_channel`
+- `python3 -m unittest python.acceptance.test_us_020_ipc` (build `uie-serve` first)
 - ONNX over IPC: register `OnnxModelLoader` on the host when `uie-loader-onnx` build is green.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_020_byte_channel.rs` | `cargo test -p uie-acceptance --test us_020_byte_channel` |
+| Rust | `crates/uie-ipc/tests/roundtrip.rs` | `cargo test -p uie-ipc` |
+| Python | `python/acceptance/test_us_020_ipc.py` | `python3 -m unittest python.acceptance.test_us_020_ipc` |

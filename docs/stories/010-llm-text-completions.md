@@ -44,3 +44,9 @@ This is **text → text** [modality](./015-modality-catalog.md). It reuses the s
 - **Today:** story only; no LLM loader in repo.
 - **Future acceptance:** `cargo run -p uie-llm -- --prompt "Hello"` prints a completion; docs cite this story.
 - **Dependencies:** tokenizer crate, KV-cache session extension ([US-004](./004-runtime-sessions.md)), likely GPU [backend](./003-backends-cpu.md) for real models.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_010_llm_stub` |

@@ -164,6 +164,22 @@ A **modality** is the kind of data at a model boundary: text, image, or audio (m
 
 ---
 
+### Model registry {#model-registry}
+
+The **model registry** is built at runtime by scanning [**model roots**](#model-root) (directories only). Each indexed file gets an id, format, and role (LLM GGUF, Comfy checkpoint, etc.). See [US-021](./stories/021-model-registry-scan.md).
+
+**See also:** [US-021](./stories/021-model-registry-scan.md)
+
+---
+
+### Model root {#model-root}
+
+A **model root** is a configured directory (LM Studio tree, Comfy `models/`, or generic) listed in `model_roots.yaml` without naming individual files.
+
+**See also:** [US-021](./stories/021-model-registry-scan.md)
+
+---
+
 ### Model loader registry {#model-loader-registry}
 
 The **model loader registry** holds every registered loader. When you ask the [runtime](#inference-runtime) to open a file, it walks the registry until one loader claims the path.

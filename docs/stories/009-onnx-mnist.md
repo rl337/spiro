@@ -49,3 +49,9 @@ See `models/README.md` for input/output shapes and license.
 - **Test:** `cargo test -p uie-mnist` expects digit `1` on the stroke fixture.
 - **Env overrides:** `UIE_MNIST_MODEL`, `UIE_MNIST_FIXTURE`.
 - **Limitation:** Requires Rust **1.96+** in `rust-toolchain.toml` for current Tract dependency chain; ONNX dtypes beyond `F32` not supported yet.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_009_mnist.rs` | `cargo test -p uie-acceptance --test us_009_mnist` |

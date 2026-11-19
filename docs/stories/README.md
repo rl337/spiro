@@ -33,6 +33,12 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 | [US-018](./018-audio-to-audio.md) | Audio-to-audio | Pete | Audio → Audio |
 | [US-019](./019-image-to-image.md) | Image-to-image / inpainting | Tracy | Image → Image |
 | [US-020](./020-inference-byte-channel.md) | Inference byte channel | Liz, Pete | (transport) |
+| [US-021](./021-model-registry-scan.md) | Model roots & registry scan | Jack, Liz | partial |
+| [US-022](./022-byte-channel-pipeline.md) | Multi-hop byte channel pipeline | Tracy, Pete | partial |
+
+## Acceptance tests
+
+See [acceptance-tests.md](../acceptance-tests.md). Every story must list at least one Rust or Python test in its **Acceptance tests** section.
 
 ## By crate
 
@@ -41,3 +47,6 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 - **`uie-loader-onnx`, `uie-mnist`, `models/`:** US-009  
 - **Future loaders / demos:** US-010 – US-019
 - **`uie-ipc`, `uie-serve`, `python/`:** US-020  
+- **`uie-catalog`, `config/model_roots.example.yaml`:** US-021  
+- **`uie-pipeline`:** US-022  
+- **`uie-acceptance`, `python/acceptance/`:** all US-*  

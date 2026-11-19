@@ -1,0 +1,19 @@
+[package]
+name = "uie-catalog"
+description = "Directory roots and runtime model registry scan (LM Studio, ComfyUI, etc.)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+uie-core = { path = "../uie-core" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = "0.9"
+thiserror.workspace = true
+tracing.workspace = true
+walkdir = "2.5"
+
+[dev-dependencies]
+tempfile = "3.14"

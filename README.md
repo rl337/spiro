@@ -2,7 +2,7 @@
 
 This repository began as a small Python Spirograph generator (`spiro.py`). It is being evolved into a **universal inference engine** written in Rust, with the original drawing retained as a reference workload.
 
-**Documentation:** user stories and a shared glossary live in [`docs/`](./docs/README.md) (`US-001` … `US-009`).
+**Documentation:** user stories, [acceptance tests](./docs/acceptance-tests.md), and a glossary live in [`docs/`](./docs/README.md) (`US-001` … `US-022`).
 
 ## Current layout
 
@@ -34,6 +34,15 @@ python3 python/uie_client.py --stub llm
 ```
 
 In-process tests use the same framing via `InProcessChannel` (`cargo test -p uie-ipc`). See [US-020](docs/stories/020-inference-byte-channel.md).
+
+## Acceptance tests (per user story)
+
+```bash
+cargo test -p uie-acceptance
+python3 -m unittest discover -s python/acceptance -v
+```
+
+Agents and contributors: follow [.cursor/skills/uie-user-stories/SKILL.md](.cursor/skills/uie-user-stories/SKILL.md).
 
 ## Architecture (scaffold)
 

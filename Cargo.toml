@@ -9,6 +9,9 @@ members = [
     "crates/uie-stubs",
     "crates/uie-ipc",
     "crates/uie-serve",
+    "crates/uie-catalog",
+    "crates/uie-pipeline",
+    "crates/uie-acceptance",
 ]
 default-members = ["crates/uie-spiro"]
 

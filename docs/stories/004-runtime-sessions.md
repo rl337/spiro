@@ -39,3 +39,9 @@ Sessions survive across steps in one logical “run.” Outputs from `infer` can
 
 - `InferenceRuntime::new`, `with_loader`, `create_session`, `load_model`, `infer`, `run_model`.
 - `Session::bind`, `get`, `take`, `allocate`.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_004_runtime_session.rs` | `cargo test -p uie-acceptance --test us_004_runtime_session` |

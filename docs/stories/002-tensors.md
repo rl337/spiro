@@ -39,3 +39,9 @@ If the buffer length does not match the shape, UIE rejects the tensor rather tha
 
 - `Tensor::empty`, `from_bytes`, `from_f32_slice`, `as_f32_slice` in `uie-core`.
 - Unit tests in `tensor.rs` for shape math and `f32` round-trip.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_002_tensors.rs` | `cargo test -p uie-acceptance --test us_002_tensors` |

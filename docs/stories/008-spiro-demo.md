@@ -39,3 +39,9 @@ The demo does **not** yet express spiro steps as [graph operations](./006-operat
 
 - `cargo run -p uie-spiro` → `output.jpg` (large image; may take time).
 - Compare with `python spiro.py` for parity reference.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_008_spiro.rs` | `cargo test -p uie-acceptance --test us_008_spiro` |

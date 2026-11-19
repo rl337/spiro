@@ -37,3 +37,9 @@ Differs from [US-009](./009-onnx-mnist.md): output is language, not a single dig
 
 - **Today:** story only.
 - **Future acceptance:** fixture image → caption contains expected keyword in test.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_016_image_to_text_stub` |

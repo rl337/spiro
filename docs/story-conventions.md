@@ -23,6 +23,7 @@ Use [30 Rock personas](./personas.md) in the *As a …* line (first name only, e
 3. **Related stories** — links to other `US-*` files
 4. **Terms used** — bullet list linking into the [glossary](./glossary.md)
 5. **Acceptance notes** — how we know it works today (command, test, or limitation)
+6. **Acceptance tests** — table linking to Rust (`crates/uie-acceptance/tests/us_0NN_*.rs`) and/or Python (`python/acceptance/test_us_0NN_*.py`); see [acceptance-tests.md](./acceptance-tests.md)
 
 ## Cross-references
 

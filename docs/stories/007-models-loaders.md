@@ -46,3 +46,9 @@ The [model loader registry](../glossary.md#model-loader-registry) on the [runtim
 - `ModelLoader`, `InferenceExecutor`, `IoSpec`, `ModelLoaderRegistry`, `ModelSource`.
 - `InferenceRuntime::with_loader` + `load_model`.
 - ONNX implementation tracked in [US-009](./009-onnx-mnist.md).
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_007_model_loader.rs` | `cargo test -p uie-acceptance --test us_007_model_loader` |

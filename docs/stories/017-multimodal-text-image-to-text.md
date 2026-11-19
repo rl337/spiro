@@ -38,3 +38,9 @@ Combines [US-016](./016-image-to-text.md) encoding with [US-010](./010-llm-text-
 
 - **Today:** story only.
 - **Future acceptance:** two-input `infer` test with fixture image + question string.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_017_vlm_stub` |

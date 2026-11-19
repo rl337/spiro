@@ -37,3 +37,9 @@ Pairs with [US-013](./013-speech-to-text.md) for round-trip tests and with Lizâ€
 
 - **Today:** story only.
 - **Future acceptance:** CLI writes `out.wav` under one second for a short phrase on CPU (tiny model).
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_014_tts_stub` |
