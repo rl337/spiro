@@ -1,13 +1,15 @@
-//! CI (stub) vs live acceptance modes — resolved via [`crate::composition`].
+//! CI (stub) vs live acceptance modes — resolved via the composition root ([`crate::composition`]).
 
 pub use uie_iv::uie::profile::{
-    acceptance_mode_from_env, AcceptanceMode, AcceptanceProfile, CiAcceptanceProfile,
-    LiveAcceptanceProfile,
+    AcceptanceMode, AcceptanceProfile, CiAcceptanceProfile, LiveAcceptanceProfile,
 };
 
-/// Reads `UIE_ACCEPTANCE_MODE`. Unset or `ci`/`stub` → [`AcceptanceMode::Ci`].
+/// Active acceptance mode from the injected profile (not a direct env read).
 pub fn acceptance_mode() -> AcceptanceMode {
-    acceptance_mode_from_env()
+    match crate::composition::injector().acceptance_profile().id() {
+        "live" => AcceptanceMode::Live,
+        _ => AcceptanceMode::Ci,
+    }
 }
 
 pub fn is_ci_mode() -> bool {

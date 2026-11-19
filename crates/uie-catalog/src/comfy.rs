@@ -3,6 +3,25 @@ use std::path::Path;
 use crate::registry::{ModelEntry, ModelRole};
 use crate::scan::{extension_format, id_from_rel};
 
+/// Shared stack key: checkpoint stem; for other roles, strip common role suffixes.
+fn comfy_family(role_folder: &str, path: &Path) -> Option<String> {
+    let stem = path.file_stem()?.to_str()?;
+    let stem = stem.strip_suffix(".fp16").unwrap_or(stem);
+    match role_folder {
+        "checkpoints" | "diffusion_models" | "unet" => Some(stem.to_string()),
+        "text_encoders" | "clip" | "vae" | "loras" | "controlnet" => {
+            let stripped = stem
+                .strip_suffix("_vae")
+                .or_else(|| stem.strip_suffix("-vae"))
+                .or_else(|| stem.strip_suffix("_clip"))
+                .or_else(|| stem.strip_suffix("-clip"))
+                .unwrap_or(stem);
+            Some(stripped.to_string())
+        }
+        _ => Some(stem.to_string()),
+    }
+}
+
 /// Map ComfyUI folder names to roles (see Comfy `folder_paths.py`).
 pub fn classify_comfy_path(
     root_id: &str,
@@ -22,10 +41,7 @@ pub fn classify_comfy_path(
         "upscale_models" | "latent_upscale_models" => ModelRole::Upscaler,
         _ => ModelRole::Unknown,
     };
-    let family = path
-        .file_stem()
-        .and_then(|s| s.to_str())
-        .map(str::to_string);
+    let family = comfy_family(top, path);
     Some(ModelEntry {
         id: id_from_rel(root_id, rel_str),
         root_id: root_id.into(),

@@ -12,8 +12,9 @@ Rust PRs MUST pass `cargo fmt --all --check` and `cargo clippy` with `-D warning
 [`scripts/rust-static-check.sh`](../../scripts/rust-static-check.sh) (see
 [`.github/workflows/static-checks.yml`](../../.github/workflows/static-checks.yml)).
 
-Optional native crates (`uie-loader-onnx`, `uie-loader-gguf`, `uie-llm`, `uie-mnist`) are
-excluded until a dedicated feature matrix job exists.
+Default `clippy` excludes optional native crates (`uie-loader-onnx`, `uie-loader-gguf`,
+`uie-llm`, `uie-mnist`). [`native-compile.yml`](../../.github/workflows/native-compile.yml)
+runs `cargo check` on those crates on every PR.
 
 ### VAL-02: Python static checks on every PR
 

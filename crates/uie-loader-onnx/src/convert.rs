@@ -1,10 +1,12 @@
 use ndarray::ArrayD;
-use tract_onnx::prelude::TValue;
+use tract_onnx::prelude::{TValue, Tensor as TractTensor};
 use uie_core::error::{Error, Result};
 use uie_core::tensor::{DataType, Shape, Tensor};
 
 pub(crate) fn tensor_to_tvalue(tensor: &Tensor) -> Result<TValue> {
-    Ok(tensor_to_array(tensor)?.into())
+    let arr = tensor_to_array(tensor)?;
+    let tract_tensor: TractTensor = arr.into();
+    Ok(tract_tensor.into())
 }
 
 pub(crate) fn tensor_to_array(tensor: &Tensor) -> Result<ArrayD<f32>> {

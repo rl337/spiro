@@ -5,7 +5,7 @@ use uie_catalog::{expand_home, ModelCatalog, ModelRole, ModelRootsFile};
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::tensor::Tensor;
 use uie_core::InferenceRuntime;
-use uie_loader_gguf::{complete_from_prompt, CompleteOptions, GgufModelLoader};
+use uie_loader_gguf::{complete_gguf_file, CompleteOptions, GgufModelLoader};
 
 fn main() -> uie_core::Result<()> {
     tracing_subscriber::fmt::init();
@@ -53,7 +53,7 @@ fn main() -> uie_core::Result<()> {
         return Ok(());
     }
 
-    let result = complete_from_prompt(&model_path, &prompt, &opts)?;
+    let result = complete_gguf_file(&model_path, &prompt, &opts)?;
     println!("{}", result.text);
     eprintln!(
         "telemetry: total_ms={:.2} ttft_ms={:?} decode_tps={:?} cpu_ms={:.2} gpu_ms={:?}",

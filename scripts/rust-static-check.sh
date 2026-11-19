@@ -12,3 +12,5 @@ EXCLUDE=(
   --exclude uie-mnist
 )
 cargo clippy --workspace --all-targets "${EXCLUDE[@]}" -- -D warnings
+
+echo "native-compile: see .github/workflows/native-compile.yml for ONNX/GGUF check"
