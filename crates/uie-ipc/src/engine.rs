@@ -80,12 +80,9 @@ impl InferenceEngineHost {
         }
 
         let recorder = ExecutionRecorder::new(req.request_id.clone()).with_transport("ipc");
-        let outcome = self.runtime.infer_with_trace(
-            model.as_ref(),
-            &tensors,
-            &mut session,
-            recorder,
-        )?;
+        let outcome = self
+            .runtime
+            .infer(model.as_ref(), &tensors, &mut session, recorder)?;
 
         let out_payloads = outcome
             .outputs

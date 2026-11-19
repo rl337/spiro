@@ -42,8 +42,13 @@ fn main() -> uie_core::Result<()> {
         let model = rt.load_model(&model_path)?;
         let prompt_t = uie_loader_gguf::prompt_tensor(&prompt, 4096)?;
         let mut session = rt.create_session();
-        let outs = rt.infer(model.as_ref(), &[prompt_t], &mut session)?;
-        print_completion(&outs);
+        let outcome = rt.infer(
+            model.as_ref(),
+            &[prompt_t],
+            &mut session,
+            uie_core::telemetry::ExecutionRecorder::new("uie-llm-runtime"),
+        )?;
+        print_completion(&outcome.outputs);
         return Ok(());
     }
 

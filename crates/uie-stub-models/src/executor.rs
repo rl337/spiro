@@ -3,6 +3,9 @@ use std::sync::Arc;
 use uie_core::error::{Error, Result};
 use uie_core::model::{InferenceExecutor, IoSpec, ModelMetadata};
 use uie_core::tensor::{DataType, Shape, Tensor};
+use uie_telemetry::{ComputeDevice, ExecutionRecorder};
+
+use crate::telemetry::{PHASE_POLICY_INFER, PHASE_VALIDATE_INPUTS};
 
 use crate::conventions::{
     CLIP_HIDDEN_DIM, CLIP_IMAGE_SIZE, CLIP_SEQ_LEN, DIFFUSION_HEIGHT, DIFFUSION_WIDTH,
@@ -142,16 +145,26 @@ impl InferenceExecutor for StubExecutor {
         &self.outputs
     }
 
-    fn infer(&self, inputs: &[Tensor]) -> Result<Vec<Tensor>> {
-        if inputs.len() != self.inputs.len() {
-            return Err(Error::Runtime(format!(
-                "stub `{}` expects {} inputs, got {}",
-                self.kind.id_str(),
-                self.inputs.len(),
-                inputs.len()
-            )));
-        }
-        self.policy.infer(self.kind, inputs)
+    fn infer(&self, inputs: &[Tensor], telemetry: &mut ExecutionRecorder) -> Result<Vec<Tensor>> {
+        telemetry.record_phase_ms(
+            format!("stub_modality_{}", self.kind.id_str()),
+            ComputeDevice::Cpu,
+            0.0,
+        );
+        telemetry.phase(PHASE_VALIDATE_INPUTS, ComputeDevice::Cpu, || {
+            if inputs.len() != self.inputs.len() {
+                return Err(Error::Runtime(format!(
+                    "stub `{}` expects {} inputs, got {}",
+                    self.kind.id_str(),
+                    self.inputs.len(),
+                    inputs.len()
+                )));
+            }
+            Ok(())
+        })?;
+        telemetry.phase(PHASE_POLICY_INFER, ComputeDevice::Cpu, || {
+            self.policy.infer(self.kind, inputs)
+        })
     }
 }
 
@@ -168,7 +181,8 @@ mod tests {
             }
             let stub = StubExecutor::new(kind);
             let inputs = sample_input(kind).expect("sample");
-            let outs = stub.infer(&inputs).expect("infer");
+            let mut telem = ExecutionRecorder::new("unit-test");
+            let outs = stub.infer(&inputs, &mut telem).expect("infer");
             assert_eq!(outs.len(), stub.outputs().len(), "{:?}", kind);
             for (o, spec) in outs.iter().zip(stub.outputs()) {
                 assert_eq!(o.dtype(), spec.dtype, "{:?}", kind);
@@ -181,7 +195,8 @@ mod tests {
     fn audio_passthrough_matches_input_length() {
         let stub = StubExecutor::new(ModalityKind::AudioToAudio);
         let inputs = sample_input(ModalityKind::AudioToAudio).unwrap();
-        let out = stub.infer(&inputs).unwrap();
+        let mut telem = ExecutionRecorder::new("unit-test");
+        let out = stub.infer(&inputs, &mut telem).unwrap();
         assert_eq!(out[0].shape().dims(), inputs[0].shape().dims(),);
     }
 }

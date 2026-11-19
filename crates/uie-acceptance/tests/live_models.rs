@@ -140,7 +140,15 @@ fn live_us_009_mnist_onnx_infer() {
         .with_loader(Box::new(OnnxModelLoader::new()));
     let model = rt.load_model(&model_path).unwrap();
     let mut session = rt.create_session();
-    let outputs = rt.infer(model.as_ref(), &[input], &mut session).unwrap();
+    let outcome = rt
+        .infer(
+            model.as_ref(),
+            &[input],
+            &mut session,
+            uie_core::telemetry::ExecutionRecorder::new("live-mnist"),
+        )
+        .unwrap();
+    let outputs = outcome.outputs;
     let logits = outputs[0].as_f32_slice().unwrap();
     let digit = logits
         .iter()

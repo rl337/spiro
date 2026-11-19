@@ -2,6 +2,7 @@ use std::env;
 use std::path::{Path, PathBuf};
 
 use uie_core::backend::cpu::CpuBackend;
+use uie_core::telemetry::ExecutionRecorder;
 use uie_core::InferenceRuntime;
 use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
 
@@ -21,7 +22,13 @@ fn main() -> uie_core::Result<()> {
 
     let inputs = sample_input(kind)?;
     let mut session = runtime.create_session();
-    let outputs = runtime.infer(model.as_ref(), &inputs, &mut session)?;
+    let outcome = runtime.infer(
+        model.as_ref(),
+        &inputs,
+        &mut session,
+        ExecutionRecorder::new("uie-stubs"),
+    )?;
+    let outputs = outcome.outputs;
 
     for (i, out) in outputs.iter().enumerate() {
         let spec = &model.outputs()[i];

@@ -1,5 +1,6 @@
 //! Structured **execution traces** for Spiro inference evaluation (TTFT, throughput, device time).
 
+pub mod assert;
 mod device;
 mod metrics;
 mod recorder;
@@ -10,4 +11,5 @@ pub use device::ComputeDevice;
 pub use metrics::InferMetrics;
 pub use recorder::ExecutionRecorder;
 pub use sink::{global_sink, set_global_sink, JsonlSink, NoopSink, TelemetrySink};
+pub use assert::assert_phases;
 pub use trace::{ExecutionTrace, PhaseSpan, TraceSummary};

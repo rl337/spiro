@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 use tracing::info;
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::tensor::{DataType, Shape, Tensor};
+use uie_core::telemetry::ExecutionRecorder;
 use uie_core::InferenceRuntime;
 use uie_loader_onnx::OnnxModelLoader;
 
@@ -29,7 +30,13 @@ fn main() -> uie_core::Result<()> {
     let mut session = runtime.create_session();
     session.bind("input", input.clone());
 
-    let outputs = runtime.infer(model.as_ref(), &[input], &mut session)?;
+    let outcome = runtime.infer(
+        model.as_ref(),
+        &[input],
+        &mut session,
+        ExecutionRecorder::new("uie-mnist"),
+    )?;
+    let outputs = outcome.outputs;
     let logits = outputs[0].as_f32_slice()?;
     let (digit, score) = logits
         .iter()
@@ -96,7 +103,13 @@ mod tests {
         let model = runtime.load_model(&model_path)?;
         let input = load_input_tensor(&resolve_fixture_path())?;
         let mut session = runtime.create_session();
-        let outputs = runtime.infer(model.as_ref(), &[input], &mut session)?;
+        let outcome = runtime.infer(
+        model.as_ref(),
+        &[input],
+        &mut session,
+        ExecutionRecorder::new("uie-mnist"),
+    )?;
+    let outputs = outcome.outputs;
         let logits = outputs[0].as_f32_slice()?;
         let digit = logits
             .iter()

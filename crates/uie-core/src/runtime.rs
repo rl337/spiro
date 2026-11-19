@@ -7,7 +7,7 @@ use crate::backend::{Backend, Device};
 use crate::error::{Error, Result};
 use crate::model::{InferenceExecutor, InferenceModel, ModelLoader, ModelLoaderRegistry};
 use crate::ops::{Op, OpKind};
-use crate::infer::{infer_with_trace, InferOutcome};
+use crate::infer::InferOutcome;
 use crate::tensor::{DataType, Shape, Tensor};
 use uie_telemetry::ExecutionRecorder;
 
@@ -93,27 +93,21 @@ impl InferenceRuntime {
         self.loaders.load(path, self.backend.as_ref())
     }
 
-    #[instrument(skip(self, model, inputs, session), fields(backend = %self.backend.id()))]
+    #[instrument(skip(self, model, inputs, session, recorder), fields(backend = %self.backend.id()))]
     pub fn infer(
         &self,
         model: &dyn InferenceExecutor,
         inputs: &[Tensor],
         session: &mut Session<'_>,
-    ) -> Result<Vec<Tensor>> {
-        if inputs.len() != model.inputs().len() {
-            return Err(Error::Runtime(format!(
-                "expected {} inputs, got {}",
-                model.inputs().len(),
-                inputs.len()
-            )));
-        }
-        let outputs = model.infer(inputs)?;
-        for (i, spec) in model.outputs().iter().enumerate() {
-            if let Some(tensor) = outputs.get(i) {
-                session.bind(spec.name.clone(), tensor.clone());
-            }
-        }
-        Ok(outputs)
+        recorder: ExecutionRecorder,
+    ) -> Result<InferOutcome> {
+        crate::infer::run_infer_with_trace(
+            self.backend.as_ref(),
+            model,
+            inputs,
+            session,
+            recorder,
+        )
     }
 
     #[instrument(skip(self, model, inputs, session, recorder), fields(backend = %self.backend.id()))]
@@ -124,13 +118,7 @@ impl InferenceRuntime {
         session: &mut Session<'_>,
         recorder: ExecutionRecorder,
     ) -> Result<InferOutcome> {
-        infer_with_trace(
-            self.backend.as_ref(),
-            model,
-            inputs,
-            session,
-            recorder,
-        )
+        self.infer(model, inputs, session, recorder)
     }
 
     #[instrument(skip(self, model, session), fields(backend = %self.backend.id()))]

@@ -10,5 +10,6 @@ rust-version.workspace = true
 ndarray = "0.16"
 tract-onnx = "0.21"
 uie-core = { path = "../uie-core" }
+uie-telemetry = { path = "../uie-telemetry" }
 thiserror.workspace = true
 tracing.workspace = true

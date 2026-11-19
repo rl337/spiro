@@ -8,6 +8,7 @@ use uie_core::backend::Backend;
 use uie_core::error::{Error, Result};
 use uie_core::model::{InferenceExecutor, IoSpec, ModelLoader, ModelMetadata};
 use uie_core::tensor::{DataType, Shape, Tensor};
+use uie_telemetry::{ComputeDevice, ExecutionRecorder};
 
 use crate::convert::{tensor_to_tvalue, tvalue_to_tensor};
 
@@ -135,56 +136,61 @@ impl InferenceExecutor for OnnxModel {
     }
 
     #[instrument(skip(self, inputs), fields(model = %self.metadata.name))]
-    fn infer(&self, inputs: &[Tensor]) -> Result<Vec<Tensor>> {
-        if inputs.len() != self.inputs.len() {
-            return Err(Error::Runtime(format!(
-                "model expects {} inputs, got {}",
-                self.inputs.len(),
-                inputs.len()
-            )));
-        }
-        for (tensor, spec) in inputs.iter().zip(&self.inputs) {
-            if tensor.dtype() != spec.dtype {
-                return Err(Error::DtypeMismatch {
-                    expected: spec.dtype,
-                    got: tensor.dtype(),
-                });
-            }
-            if tensor.shape().dims() != spec.shape.dims() {
-                return Err(Error::InvalidShape(format!(
-                    "input `{}`: expected {:?}, got {:?}",
-                    spec.name,
-                    spec.shape.dims(),
-                    tensor.shape().dims()
+    fn infer(&self, inputs: &[Tensor], telemetry: &mut ExecutionRecorder) -> Result<Vec<Tensor>> {
+        telemetry.phase("onnx_validate_inputs", ComputeDevice::Cpu, || {
+            if inputs.len() != self.inputs.len() {
+                return Err(Error::Runtime(format!(
+                    "model expects {} inputs, got {}",
+                    self.inputs.len(),
+                    inputs.len()
                 )));
             }
-        }
+            for (tensor, spec) in inputs.iter().zip(&self.inputs) {
+                if tensor.dtype() != spec.dtype {
+                    return Err(Error::DtypeMismatch {
+                        expected: spec.dtype,
+                        got: tensor.dtype(),
+                    });
+                }
+                if tensor.shape().dims() != spec.shape.dims() {
+                    return Err(Error::InvalidShape(format!(
+                        "input `{}`: expected {:?}, got {:?}",
+                        spec.name,
+                        spec.shape.dims(),
+                        tensor.shape().dims()
+                    )));
+                }
+            }
+            Ok(())
+        })?;
 
-        let tract_inputs = inputs
-            .iter()
-            .map(tensor_to_tvalue)
-            .collect::<Result<Vec<_>>>()?;
+        telemetry.phase("onnx_tract_run", ComputeDevice::Cpu, || {
+            let tract_inputs = inputs
+                .iter()
+                .map(tensor_to_tvalue)
+                .collect::<Result<Vec<_>>>()?;
 
-        let mut model = self
-            .runnable
-            .lock()
-            .map_err(|_| Error::Runtime("ONNX model lock poisoned".into()))?;
+            let mut model = self
+                .runnable
+                .lock()
+                .map_err(|_| Error::Runtime("ONNX model lock poisoned".into()))?;
 
-        let outputs = model
-            .run(tract_inputs.into())
-            .map_err(|e| Error::Runtime(e.to_string()))?;
+            let outputs = model
+                .run(tract_inputs.into())
+                .map_err(|e| Error::Runtime(e.to_string()))?;
 
-        outputs
-            .iter()
-            .enumerate()
-            .map(|(i, tv)| {
-                let name = self
-                    .outputs
-                    .get(i)
-                    .map(|s| s.name.as_str())
-                    .unwrap_or("output");
-                tvalue_to_tensor(tv, name)
-            })
-            .collect()
+            outputs
+                .iter()
+                .enumerate()
+                .map(|(i, tv)| {
+                    let name = self
+                        .outputs
+                        .get(i)
+                        .map(|s| s.name.as_str())
+                        .unwrap_or("output");
+                    tvalue_to_tensor(tv, name)
+                })
+                .collect()
+        })
     }
 }

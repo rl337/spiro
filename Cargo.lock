@@ -1821,6 +1821,7 @@ dependencies = [
  "tracing",
  "tract-onnx",
  "uie-core",
+ "uie-telemetry",
 ]
 
 [[package]]
@@ -1873,6 +1874,7 @@ dependencies = [
  "thiserror",
  "tracing",
  "uie-core",
+ "uie-telemetry",
 ]
 
 [[package]]

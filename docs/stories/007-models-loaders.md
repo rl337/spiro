@@ -19,6 +19,8 @@ UIE splits “models” into two styles:
 | **Plan-based** | [Inference model](../glossary.md#inference-model) | Expose an [execution plan](./005-execution-plans.md); run via `run_model`. |
 | **End-to-end** | [Inference executor](../glossary.md#inference-executor) | One `infer(inputs)` call; used by ONNX today. |
 
+Every [`InferenceExecutor`](../glossary.md#inference-executor) implements `infer(..., telemetry: &mut ExecutionRecorder)` so stubs and real models emit the same traces ([US-023](./023-inference-telemetry.md)).
+
 A [model loader](../glossary.md#model-loader):
 
 1. Declares its `format_id` (for example `"onnx"`).

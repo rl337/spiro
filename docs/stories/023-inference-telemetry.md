@@ -14,7 +14,8 @@
 
 1. [`ExecutionRecorder`](../crates/uie-telemetry) times phases (`executor_infer`, `prefill`, `decode`, `ipc_hop`, …) and tags [`ComputeDevice`](../crates/uie-telemetry) (`cpu`, `gpu`, …).
 2. [`InferMetrics`](../crates/uie-telemetry) holds **TTFT**, **prefill/decode ms**, **tokens/sec**, and summed **CPU/GPU** phase time.
-3. `InferenceRuntime::infer_with_trace` wraps any [`InferenceExecutor`](./007-models-loaders.md).
+3. **`InferenceExecutor::infer` must take `&mut ExecutionRecorder`** — stubs record `stub_validate_inputs` / `stub_policy_infer`; acceptance tests assert those phases.
+4. `InferenceRuntime::infer` always finishes a trace (see [`InferOutcome`](../crates/uie-core/src/infer.rs)).
 4. GGUF completion fills metrics from real generation ([US-010](./010-llm-text-completions.md)).
 5. IPC [`InferResult`](./020-inference-byte-channel.md) includes optional `trace` summary for clients.
 6. Set `UIE_TRACE_JSONL=/path/traces.jsonl` to append full JSON traces for offline analysis (Twitter thread spreadsheet fuel).

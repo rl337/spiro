@@ -1,8 +1,10 @@
-//! US-010 through US-019: stub tensor contracts per modality.
+//! US-010 through US-019: stub tensor contracts per modality + telemetry contract.
 mod support;
 
 use uie_core::backend::cpu::CpuBackend;
+use uie_core::telemetry::ExecutionRecorder;
 use uie_core::InferenceRuntime;
+use uie_stub_models::telemetry_assert::assert_stub_executor_telemetry;
 use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
 
 fn infer_stub(kind: ModalityKind, stub_file: &str) {
@@ -12,8 +14,16 @@ fn infer_stub(kind: ModalityKind, stub_file: &str) {
     let model = rt.load_model(&path).unwrap();
     let inputs = sample_input(kind).unwrap();
     let mut session = rt.create_session();
-    let outputs = rt.infer(model.as_ref(), &inputs, &mut session).unwrap();
-    assert!(!outputs.is_empty());
+    let outcome = rt
+        .infer(
+            model.as_ref(),
+            &inputs,
+            &mut session,
+            ExecutionRecorder::new(format!("us-{}", kind.story_id())),
+        )
+        .unwrap();
+    assert!(!outcome.outputs.is_empty());
+    assert_stub_executor_telemetry(&outcome.trace);
 }
 
 #[test]
