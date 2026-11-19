@@ -144,7 +144,7 @@ fn audio_to_audio_stub_copy_input_with_gain() {
     let policy = RuleStubPolicy::new(ModalityKind::AudioToAudio).rule(
         StubMatcher::Always,
         |inputs| {
-            let slice = inputs[0].as_f32_slice();
+            let slice = inputs[0].as_f32_slice().unwrap();
             let boosted: Vec<f32> = slice.iter().map(|v| v * 2.0).collect();
             Ok(vec![Tensor::from_f32_slice(inputs[0].shape().clone(), &boosted).unwrap()])
         },
