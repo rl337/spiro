@@ -1,6 +1,6 @@
-use std::path::PathBuf;
-
-use uie_catalog::{ModelFormat, ModelRegistry, ModelRole, ModelRootConfig, ModelRootKind, ModelRootsFile};
+use uie_catalog::{
+    ModelFormat, ModelRegistry, ModelRole, ModelRootConfig, ModelRootKind, ModelRootsFile,
+};
 
 #[test]
 fn scans_comfy_and_lmstudio_layouts() {
@@ -36,12 +36,16 @@ fn scans_comfy_and_lmstudio_layouts() {
     let mut log = uie_telemetry::StoryEventLog::new("US-021");
     assert_eq!(reg.stats().files_indexed, 3);
     log.record("registry_scan_multi_layout");
-    assert!(reg.entries().iter().any(|e| {
-        e.format == ModelFormat::Gguf && e.role == ModelRole::Llm
-    }));
+    assert!(reg
+        .entries()
+        .iter()
+        .any(|e| { e.format == ModelFormat::Gguf && e.role == ModelRole::Llm }));
     assert!(reg.entries().iter().any(|e| {
         e.role == ModelRole::DiffusionCheckpoint && e.family.as_deref() == Some("sd_xl")
     }));
     log.record("registry_roles_classified");
-    uie_telemetry::assert_story_events(&log, &["registry_scan_multi_layout", "registry_roles_classified"]);
+    uie_telemetry::assert_story_events(
+        &log,
+        &["registry_scan_multi_layout", "registry_roles_classified"],
+    );
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""US-020 live: same as stub test but requires UIE_ACCEPTANCE_MODE=live and optional UIE_LIVE_MODEL_PATH."""
+"""US-020 live: requires UIE_ACCEPTANCE_MODE=live and optional UIE_LIVE_MODEL_PATH."""
+
 from __future__ import annotations
 
 import os

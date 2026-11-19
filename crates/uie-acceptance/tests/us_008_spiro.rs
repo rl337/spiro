@@ -12,5 +12,8 @@ fn us_008_spiro_crate_has_main() {
         .join("../../crates/uie-spiro/src/spiro.rs");
     assert!(mod_rs.is_file());
     log.record("spiro_module_sources_present");
-    assert_story_events(&log, &["spiro_demo_entrypoint", "spiro_module_sources_present"]);
+    assert_story_events(
+        &log,
+        &["spiro_demo_entrypoint", "spiro_module_sources_present"],
+    );
 }

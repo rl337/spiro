@@ -13,9 +13,7 @@ pub struct GgufModelLoader {
 
 impl GgufModelLoader {
     pub fn new() -> Self {
-        Self {
-            max_new_tokens: 64,
-        }
+        Self { max_new_tokens: 64 }
     }
 
     pub fn with_max_new_tokens(mut self, n: usize) -> Self {

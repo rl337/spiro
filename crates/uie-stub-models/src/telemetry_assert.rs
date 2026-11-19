@@ -1,6 +1,8 @@
 use uie_telemetry::{assert_phases, ExecutionTrace};
 
-use crate::telemetry::{phase_modality, PHASE_MODALITY_PREFIX, PHASE_POLICY_INFER, PHASE_VALIDATE_INPUTS};
+use crate::telemetry::{
+    phase_modality, PHASE_MODALITY_PREFIX, PHASE_POLICY_INFER, PHASE_VALIDATE_INPUTS,
+};
 use crate::ModalityKind;
 
 /// US-010+ acceptance: every stub run must emit these phases and stub metadata.
@@ -19,7 +21,10 @@ pub fn assert_stub_executor_telemetry(trace: &ExecutionTrace) {
         "stub trace should tag format=stub"
     );
     assert!(
-        trace.user_story.as_deref().is_some_and(|s| s.starts_with("US-")),
+        trace
+            .user_story
+            .as_deref()
+            .is_some_and(|s| s.starts_with("US-")),
         "stub trace should tag user_story=US-0NN"
     );
 }
@@ -33,10 +38,7 @@ pub fn assert_stub_modality_telemetry(trace: &ExecutionTrace, kind: ModalityKind
         "stub trace user_story must match modality"
     );
     assert!(
-        trace
-            .phases
-            .iter()
-            .any(|p| p.name == phase_modality(kind)),
+        trace.phases.iter().any(|p| p.name == phase_modality(kind)),
         "missing phase {}",
         phase_modality(kind)
     );

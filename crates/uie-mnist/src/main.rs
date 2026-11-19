@@ -2,8 +2,8 @@ use std::path::{Path, PathBuf};
 
 use tracing::info;
 use uie_core::backend::cpu::CpuBackend;
-use uie_core::tensor::{DataType, Shape, Tensor};
 use uie_core::telemetry::ExecutionRecorder;
+use uie_core::tensor::{DataType, Shape, Tensor};
 use uie_core::InferenceRuntime;
 use uie_loader_onnx::OnnxModelLoader;
 
@@ -104,12 +104,12 @@ mod tests {
         let input = load_input_tensor(&resolve_fixture_path())?;
         let mut session = runtime.create_session();
         let outcome = runtime.infer(
-        model.as_ref(),
-        &[input],
-        &mut session,
-        ExecutionRecorder::new("uie-mnist"),
-    )?;
-    let outputs = outcome.outputs;
+            model.as_ref(),
+            &[input],
+            &mut session,
+            ExecutionRecorder::new("uie-mnist"),
+        )?;
+        let outputs = outcome.outputs;
         let logits = outputs[0].as_f32_slice()?;
         let digit = logits
             .iter()

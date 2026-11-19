@@ -14,5 +14,8 @@ fn us_003_cpu_backend_allocates() {
         .expect("allocate");
     assert_eq!(t.shape().dims(), &[4]);
     log.record("tensor_allocated_on_cpu");
-    assert_story_events(&log, &["cpu_backend_constructed", "tensor_allocated_on_cpu"]);
+    assert_story_events(
+        &log,
+        &["cpu_backend_constructed", "tensor_allocated_on_cpu"],
+    );
 }

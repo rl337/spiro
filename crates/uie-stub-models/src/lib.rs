@@ -1,8 +1,6 @@
 //! Blank [InferenceExecutor] implementations for US-010 – US-019 modalities.
 
 mod blanks;
-pub mod telemetry;
-pub mod telemetry_assert;
 mod conventions;
 mod executor;
 mod infer_blank;
@@ -12,6 +10,8 @@ mod policy;
 mod samples;
 mod stub_infer_metrics;
 mod stub_input_validate;
+pub mod telemetry;
+pub mod telemetry_assert;
 mod validate;
 
 pub use conventions::*;

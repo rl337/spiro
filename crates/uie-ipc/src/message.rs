@@ -6,7 +6,9 @@ pub const PROTOCOL_VERSION: u32 = 1;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum IpcMessage {
-    Hello { protocol_version: u32 },
+    Hello {
+        protocol_version: u32,
+    },
     HelloAck {
         protocol_version: u32,
         engine: String,
@@ -22,7 +24,9 @@ pub enum IpcMessage {
         #[serde(skip_serializing_if = "Option::is_none")]
         trace: Option<uie_telemetry::TraceSummary>,
     },
-    Error { message: String },
+    Error {
+        message: String,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -71,7 +75,9 @@ impl TryFrom<IpcMessage> for InferRequest {
                 model_path,
                 inputs,
             }),
-            other => Err(uie_core::Error::Runtime(format!("not an infer request: {other:?}"))),
+            other => Err(uie_core::Error::Runtime(format!(
+                "not an infer request: {other:?}"
+            ))),
         }
     }
 }
@@ -108,6 +114,8 @@ fn parse_dtype(s: &str) -> uie_core::Result<DataType> {
         "f64" => Ok(DataType::F64),
         "i32" => Ok(DataType::I32),
         "u8" => Ok(DataType::U8),
-        other => Err(uie_core::Error::InvalidShape(format!("unknown dtype `{other}`"))),
+        other => Err(uie_core::Error::InvalidShape(format!(
+            "unknown dtype `{other}`"
+        ))),
     }
 }

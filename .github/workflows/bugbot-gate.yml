@@ -1,0 +1,50 @@
+name: Bugbot gate
+
+# Waits for the Cursor GitHub App "Cursor Bugbot" check (not an Actions runner review).
+# Requires Bugbot enabled for this repo: Cursor dashboard → Automations → Bugbot.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions:
+  pull-requests: read
+  checks: read
+
+jobs:
+  wait-for-bugbot:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Cursor Bugbot check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = context.payload.pull_request.head.sha;
+            const maxAttempts = 90;
+
+            for (let i = 0; i < maxAttempts; i++) {
+              const { data } = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: sha,
+              });
+              const bugbot = data.check_runs.find((r) => r.name === "Cursor Bugbot");
+              if (bugbot?.status === "completed") {
+                if (bugbot.conclusion === "success") {
+                  core.info("Cursor Bugbot passed.");
+                  return;
+                }
+                core.setFailed(
+                  `Cursor Bugbot finished with: ${bugbot.conclusion ?? "unknown"}`
+                );
+                return;
+              }
+              core.info(
+                `Waiting for Cursor Bugbot (${bugbot?.status ?? "not started"})…`
+              );
+              await new Promise((r) => setTimeout(r, 10_000));
+            }
+            core.setFailed("Timed out waiting for Cursor Bugbot.");

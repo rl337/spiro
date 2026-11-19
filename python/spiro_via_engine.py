@@ -9,9 +9,10 @@ a dedicated spiro workload manifest once exposed over IPC.
   Terminal 1: cargo run -p uie-serve
   Terminal 2: python3 python/spiro_via_engine.py
 """
+
 from pathlib import Path
 
-from uie_client import roundtrip, UIE_PROTOCOL_VERSION
+from uie_client import UIE_PROTOCOL_VERSION, roundtrip
 
 REPO = Path(__file__).resolve().parent.parent
 STUB = REPO / "models/stubs/llm.stub"

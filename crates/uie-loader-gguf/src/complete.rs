@@ -11,9 +11,9 @@ use llama_cpp_2::model::params::LlamaModelParams;
 use llama_cpp_2::model::LlamaModel;
 use llama_cpp_2::sampling::LlamaSampler;
 use llama_cpp_2::token::LlamaToken;
+use std::time::Instant;
 use uie_core::error::{Error, Result};
 use uie_telemetry::{ComputeDevice, InferMetrics};
-use std::time::Instant;
 
 #[derive(Debug, Clone)]
 pub struct CompleteOptions {
@@ -44,7 +44,8 @@ pub fn complete_from_prompt(
     prompt: &str,
     opts: &CompleteOptions,
 ) -> Result<CompleteResult> {
-    let backend = LlamaBackend::init().map_err(|e| Error::ModelLoad(format!("llama backend: {e}")))?;
+    let backend =
+        LlamaBackend::init().map_err(|e| Error::ModelLoad(format!("llama backend: {e}")))?;
     let model_params = LlamaModelParams::default();
     let model = LlamaModel::load_from_file(&backend, model_path, &model_params)
         .map_err(|e| Error::ModelLoad(format!("load gguf {}: {e}", model_path.display())))?;
@@ -67,15 +68,16 @@ fn run_generation(
         ComputeDevice::Cpu
     };
 
-    let ctx_tokens = NonZeroU32::new(opts.context_tokens.max(256)).ok_or_else(|| {
-        Error::InvalidShape("context_tokens must be > 0".into())
-    })?;
+    let ctx_tokens = NonZeroU32::new(opts.context_tokens.max(256))
+        .ok_or_else(|| Error::InvalidShape("context_tokens must be > 0".into()))?;
     let ctx_params = LlamaContextParams::default().with_n_ctx(Some(ctx_tokens));
     let mut ctx = model
         .new_context(backend, ctx_params)
         .map_err(|e| Error::Runtime(format!("llama context: {e}")))?;
 
-    let max_gen = opts.max_new_tokens.min(opts.context_tokens.saturating_sub(64));
+    let max_gen = opts
+        .max_new_tokens
+        .min(opts.context_tokens.saturating_sub(64));
     if tokens.is_empty() {
         return Err(Error::Runtime("empty prompt tokens".into()));
     }

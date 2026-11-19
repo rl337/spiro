@@ -45,7 +45,8 @@ impl FramedTransport {
             return Err(Error::Io("frame too large".into()));
         }
         let mut body = vec![0u8; len];
-        r.read_exact(&mut body).map_err(|e| Error::Io(e.to_string()))?;
+        r.read_exact(&mut body)
+            .map_err(|e| Error::Io(e.to_string()))?;
         let mut frame = Vec::with_capacity(4 + len);
         frame.extend_from_slice(&len_buf);
         frame.extend_from_slice(&body);

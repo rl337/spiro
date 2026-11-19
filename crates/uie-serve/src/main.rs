@@ -1,8 +1,6 @@
 use std::env;
 
-use uie_iv::uie::profile::serve_loader_mode_from_env;
 use std::path::PathBuf;
-
 use uie_ipc::{InferenceEngineHost, UnixListenerChannel};
 
 fn main() -> uie_core::Result<()> {
@@ -17,7 +15,7 @@ fn main() -> uie_core::Result<()> {
     );
     let host = InferenceEngineHost::new(inj.loaders());
 
-    tracing::info!(%socket, "listening");
+    tracing::info!(socket = %socket.display(), "listening");
     let server = UnixListenerChannel::bind(&socket, host)?;
     server.serve_forever()
 }

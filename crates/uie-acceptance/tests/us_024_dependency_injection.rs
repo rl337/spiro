@@ -1,8 +1,8 @@
 //! US-024: pyiv-style DI for CI vs live (no env conditionals at call sites).
 use uie_acceptance::composition::{injector, loader_format_ids};
+use uie_acceptance::{assert_story_events, StoryEventLog};
 use uie_iv::uie::modules::{OverrideCiModule, OverrideLiveModule};
 use uie_iv::Injector;
-use uie_acceptance::{assert_story_events, StoryEventLog};
 
 #[test]
 fn us_024_ci_injector_skips_live_without_env_branch() {
@@ -10,11 +10,7 @@ fn us_024_ci_injector_skips_live_without_env_branch() {
     let inj = Injector::from_modules(&[&OverrideCiModule]).unwrap();
     assert!(inj.acceptance_profile().skip_live_test("live_us_007"));
     log.record("ci_profile_injected");
-    assert!(
-        inj.loaders()
-            .iter()
-            .all(|l| l.format_id() == "stub")
-    );
+    assert!(inj.loaders().iter().all(|l| l.format_id() == "stub"));
     assert_story_events(&log, &["ci_profile_injected"]);
 }
 

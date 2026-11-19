@@ -1,6 +1,5 @@
 #![cfg(unix)]
 
-use std::io::{Read, Write};
 use std::os::unix::net::{UnixListener, UnixStream};
 use std::path::Path;
 
@@ -56,11 +55,7 @@ impl UnixListenerChannel {
             .listener
             .accept()
             .map_err(|e| Error::Io(e.to_string()))?;
-        loop {
-            let frame = match FramedTransport::read_frame(&mut stream) {
-                Ok(f) => f,
-                Err(_) => break,
-            };
+        while let Ok(frame) = FramedTransport::read_frame(&mut stream) {
             let msg = crate::codec::decode_frame(&frame)?;
             let reply = self.host.handle_message(msg);
             let out = crate::codec::encode_frame(&reply)?;

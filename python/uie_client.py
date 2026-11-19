@@ -8,6 +8,7 @@ Requires the engine daemon:
 Example:
   python3 python/uie_client.py --stub llm
 """
+
 from __future__ import annotations
 
 import argparse

@@ -128,10 +128,7 @@ fn io_specs(kind: ModalityKind) -> (Vec<IoSpec>, Vec<IoSpec>) {
         ModalityKind::MultimodalTextImageToText => {
             (vec![input_ids, pixel_values_vlm], vec![output_ids])
         }
-        ModalityKind::AudioToAudio => (
-            vec![waveform_in.clone()],
-            vec![waveform_in],
-        ),
+        ModalityKind::AudioToAudio => (vec![waveform_in.clone()], vec![waveform_in]),
         ModalityKind::ImageToImage => (vec![pixel_values_sd.clone()], vec![pixel_values_sd]),
     }
 }
@@ -151,11 +148,7 @@ impl InferenceExecutor for StubExecutor {
 
     fn infer(&self, inputs: &[Tensor], telemetry: &mut ExecutionRecorder) -> Result<Vec<Tensor>> {
         telemetry.tag_stub_executor(self.metadata.name.clone(), self.kind.story_id());
-        telemetry.record_phase_ms(
-            phase_modality(self.kind),
-            ComputeDevice::Cpu,
-            0.0,
-        );
+        telemetry.record_phase_ms(phase_modality(self.kind), ComputeDevice::Cpu, 0.0);
 
         if inputs.len() != self.inputs.len() {
             return Err(Error::Runtime(format!(

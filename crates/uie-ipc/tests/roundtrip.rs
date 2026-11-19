@@ -1,8 +1,6 @@
 use std::path::PathBuf;
-use uie_ipc::{
-    InferRequest, InProcessChannel, InferenceEngineHost, IpcMessage, PROTOCOL_VERSION, TensorPayload,
-};
 use uie_ipc::ByteChannel;
+use uie_ipc::{InProcessChannel, InferenceEngineHost, IpcMessage, TensorPayload, PROTOCOL_VERSION};
 use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
 
 fn workspace_stub(name: &str) -> PathBuf {
@@ -13,7 +11,7 @@ fn workspace_stub(name: &str) -> PathBuf {
 
 #[test]
 fn in_process_stub_llm_roundtrip() {
-    let host = InferenceEngineHost::new(vec![Box::new(StubModelLoader::default())]);
+    let host = InferenceEngineHost::new(vec![Box::new(StubModelLoader)]);
     let mut ch = InProcessChannel::new(host);
 
     let ack = ch
@@ -58,7 +56,7 @@ fn unix_socket_stub_roundtrip() {
     let dir = tempfile::tempdir().unwrap();
     let sock = dir.path().join("uie-test.sock");
 
-    let host = InferenceEngineHost::new(vec![Box::new(StubModelLoader::default())]);
+    let host = InferenceEngineHost::new(vec![Box::new(StubModelLoader)]);
     let listener = uie_ipc::UnixListenerChannel::bind(&sock, host).unwrap();
 
     let sock_c = sock.clone();

@@ -23,9 +23,9 @@ pub struct JsonlSink {
 
 impl JsonlSink {
     pub fn from_env() -> Option<Self> {
-        std::env::var("UIE_TRACE_JSONL")
-            .ok()
-            .map(|p| Self { path: PathBuf::from(p) })
+        std::env::var("UIE_TRACE_JSONL").ok().map(|p| Self {
+            path: PathBuf::from(p),
+        })
     }
 
     pub fn new(path: impl Into<PathBuf>) -> Self {

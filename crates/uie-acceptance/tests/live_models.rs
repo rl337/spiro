@@ -1,13 +1,13 @@
 //! Live-mode acceptance: real weights, registry roots, optional ONNX (feature `live-onnx`).
-mod support;
+mod common;
 
 use std::path::PathBuf;
 
 use uie_acceptance::{assert_infer_outcome_trace, assert_story_events, StoryEventLog};
-use uie_catalog::{ModelCatalog, ModelRootsFile, ModelRootConfig, ModelRootKind};
+use uie_catalog::{ModelCatalog, ModelRootConfig, ModelRootKind, ModelRootsFile};
 
 fn skip_live(log: &mut StoryEventLog, test_name: &str) -> bool {
-    if support::skip_unless_live(test_name) {
+    if common::skip_unless_live(test_name) {
         log.record("live_skipped_ci");
         assert_story_events(log, &["live_skipped_ci"]);
         return true;
@@ -24,7 +24,7 @@ fn live_us_021_scan_configured_roots() {
 
     let roots_path = std::env::var("SPIRO_MODEL_ROOTS")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| support::repo_root().join("config/model_roots.example.yaml"));
+        .unwrap_or_else(|_| common::repo_root().join("config/model_roots.example.yaml"));
 
     if !roots_path.is_file() {
         log.record("live_skipped_no_roots_file");
@@ -147,10 +147,10 @@ fn live_us_009_mnist_onnx_infer() {
 
     let model_path = std::env::var("UIE_MNIST_MODEL")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| support::repo_root().join("models/mnist-8.onnx"));
+        .unwrap_or_else(|_| common::repo_root().join("models/mnist-8.onnx"));
     let fixture = std::env::var("UIE_MNIST_FIXTURE")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| support::repo_root().join("models/fixtures/digit_one_f32.bin"));
+        .unwrap_or_else(|_| common::repo_root().join("models/fixtures/digit_one_f32.bin"));
 
     if !model_path.is_file() || !fixture.is_file() {
         log.record("live_skipped_missing_mnist_assets");
@@ -198,20 +198,22 @@ fn live_us_010_gguf_text_completion() {
     if skip_live(&mut log, "live_us_010_gguf_text_completion") {
         return;
     }
-    let model_path = match std::env::var("UIE_GGUF_MODEL").or_else(|_| std::env::var("UIE_LIVE_MODEL_PATH")) {
-        Ok(p) => std::path::PathBuf::from(p),
-        Err(_) => {
-            log.record("live_skipped_no_gguf_path");
-            assert_story_events(&log, &["live_skipped_no_gguf_path"]);
-            return;
-        }
-    };
+    let model_path =
+        match std::env::var("UIE_GGUF_MODEL").or_else(|_| std::env::var("UIE_LIVE_MODEL_PATH")) {
+            Ok(p) => std::path::PathBuf::from(p),
+            Err(_) => {
+                log.record("live_skipped_no_gguf_path");
+                assert_story_events(&log, &["live_skipped_no_gguf_path"]);
+                return;
+            }
+        };
     if !model_path.is_file() {
         log.record("live_skipped_gguf_missing");
         assert_story_events(&log, &["live_skipped_gguf_missing"]);
         return;
     }
-    let prompt = std::env::var("UIE_LLM_PROMPT").unwrap_or_else(|_| "Say hi in one short sentence.".into());
+    let prompt =
+        std::env::var("UIE_LLM_PROMPT").unwrap_or_else(|_| "Say hi in one short sentence.".into());
     let opts = uie_loader_gguf::CompleteOptions {
         max_new_tokens: 24,
         ..Default::default()
@@ -230,8 +232,8 @@ fn live_us_022_byte_pipeline_workspace_onnx_or_stub() {
     if skip_live(&mut log, "live_us_022_byte_pipeline_workspace_onnx_or_stub") {
         return;
     }
-    let onnx = support::repo_root().join("models/mnist-8.onnx");
-    let stubs = support::stubs_dir();
+    let onnx = common::repo_root().join("models/mnist-8.onnx");
+    let stubs = common::stubs_dir();
     let stub = stubs.join("llm.stub");
     let hop_path = if onnx.is_file() {
         onnx
@@ -245,7 +247,7 @@ fn live_us_022_byte_pipeline_workspace_onnx_or_stub() {
 
     use uie_acceptance::assert_ipc_infer_trace;
     use uie_acceptance::composition::injector;
-    use uie_ipc::{ByteChannel, IpcMessage, InProcessChannel, InferenceEngineHost, TensorPayload};
+    use uie_ipc::{ByteChannel, InProcessChannel, InferenceEngineHost, IpcMessage, TensorPayload};
     use uie_pipeline::{ByteChannelPipelineRunner, PipelineHop};
 
     let is_onnx = hop_path.extension().is_some_and(|e| e == "onnx");
@@ -262,10 +264,7 @@ fn live_us_022_byte_pipeline_workspace_onnx_or_stub() {
 
     let mut runner = ByteChannelPipelineRunner::from_loaders(injector().loaders(), hops);
 
-    let has_onnx_loader = injector()
-        .loaders()
-        .iter()
-        .any(|l| l.format_id() == "onnx");
+    let has_onnx_loader = injector().loaders().iter().any(|l| l.format_id() == "onnx");
 
     if is_onnx {
         if !has_onnx_loader {
@@ -274,7 +273,7 @@ fn live_us_022_byte_pipeline_workspace_onnx_or_stub() {
             return;
         }
         use uie_core::tensor::{DataType, Shape, Tensor};
-        let fixture = support::repo_root().join("models/fixtures/digit_one_f32.bin");
+        let fixture = common::repo_root().join("models/fixtures/digit_one_f32.bin");
         let bytes = std::fs::read(fixture).unwrap();
         let input = Tensor::from_bytes(DataType::F32, Shape::new([1, 1, 28, 28]), bytes).unwrap();
         let out = runner.run_tensors("live-pipe", &[input]).unwrap();

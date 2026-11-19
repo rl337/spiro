@@ -7,8 +7,6 @@ mod roots;
 mod scan;
 
 pub use comfy::{stack_candidates, ComfyStackRef};
-pub use registry::{
-    ModelCatalog, ModelEntry, ModelFormat, ModelRegistry, ModelRole, ScanStats,
-};
+pub use registry::{ModelCatalog, ModelEntry, ModelFormat, ModelRegistry, ModelRole, ScanStats};
 pub use roots::{expand_home, ModelRootConfig, ModelRootKind, ModelRootsFile};
 pub use scan::scan_roots;

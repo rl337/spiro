@@ -3,11 +3,11 @@ use std::path::PathBuf;
 use std::time::Instant;
 
 use tracing::debug;
-use uie_telemetry::ComputeDevice;
-use uie_core::tensor::Tensor;
-use uie_ipc::{ByteChannel, IpcMessage, InProcessChannel, InferenceEngineHost, TensorPayload};
-use uie_core::model::ModelLoader;
 use uie_core::error::Result;
+use uie_core::model::ModelLoader;
+use uie_core::tensor::Tensor;
+use uie_ipc::{ByteChannel, InProcessChannel, InferenceEngineHost, IpcMessage, TensorPayload};
+use uie_telemetry::ComputeDevice;
 
 #[derive(Debug, Clone)]
 pub struct PipelineHop {
@@ -41,9 +41,7 @@ impl ByteChannelPipelineRunner {
             .collect::<Result<Vec<_>>>()?;
 
         let out = self.run_payloads(request_id, payloads)?;
-        out.into_iter()
-            .map(|p| p.to_tensor())
-            .collect()
+        out.into_iter().map(|p| p.to_tensor()).collect()
     }
 
     pub fn run_payloads(

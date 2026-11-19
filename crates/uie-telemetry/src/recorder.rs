@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use crate::device::ComputeDevice;
 use crate::metrics::InferMetrics;
-use crate::sink::{global_sink, TelemetrySink};
+use crate::sink::global_sink;
 use crate::trace::{ExecutionTrace, PhaseSpan};
 
 #[derive(Debug, Clone)]
@@ -70,7 +70,12 @@ impl ExecutionRecorder {
         &mut self.metrics
     }
 
-    pub fn record_phase_ms(&mut self, name: impl Into<String>, device: ComputeDevice, duration_ms: f64) {
+    pub fn record_phase_ms(
+        &mut self,
+        name: impl Into<String>,
+        device: ComputeDevice,
+        duration_ms: f64,
+    ) {
         self.metrics.add_phase_time(device, duration_ms);
         self.phases.push(PhaseSpan {
             name: name.into(),

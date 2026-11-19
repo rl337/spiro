@@ -1,5 +1,5 @@
 //! US-010 through US-019: stub tensor contracts per modality + telemetry contract.
-mod support;
+mod common;
 
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::telemetry::ExecutionRecorder;
@@ -8,9 +8,9 @@ use uie_stub_models::telemetry_assert::assert_stub_modality_telemetry;
 use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
 
 fn infer_stub(kind: ModalityKind, stub_file: &str) {
-    let rt = InferenceRuntime::new(Box::new(CpuBackend::new()))
-        .with_loader(Box::new(StubModelLoader::default()));
-    let path = support::stubs_dir().join(stub_file);
+    let rt =
+        InferenceRuntime::new(Box::new(CpuBackend::new())).with_loader(Box::new(StubModelLoader));
+    let path = common::stubs_dir().join(stub_file);
     let model = rt.load_model(&path).unwrap();
     let inputs = sample_input(kind).unwrap();
     let mut session = rt.create_session();

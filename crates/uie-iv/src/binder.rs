@@ -13,7 +13,10 @@ pub struct Binder {
 }
 
 impl Binder {
-    pub fn bind_acceptance_profile(&mut self, profile: Arc<dyn AcceptanceProfile>) -> Result<(), IvError> {
+    pub fn bind_acceptance_profile(
+        &mut self,
+        profile: Arc<dyn AcceptanceProfile>,
+    ) -> Result<(), IvError> {
         if self.acceptance_profile.is_some() {
             return Err(IvError::Duplicate("acceptance_profile"));
         }

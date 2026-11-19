@@ -101,16 +101,16 @@ impl InferenceExecutor for GgufLlmExecutor {
             merge_gguf_metrics(telemetry, &result);
 
             let text_bytes = result.text.as_bytes().to_vec();
-        let mut text_buf = vec![0u8; MAX_NEW_TOKENS];
-        let copy_len = text_bytes.len().min(MAX_NEW_TOKENS);
-        text_buf[..copy_len].copy_from_slice(&text_bytes[..copy_len]);
+            let mut text_buf = vec![0u8; MAX_NEW_TOKENS];
+            let copy_len = text_bytes.len().min(MAX_NEW_TOKENS);
+            text_buf[..copy_len].copy_from_slice(&text_bytes[..copy_len]);
 
-        let mut out_ids = vec![PAD_TOKEN_ID; MAX_NEW_TOKENS];
-        let gen = result.token_ids;
-        let copy_ids = gen.len().min(MAX_NEW_TOKENS);
-        for (i, t) in gen.iter().take(copy_ids).enumerate() {
-            out_ids[i] = *t;
-        }
+            let mut out_ids = vec![PAD_TOKEN_ID; MAX_NEW_TOKENS];
+            let gen = result.token_ids;
+            let copy_ids = gen.len().min(MAX_NEW_TOKENS);
+            for (i, t) in gen.iter().take(copy_ids).enumerate() {
+                out_ids[i] = *t;
+            }
 
             Ok(vec![
                 Tensor::from_bytes(DataType::U8, Shape::new([MAX_NEW_TOKENS]), text_buf)?,

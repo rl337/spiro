@@ -1,7 +1,7 @@
 //! US-005
 use uie_acceptance::{assert_story_events, StoryEventLog};
 use uie_core::model::Graph;
-use uie_core::ops::{Op, OpKind};
+use uie_core::ops::Op;
 
 #[test]
 fn us_005_graph_to_plan_has_ops() {

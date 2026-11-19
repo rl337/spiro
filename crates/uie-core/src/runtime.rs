@@ -5,9 +5,9 @@ use tracing::{debug, instrument};
 
 use crate::backend::{Backend, Device};
 use crate::error::{Error, Result};
+use crate::infer::InferOutcome;
 use crate::model::{InferenceExecutor, InferenceModel, ModelLoader, ModelLoaderRegistry};
 use crate::ops::{Op, OpKind};
-use crate::infer::InferOutcome;
 use crate::tensor::{DataType, Shape, Tensor};
 use uie_telemetry::ExecutionRecorder;
 
@@ -101,13 +101,7 @@ impl InferenceRuntime {
         session: &mut Session<'_>,
         recorder: ExecutionRecorder,
     ) -> Result<InferOutcome> {
-        crate::infer::run_infer_with_trace(
-            self.backend.as_ref(),
-            model,
-            inputs,
-            session,
-            recorder,
-        )
+        crate::infer::run_infer_with_trace(self.backend.as_ref(), model, inputs, session, recorder)
     }
 
     #[instrument(skip(self, model, inputs, session, recorder), fields(backend = %self.backend.id()))]

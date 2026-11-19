@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """US-020 acceptance: Python client over Unix socket (optional spawn uie-serve)."""
+
 from __future__ import annotations
 
 import os
@@ -11,13 +12,12 @@ import sys
 import tempfile
 import time
 import unittest
-import json
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO / "python"))
 
-from uie_client import encode_frame, read_frame, roundtrip, UIE_PROTOCOL_VERSION  # noqa: E402
+from uie_client import UIE_PROTOCOL_VERSION, roundtrip  # noqa: E402
 
 
 def acceptance_mode() -> str:
@@ -43,9 +43,7 @@ class Us020IpcAcceptance(unittest.TestCase):
             Path(self.sock_path).unlink()
         bin_path = shutil.which("uie-serve")
         if bin_path is None:
-            bin_path = str(
-                REPO / "target/debug/uie-serve"
-            )
+            bin_path = str(REPO / "target/debug/uie-serve")
         env = {**os.environ, "UIE_SOCKET": self.sock_path}
         try:
             self._serve_proc = subprocess.Popen(

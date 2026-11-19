@@ -1,3 +1,6 @@
+//! Shared helpers for integration tests (each test binary may not use every item).
+#![allow(dead_code)]
+
 use std::path::PathBuf;
 
 mod composition {
@@ -39,4 +42,4 @@ pub fn skip_stub_in_live(test_name: &str) -> bool {
     true
 }
 
-use uie_acceptance::{is_ci_mode, is_live_mode};
+use uie_acceptance::is_ci_mode;

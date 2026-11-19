@@ -2,10 +2,10 @@ use std::env;
 use std::path::PathBuf;
 
 use uie_catalog::{expand_home, ModelCatalog, ModelRole, ModelRootsFile};
-use uie_loader_gguf::{complete_from_prompt, CompleteOptions, GgufModelLoader};
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::tensor::Tensor;
 use uie_core::InferenceRuntime;
+use uie_loader_gguf::{complete_from_prompt, CompleteOptions, GgufModelLoader};
 
 fn main() -> uie_core::Result<()> {
     tracing_subscriber::fmt::init();
@@ -37,8 +37,9 @@ fn main() -> uie_core::Result<()> {
     };
 
     if env::var("UIE_LLM_USE_RUNTIME").is_ok_and(|v| v == "1") {
-        let rt = InferenceRuntime::new(Box::new(CpuBackend::new()))
-            .with_loader(Box::new(GgufModelLoader::new().with_max_new_tokens(max_new)));
+        let rt = InferenceRuntime::new(Box::new(CpuBackend::new())).with_loader(Box::new(
+            GgufModelLoader::new().with_max_new_tokens(max_new),
+        ));
         let model = rt.load_model(&model_path)?;
         let prompt_t = uie_loader_gguf::prompt_tensor(&prompt, 4096)?;
         let mut session = rt.create_session();

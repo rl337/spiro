@@ -11,7 +11,7 @@ fn main() -> uie_core::Result<()> {
     let path = resolve_stub_path()?;
 
     let backend = Box::new(CpuBackend::new());
-    let runtime = InferenceRuntime::new(backend).with_loader(Box::new(StubModelLoader::default()));
+    let runtime = InferenceRuntime::new(backend).with_loader(Box::new(StubModelLoader));
     let model = runtime.load_model(&path)?;
     let kind = infer_kind_from_path(&path)?;
 

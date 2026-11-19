@@ -28,12 +28,10 @@ pub fn run_infer_with_trace(
         )));
     }
 
-    let mut rec = recorder
-        .with_backend(backend.id().to_string())
-        .with_model(
-            model.metadata().name.clone(),
-            model.metadata().format.clone(),
-        );
+    let mut rec = recorder.with_backend(backend.id().to_string()).with_model(
+        model.metadata().name.clone(),
+        model.metadata().format.clone(),
+    );
 
     let outputs = model.infer(inputs, &mut rec)?;
 

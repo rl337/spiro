@@ -9,8 +9,8 @@ use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
 #[test]
 fn us_004_session_bind_and_take() {
     let mut log = StoryEventLog::new("US-004");
-    let rt = InferenceRuntime::new(Box::new(CpuBackend::new()))
-        .with_loader(Box::new(StubModelLoader::default()));
+    let rt =
+        InferenceRuntime::new(Box::new(CpuBackend::new())).with_loader(Box::new(StubModelLoader));
     let mut session = rt.create_session();
     let t = Tensor::zeros(DataType::F32, Shape::new([1])).unwrap();
     session.bind("input", t);
@@ -19,8 +19,8 @@ fn us_004_session_bind_and_take() {
     assert!(session.take("input").is_some());
     log.record("session_take");
 
-    let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../models/stubs/llm.stub");
+    let path =
+        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../models/stubs/llm.stub");
     let model = rt.load_model(&path).unwrap();
     let inputs = sample_input(ModalityKind::LlmTextCompletion).unwrap();
     let outcome = rt

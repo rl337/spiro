@@ -29,11 +29,23 @@ Wiring CI vs live, loader chains, and host entrypoints is **DI-first**: bind in
 ## Running checks locally
 
 ```bash
+./scripts/rust-static-check.sh          # rustfmt + clippy (-D warnings)
+./scripts/python-static-check.sh        # ruff lint + format
 python3 scripts/verify-story-governance.py --skip-diff   # structure only
 python3 scripts/verify-story-governance.py             # includes check-in citation vs main
 python3 scripts/verify-di-first.py                      # DI-VERIFY-01 env-branch lint
 ./scripts/acceptance-ci.sh
 ```
+
+### CI on pull requests
+
+| Workflow | What |
+|----------|------|
+| [static-checks.yml](../.github/workflows/static-checks.yml) | Rust `fmt`/`clippy`, Python `ruff` |
+| [uie-acceptance-ci.yml](../.github/workflows/uie-acceptance-ci.yml) | Story governance + acceptance tests |
+| [bugbot-gate.yml](../.github/workflows/bugbot-gate.yml) | Waits for **Cursor Bugbot** App check |
+
+Enable Bugbot on the repo in [Cursor → Automations → Bugbot](https://cursor.com/docs/bugbot). Repo config: [`.cursor/config/bugbot.yaml`](../.cursor/config/bugbot.yaml).
 
 ## Pull requests
 

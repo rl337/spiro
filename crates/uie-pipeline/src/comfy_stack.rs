@@ -1,6 +1,5 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
-use uie_catalog::comfy::ComfyStackRef;
 use uie_catalog::{ModelCatalog, ModelEntry, ModelRole};
 
 use crate::byte_pipeline::PipelineHop;
@@ -16,13 +15,11 @@ pub struct ComfyPipelinePlan {
 pub fn build_comfy_byte_pipeline(
     catalog: &ModelCatalog,
     family: &str,
-    stub_fallback_dir: &PathBuf,
+    stub_fallback_dir: &Path,
 ) -> Option<ComfyPipelinePlan> {
     let entries: Vec<_> = catalog.registry().entries().to_vec();
     let stacks = uie_catalog::comfy::stack_candidates(&entries);
-    let stack = stacks
-        .into_iter()
-        .find(|s| s.family == family)?;
+    let stack = stacks.into_iter().find(|s| s.family == family)?;
 
     let mut hops = Vec::new();
 
@@ -68,11 +65,12 @@ fn push_hop(
     });
 }
 
-fn stub_fallback(name: &str, dir: &PathBuf) -> PathBuf {
+fn stub_fallback(name: &str, dir: &Path) -> PathBuf {
     dir.join(name)
 }
 
 /// Pick the first checkpoint family in the registry (for demos).
+#[allow(dead_code)]
 pub fn first_comfy_family(catalog: &ModelCatalog) -> Option<String> {
     catalog
         .registry()

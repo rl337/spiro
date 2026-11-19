@@ -28,9 +28,7 @@ impl Injector {
             acceptance_profile: binder
                 .acceptance_profile
                 .ok_or(IvError::Unbound("acceptance_profile"))?,
-            loader_set: binder
-                .loader_set
-                .ok_or(IvError::Unbound("loader_set"))?,
+            loader_set: binder.loader_set.ok_or(IvError::Unbound("loader_set"))?,
         })
     }
 

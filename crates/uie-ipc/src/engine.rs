@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 use tracing::{debug, info};
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::model::{InferenceExecutor, ModelLoader};
-use uie_core::{InferenceRuntime, Session};
+use uie_core::InferenceRuntime;
 use uie_telemetry::{ExecutionRecorder, TraceSummary};
 
 use crate::message::{InferRequest, IpcMessage, TensorPayload, PROTOCOL_VERSION};

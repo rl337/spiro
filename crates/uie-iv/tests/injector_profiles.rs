@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use uie_telemetry::{assert_story_events, StoryEventLog};
 use uie_iv::uie::loaders::{LiveLoaderSet, ModelLoaderSet, StubOnlyLoaderSet};
-use uie_iv::uie::profile::{AcceptanceProfile, CiAcceptanceProfile, LiveAcceptanceProfile};
 use uie_iv::uie::modules::{OverrideCiModule, OverrideLiveModule};
-use uie_iv::{Binder, Injector, Module};
+use uie_iv::uie::profile::{AcceptanceProfile, CiAcceptanceProfile, LiveAcceptanceProfile};
+use uie_iv::{Binder, Injector};
+use uie_telemetry::{assert_story_events, StoryEventLog};
 
 #[test]
 fn ci_profile_skips_live_tests() {
@@ -37,12 +37,15 @@ fn loader_sets_stub_vs_live_chain() {
     let stub = StubOnlyLoaderSet;
     assert_eq!(stub.loaders().len(), 1);
     let live = LiveLoaderSet;
-    assert!(live.loaders().len() >= 1);
+    assert!(!live.loaders().is_empty());
 }
 
 #[test]
 fn binder_rejects_duplicate_profile() {
     let mut b = Binder::default();
-    b.bind_acceptance_profile(Arc::new(CiAcceptanceProfile)).unwrap();
-    assert!(b.bind_acceptance_profile(Arc::new(LiveAcceptanceProfile)).is_err());
+    b.bind_acceptance_profile(Arc::new(CiAcceptanceProfile))
+        .unwrap();
+    assert!(b
+        .bind_acceptance_profile(Arc::new(LiveAcceptanceProfile))
+        .is_err());
 }

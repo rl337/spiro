@@ -1,9 +1,7 @@
 use uie_core::error::Result;
 use uie_core::tensor::{Shape, Tensor};
 
-use crate::conventions::{
-    DIFFUSION_HEIGHT, DIFFUSION_WIDTH, JUDGE_NUM_LABELS, PAD_TOKEN_ID,
-};
+use crate::conventions::{DIFFUSION_HEIGHT, DIFFUSION_WIDTH, JUDGE_NUM_LABELS, PAD_TOKEN_ID};
 
 pub fn token_ids_blank(seq_len: usize) -> Result<Tensor> {
     let ids = vec![PAD_TOKEN_ID; seq_len];

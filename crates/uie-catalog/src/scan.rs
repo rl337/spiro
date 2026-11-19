@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use tracing::{debug, warn};
 use walkdir::WalkDir;
@@ -73,7 +73,7 @@ fn classify_file(
     }
 }
 
-fn classify_generic(root_id: &str, base: &Path, path: &Path, rel_str: &str) -> Option<ModelEntry> {
+fn classify_generic(root_id: &str, _base: &Path, path: &Path, rel_str: &str) -> Option<ModelEntry> {
     let format = extension_format(path)?;
     let id = format!("{root_id}:{rel_str}");
     Some(ModelEntry {

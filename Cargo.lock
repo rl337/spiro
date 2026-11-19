@@ -1799,6 +1799,7 @@ dependencies = [
  "uie-loader-gguf",
  "uie-loader-onnx",
  "uie-stub-models",
+ "uie-telemetry",
 ]
 
 [[package]]
@@ -1868,6 +1869,7 @@ version = "0.1.0"
 dependencies = [
  "tracing",
  "tracing-subscriber",
+ "uie-core",
  "uie-ipc",
  "uie-iv",
  "uie-stub-models",

@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use crate::registry::{ModelEntry, ModelFormat, ModelRole};
 use crate::scan::{extension_format, id_from_rel};

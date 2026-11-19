@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use uie_ipc::{ByteChannel, IpcMessage, InProcessChannel, InferenceEngineHost, TensorPayload};
+use uie_ipc::{ByteChannel, InProcessChannel, InferenceEngineHost, IpcMessage, TensorPayload};
 use uie_pipeline::{ByteChannelPipelineRunner, PipelineHop};
 use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
 
@@ -21,13 +21,12 @@ fn us_022_byte_channel_two_stub_hops() {
             model_path: stubs.join("llm.stub"),
         },
     ];
-    let mut runner =
-        ByteChannelPipelineRunner::from_loaders(vec![Box::new(StubModelLoader::default())], hops);
+    let mut runner = ByteChannelPipelineRunner::from_loaders(vec![Box::new(StubModelLoader)], hops);
     let inputs = sample_input(ModalityKind::LlmTextCompletion).unwrap();
     let out = runner.run_tensors("pipe", &[inputs[0].clone()]).unwrap();
     assert!(!out.is_empty());
 
-    let host = InferenceEngineHost::new(vec![Box::new(StubModelLoader::default())]);
+    let host = InferenceEngineHost::new(vec![Box::new(StubModelLoader)]);
     let mut ch = InProcessChannel::new(host);
     let payloads = vec![TensorPayload::from_tensor("input_ids", &inputs[0]).unwrap()];
     let resp = ch

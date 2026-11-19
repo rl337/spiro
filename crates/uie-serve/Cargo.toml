@@ -16,6 +16,7 @@ live-onnx = ["uie-iv/live-onnx"]
 gguf = ["uie-iv/gguf"]
 
 [dependencies]
+uie-core = { path = "../uie-core" }
 uie-iv = { path = "../uie-iv" }
 uie-ipc = { path = "../uie-ipc" }
 uie-stub-models = { path = "../uie-stub-models" }

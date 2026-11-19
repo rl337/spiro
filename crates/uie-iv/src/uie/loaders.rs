@@ -19,7 +19,7 @@ impl ModelLoaderSet for StubOnlyLoaderSet {
     }
 
     fn loaders(&self) -> Vec<Box<dyn ModelLoader>> {
-        vec![Box::new(StubModelLoader::default())]
+        vec![Box::new(StubModelLoader)]
     }
 }
 
@@ -32,7 +32,8 @@ impl ModelLoaderSet for LiveLoaderSet {
     }
 
     fn loaders(&self) -> Vec<Box<dyn ModelLoader>> {
-        let mut chain: Vec<Box<dyn ModelLoader>> = vec![Box::new(StubModelLoader::default())];
+        #[allow(unused_mut)]
+        let mut chain: Vec<Box<dyn ModelLoader>> = vec![Box::new(StubModelLoader)];
         #[cfg(feature = "live-onnx")]
         {
             chain.push(Box::new(uie_loader_onnx::OnnxModelLoader::new()));

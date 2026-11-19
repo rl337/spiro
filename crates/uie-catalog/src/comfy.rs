@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::registry::{ModelEntry, ModelFormat, ModelRole};
+use crate::registry::{ModelEntry, ModelRole};
 use crate::scan::{extension_format, id_from_rel};
 
 /// Map ComfyUI folder names to roles (see Comfy `folder_paths.py`).
