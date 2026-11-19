@@ -1,0 +1,14 @@
+[package]
+name = "uie-stub-models"
+description = "Placeholder inference executors for each UIE modality (blank outputs)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+uie-core = { path = "../uie-core" }
+thiserror = "2.0"
+tracing.workspace = true
+
+[dev-dependencies]

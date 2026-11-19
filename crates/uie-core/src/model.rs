@@ -1,9 +1,10 @@
 use std::path::{Path, PathBuf};
 
 use crate::backend::Backend;
-use crate::error::Result;
+use crate::error::{Error, Result};
 use crate::ops::Op;
 use crate::runtime::ExecutionPlan;
+use crate::tensor::{DataType, Shape, Tensor};
 
 #[derive(Debug, Clone, Default)]
 pub struct ModelMetadata {
@@ -12,7 +13,25 @@ pub struct ModelMetadata {
     pub ops: usize,
 }
 
-/// Loaded model ready for inference sessions.
+#[derive(Debug, Clone)]
+pub struct IoSpec {
+    pub name: String,
+    pub shape: Shape,
+    pub dtype: DataType,
+}
+
+/// End-to-end inference (ONNX, GGUF, etc.).
+pub trait InferenceExecutor: Send + Sync {
+    fn metadata(&self) -> &ModelMetadata;
+
+    fn inputs(&self) -> &[IoSpec];
+
+    fn outputs(&self) -> &[IoSpec];
+
+    fn infer(&self, inputs: &[Tensor]) -> Result<Vec<Tensor>>;
+}
+
+/// Graph / op-plan representation (scaffold path).
 pub trait InferenceModel: Send + Sync {
     fn metadata(&self) -> &ModelMetadata;
 
@@ -25,7 +44,7 @@ pub trait ModelLoader: Send + Sync {
 
     fn can_load(&self, path: &Path) -> bool;
 
-    fn load(&self, path: &Path, backend: &dyn Backend) -> Result<Box<dyn InferenceModel>>;
+    fn load(&self, path: &Path, backend: &dyn Backend) -> Result<Box<dyn InferenceExecutor>>;
 }
 
 /// In-memory model built from an execution plan (scaffold default).
@@ -79,5 +98,33 @@ impl Graph {
         ExecutionPlan {
             ops: self.ops.clone(),
         }
+    }
+}
+
+/// Loader registry: pick the first loader that recognizes the path.
+#[derive(Default)]
+pub struct ModelLoaderRegistry {
+    loaders: Vec<Box<dyn ModelLoader>>,
+}
+
+impl ModelLoaderRegistry {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn register(&mut self, loader: Box<dyn ModelLoader>) {
+        self.loaders.push(loader);
+    }
+
+    pub fn load(&self, path: &Path, backend: &dyn Backend) -> Result<Box<dyn InferenceExecutor>> {
+        for loader in &self.loaders {
+            if loader.can_load(path) {
+                return loader.load(path, backend);
+            }
+        }
+        Err(Error::ModelLoad(format!(
+            "no loader registered for {}",
+            path.display()
+        )))
     }
 }

@@ -1,0 +1,17 @@
+[package]
+name = "uie-mnist"
+description = "MNIST digit classification demo via uie-loader-onnx"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "uie-mnist"
+path = "src/main.rs"
+
+[dependencies]
+uie-core = { path = "../uie-core" }
+uie-loader-onnx = { path = "../uie-loader-onnx" }
+tracing = { workspace = true }
+tracing-subscriber = "0.3"

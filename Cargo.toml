@@ -2,7 +2,11 @@
 resolver = "2"
 members = [
     "crates/uie-core",
+    "crates/uie-loader-onnx",
+    "crates/uie-mnist",
     "crates/uie-spiro",
+    "crates/uie-stub-models",
+    "crates/uie-stubs",
 ]
 default-members = ["crates/uie-spiro"]
 
@@ -11,8 +15,10 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "."
-rust-version = "1.75"
+rust-version = "1.88"
 
 [workspace.dependencies]
 thiserror = "2.0"
 tracing = "0.1"
+ndarray = "0.16"
+tract-onnx = "0.21"

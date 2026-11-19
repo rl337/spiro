@@ -14,7 +14,9 @@ pub mod tensor;
 pub use backend::cpu::CpuBackend;
 pub use backend::{Backend, BackendId, Device, DeviceKind};
 pub use error::{Error, Result};
-pub use model::{InferenceModel, ModelLoader, ModelMetadata};
+pub use model::{
+    InferenceExecutor, InferenceModel, IoSpec, ModelLoader, ModelLoaderRegistry, ModelMetadata,
+};
 pub use ops::{Op, OpKind};
 pub use runtime::{ExecutionPlan, InferenceRuntime, Session, SessionConfig};
 pub use tensor::{DataType, Shape, Tensor, TensorView};

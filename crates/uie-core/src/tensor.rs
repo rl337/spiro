@@ -108,6 +108,92 @@ impl Tensor {
             data: &self.data,
         }
     }
+
+    pub fn from_i32_slice(shape: Shape, values: &[i32]) -> Result<Self> {
+        if shape.num_elements() != values.len() {
+            return Err(Error::InvalidShape(format!(
+                "shape {:?} has {} elements, got {}",
+                shape.dims(),
+                shape.num_elements(),
+                values.len()
+            )));
+        }
+        let bytes: Vec<u8> = values.iter().flat_map(|v| v.to_le_bytes()).collect();
+        Self::from_bytes(DataType::I32, shape, bytes)
+    }
+
+    pub fn as_i32_slice(&self) -> Result<&[i32]> {
+        if self.dtype() != DataType::I32 {
+            return Err(Error::DtypeMismatch {
+                expected: DataType::I32,
+                got: self.dtype(),
+            });
+        }
+        let data = self.as_bytes();
+        if !data.len().is_multiple_of(4) {
+            return Err(Error::InvalidShape("i32 buffer length not aligned".into()));
+        }
+        Ok(bytemuck::cast_slice(data))
+    }
+
+    pub fn from_f32_slice(shape: Shape, values: &[f32]) -> Result<Self> {
+        if shape.num_elements() != values.len() {
+            return Err(Error::InvalidShape(format!(
+                "shape {:?} has {} elements, got {}",
+                shape.dims(),
+                shape.num_elements(),
+                values.len()
+            )));
+        }
+        let bytes: Vec<u8> = values.iter().flat_map(|v| v.to_le_bytes()).collect();
+        Self::from_bytes(DataType::F32, shape, bytes)
+    }
+
+    pub fn zeros(dtype: DataType, shape: Shape) -> Result<Self> {
+        Self::empty(dtype, shape)
+    }
+
+    pub fn like_zeros(template: &Self) -> Result<Self> {
+        Self::empty(template.dtype(), template.shape().clone())
+    }
+
+    /// UTF-8 payload in a 1-D `U8` tensor (may be empty).
+    pub fn text_tensor(text: &str) -> Result<Self> {
+        let bytes = text.as_bytes();
+        Self::from_bytes(DataType::U8, Shape::new([bytes.len().max(1)]), {
+            let mut out = bytes.to_vec();
+            if out.is_empty() {
+                out.push(0);
+            }
+            out
+        })
+    }
+
+    pub fn as_text(&self) -> Result<String> {
+        if self.dtype() != DataType::U8 {
+            return Err(Error::DtypeMismatch {
+                expected: DataType::U8,
+                got: self.dtype(),
+            });
+        }
+        let bytes = self.as_bytes();
+        let trimmed = if bytes == [0] { &[][..] } else { bytes };
+        String::from_utf8(trimmed.to_vec()).map_err(|e| Error::InvalidShape(e.to_string()))
+    }
+
+    pub fn as_f32_slice(&self) -> Result<&[f32]> {
+        if self.dtype != DataType::F32 {
+            return Err(Error::DtypeMismatch {
+                expected: DataType::F32,
+                got: self.dtype,
+            });
+        }
+        let data = self.as_bytes();
+        if !data.len().is_multiple_of(4) {
+            return Err(Error::InvalidShape("f32 buffer length not aligned".into()));
+        }
+        Ok(bytemuck::cast_slice(data))
+    }
 }
 
 #[derive(Debug, Clone)]
