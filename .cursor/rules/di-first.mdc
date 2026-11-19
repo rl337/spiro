@@ -1,0 +1,33 @@
+---
+description: Spiro UIE is uie-iv / pyiv dependency-injection-first — modules and composition roots, not env conditionals
+alwaysApply: true
+---
+
+# DI-first (uie-iv / pyiv)
+
+Default path is **[`uie-iv`](../../crates/uie-iv/README.md)** (Guice / [pyiv](https://github.com/rl337/pyiv) style).
+New shared services, loader chains, and CI vs live wiring go through **`Module` +
+`Binder` + `Injector`**, not scattered `if live` or raw `UIE_*` env checks.
+
+- Register bindings in `Module::install` (`AcceptanceEnvModule`, `ServeEnvModule`, test overrides).
+- Consume via [`uie_acceptance::composition`](../../crates/uie-acceptance/src/composition.rs) or an explicit `Injector::from_modules`.
+- Do **not** add string registries, service locators, or duplicate static graphs outside `uie-iv`.
+- Domain crates (`uie-core`, modality engines, IPC) stay **injector-agnostic**; only composition roots import `uie-iv`.
+- Tests force CI/live with `OverrideCiModule` / `OverrideLiveModule`, not by flipping env mid-test.
+- Injectables **own** their config (paths, URLs, credentials). Do not grow ambient global settings bags.
+
+Normative detail: [`docs/requirements/dependency-injection.md`](../../docs/requirements/dependency-injection.md).
+Workflow: [`.cursor/skills/di-config-ownership/SKILL.md`](../skills/di-config-ownership/SKILL.md).
+
+```rust
+// BAD — call-site env branch
+if std::env::var("UIE_ACCEPTANCE_MODE").unwrap_or_default() == "live" { ... }
+
+// GOOD — injected profile
+if injector().acceptance_profile().skip_live_test("live_us_009") {
+    return;
+}
+
+// GOOD — test override, no env
+let inj = Injector::from_modules(&[&OverrideCiModule]).unwrap();
+```

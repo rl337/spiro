@@ -17,6 +17,10 @@
 3. `ServeEnvModule` reads `UIE_SERVE_PROFILE` for `uie-serve`.
 4. Tests override with `OverrideCiModule` / `OverrideLiveModule` (pyiv test doubles).
 
+## Requirements
+
+Normative DI-first rules: [`docs/requirements/dependency-injection.md`](../requirements/dependency-injection.md) (aligned with [rl337/project-template](https://github.com/rl337/project-template) `di-first`).
+
 ## Related stories
 
 - [US-007](./007-models-loaders.md) — loader chain

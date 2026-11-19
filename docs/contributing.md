@@ -18,11 +18,20 @@ CI runs [`scripts/verify-story-governance.py`](../scripts/verify-story-governanc
 
 Agents must follow [.cursor/skills/uie-user-stories/SKILL.md](../.cursor/skills/uie-user-stories/SKILL.md).
 
+## Dependency injection (pyiv / uie-iv first)
+
+Wiring CI vs live, loader chains, and host entrypoints is **DI-first**: bind in
+[`uie-iv`](../crates/uie-iv/README.md) modules and consume via
+[`composition::injector`](../crates/uie-acceptance/src/composition.rs). Normative rules:
+[`docs/requirements/dependency-injection.md`](requirements/dependency-injection.md),
+[`.cursor/rules/di-first.mdc`](../.cursor/rules/di-first.mdc).
+
 ## Running checks locally
 
 ```bash
 python3 scripts/verify-story-governance.py --skip-diff   # structure only
 python3 scripts/verify-story-governance.py             # includes check-in citation vs main
+python3 scripts/verify-di-first.py                      # DI-VERIFY-01 env-branch lint
 ./scripts/acceptance-ci.sh
 ```
 
