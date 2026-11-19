@@ -7,5 +7,6 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+bytemuck = { version = "1.25", features = ["extern_crate_std"] }
 thiserror.workspace = true
 tracing.workspace = true

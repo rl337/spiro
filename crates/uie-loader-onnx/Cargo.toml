@@ -1,0 +1,14 @@
+[package]
+name = "uie-loader-onnx"
+description = "ONNX ModelLoader for UIE (CPU via tract)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+ndarray = "0.16"
+tract-onnx = "0.21"
+uie-core = { path = "../uie-core" }
+thiserror.workspace = true
+tracing.workspace = true

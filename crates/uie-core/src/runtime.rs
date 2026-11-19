@@ -1,10 +1,11 @@
 use std::collections::HashMap;
+use std::path::Path;
 
 use tracing::{debug, instrument};
 
 use crate::backend::{Backend, Device};
 use crate::error::{Error, Result};
-use crate::model::InferenceModel;
+use crate::model::{InferenceExecutor, InferenceModel, ModelLoader, ModelLoaderRegistry};
 use crate::ops::{Op, OpKind};
 use crate::tensor::{DataType, Shape, Tensor};
 
@@ -58,11 +59,24 @@ impl<'a> Session<'a> {
 
 pub struct InferenceRuntime {
     backend: Box<dyn Backend>,
+    loaders: ModelLoaderRegistry,
 }
 
 impl InferenceRuntime {
     pub fn new(backend: Box<dyn Backend>) -> Self {
-        Self { backend }
+        Self {
+            backend,
+            loaders: ModelLoaderRegistry::new(),
+        }
+    }
+
+    pub fn with_loader(mut self, loader: Box<dyn ModelLoader>) -> Self {
+        self.loaders.register(loader);
+        self
+    }
+
+    pub fn register_loader(&mut self, loader: Box<dyn ModelLoader>) {
+        self.loaders.register(loader);
     }
 
     pub fn backend(&self) -> &dyn Backend {
@@ -71,6 +85,33 @@ impl InferenceRuntime {
 
     pub fn create_session(&self) -> Session<'_> {
         Session::new(self.backend.as_ref())
+    }
+
+    pub fn load_model(&self, path: &Path) -> Result<Box<dyn InferenceExecutor>> {
+        self.loaders.load(path, self.backend.as_ref())
+    }
+
+    #[instrument(skip(self, model, inputs, session), fields(backend = %self.backend.id()))]
+    pub fn infer(
+        &self,
+        model: &dyn InferenceExecutor,
+        inputs: &[Tensor],
+        session: &mut Session<'_>,
+    ) -> Result<Vec<Tensor>> {
+        if inputs.len() != model.inputs().len() {
+            return Err(Error::Runtime(format!(
+                "expected {} inputs, got {}",
+                model.inputs().len(),
+                inputs.len()
+            )));
+        }
+        let outputs = model.infer(inputs)?;
+        for (i, spec) in model.outputs().iter().enumerate() {
+            if let Some(tensor) = outputs.get(i) {
+                session.bind(spec.name.clone(), tensor.clone());
+            }
+        }
+        Ok(outputs)
     }
 
     #[instrument(skip(self, model, session), fields(backend = %self.backend.id()))]
