@@ -1,13 +1,14 @@
 # US-002: Representing data as tensors
 
 **Status:** shipped  
+**Personas:** Kenneth  
 **Crate / path:** `crates/uie-core/src/tensor.rs`
 
 ## User story
 
-**As a** workload author  
+**As** Kenneth, learning how the engine stores data  
 **I want** one way to describe multi-dimensional data and its element type  
-**So that** the Spirograph canvas, MNIST digits, and future model weights all use the same container.
+**So that** the Spirograph canvas, MNIST digits, and future model weights all use the same container I can memorize once.
 
 ## In plain terms
 

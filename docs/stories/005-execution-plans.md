@@ -1,11 +1,12 @@
 # US-005: Execution plans from graphs
 
 **Status:** shipped (scaffold; full op wiring incomplete)  
+**Personas:** Frank  
 **Crate / path:** `crates/uie-core/src/model.rs`, `runtime.rs`
 
 ## User story
 
-**As a** future graph compiler author  
+**As** Frank, who is fine experimenting with half-built graph machinery  
 **I want** an ordered list of operations the runtime can walk  
 **So that** plan-based models run the same way as imported ONNX graphs will eventually decompose.
 

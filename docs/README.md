@@ -7,6 +7,7 @@ The **Universal Inference Engine (UIE)** is this repo’s Rust engine for runnin
 | Doc | Purpose |
 |-----|---------|
 | [Glossary](./glossary.md) | Short definitions for every bold term used in stories |
+| [Personas](./personas.md) | 30 Rock first names used in stories (Liz, Jack, …) |
 | [Story conventions](./story-conventions.md) | Story IDs, linking rules, how to add a new story |
 | [User stories index](./stories/README.md) | All scenarios, in learning order |
 

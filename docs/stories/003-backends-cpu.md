@@ -1,13 +1,14 @@
 # US-003: Running compute on the CPU backend
 
 **Status:** shipped (minimal operation set)  
+**Personas:** Pete  
 **Crate / path:** `crates/uie-core/src/backend.rs`, `backend/cpu.rs`
 
 ## User story
 
-**As a** runtime user  
+**As** Pete, trying to ship something on a normal laptop  
 **I want** a default backend that works everywhere  
-**So that** I can run demos and tests without a GPU or extra SDKs.
+**So that** I can run demos and tests without a GPU or extra SDKs on anyone’s machine.
 
 ## In plain terms
 

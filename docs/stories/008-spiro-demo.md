@@ -1,13 +1,14 @@
 # US-008: Spirograph demo workload
 
 **Status:** shipped  
+**Personas:** Tracy, Jenna  
 **Crate / path:** `crates/uie-spiro`, `spiro.py`
 
 ## User story
 
-**As a** visitor to the repo  
+**As** Tracy, who needs something eye-catching—and **as** Jenna, who judges the final picture  
 **I want** to run the classic Spirograph drawing through UIE  
-**So that** I can see tensors, runtime, and sessions used for something visual—not only ML jargon.
+**So that** we see tensors, runtime, and sessions doing something visual—not only ML jargon—and get a JPEG worth showing off.
 
 ## In plain terms
 

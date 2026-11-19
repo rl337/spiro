@@ -10,12 +10,15 @@ Stories live under [`docs/stories/`](./stories/). Each file is named `NNN-short-
 # US-0NN: Human title
 
 **Status:** shipped | partial | planned
+**Personas:** Liz | Jack | … (see [personas](./personas.md))
 **Crate / path:** where the code lives
 ```
 
+Use [30 Rock personas](./personas.md) in the *As a …* line (first name only, e.g. **Liz**, **Kenneth**). List every persona in the **Personas** metadata line.
+
 ## Required sections
 
-1. **User story** — *As a … I want … so that …*
+1. **User story** — *As a … I want … so that …* (persona name in *As a*)
 2. **In plain terms** — what happens step by step
 3. **Related stories** — links to other `US-*` files
 4. **Terms used** — bullet list linking into the [glossary](./glossary.md)

@@ -1,13 +1,14 @@
 # US-007: Models, loaders, and registries
 
 **Status:** partial (traits shipped; ONNX loader integrating)  
+**Personas:** Jack, Liz  
 **Crate / path:** `crates/uie-core/src/model.rs`
 
 ## User story
 
-**As a** user with a model file on disk  
+**As** Jack, handing off a model file—and **as** Liz, wiring it into the engine  
 **I want** the runtime to pick the right loader and run the model  
-**So that** I add new formats in separate crates without editing the core.
+**So that** we add new formats in separate crates without Liz editing the core every time Jack changes vendors.
 
 ## In plain terms
 

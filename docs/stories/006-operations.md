@@ -1,11 +1,12 @@
 # US-006: Operations in the graph
 
 **Status:** shipped (scaffold)  
+**Personas:** Toofer  
 **Crate / path:** `crates/uie-core/src/ops.rs`
 
 ## User story
 
-**As a** person defining or importing a compute graph  
+**As** Toofer, who cares that every step is labeled correctly  
 **I want** each step labeled with a kind, name, and tensor shapes  
 **So that** backends know what to implement and logs remain readable.
 

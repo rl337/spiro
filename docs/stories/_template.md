@@ -1,11 +1,12 @@
 # US-0NN: Title
 
 **Status:** planned  
+**Personas:** Liz  
 **Crate / path:** `crates/...`
 
 ## User story
 
-**As a** …  
+**As a** Liz (example)  
 **I want** …  
 **So that** …
 

@@ -1,11 +1,12 @@
 # US-004: Runtime and named sessions
 
 **Status:** shipped  
+**Personas:** Liz  
 **Crate / path:** `crates/uie-core/src/runtime.rs`
 
 ## User story
 
-**As a** developer orchestrating a run  
+**As** Liz, orchestrating a run in the repo she maintains  
 **I want** a runtime that owns the backend and a session that holds named tensors  
 **So that** I can load a model, bind `"input"`, and fetch `"output"` without manual pointer juggling.
 

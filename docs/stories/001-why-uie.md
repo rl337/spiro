@@ -1,13 +1,14 @@
 # US-001: Why UIE exists
 
 **Status:** shipped  
+**Personas:** Liz, Jack  
 **Crate / path:** workspace root, `README.md`
 
 ## User story
 
-**As a** developer who started with a Spirograph art script  
+**As** Liz, who inherited a Spirograph art script—and **as** Jack, who wants one platform for demos and models  
 **I want** a single Rust engine that can run both toy workloads and real models  
-**So that** demos and inference share the same concepts instead of one-off scripts.
+**So that** Liz is not maintaining parallel scripts and Jack sees one scalable story for the team.
 
 ## In plain terms
 

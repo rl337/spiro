@@ -1,13 +1,14 @@
 # US-009: ONNX MNIST digit classification
 
 **Status:** partial (model vendored; loader crate in progress)  
+**Personas:** Liz, Kenneth  
 **Crate / path:** `models/mnist-8.onnx`, `crates/uie-loader-onnx`, `crates/uie-mnist`
 
 ## User story
 
-**As a** developer learning UIE  
+**As** Liz, validating the engine—and **as** Kenneth, running his first “real” model  
 **I want** a tiny, well-known neural net I can load and run from the CLI  
-**So that** I verify [model loaders](./007-models-loaders.md) and [inference](./004-runtime-sessions.md) on real weights—not only the Spirograph.
+**So that** we verify [model loaders](./007-models-loaders.md) and [inference](./004-runtime-sessions.md) on real weights—not only the Spirograph.
 
 ## In plain terms
 
