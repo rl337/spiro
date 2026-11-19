@@ -42,6 +42,7 @@
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_021_model_registry.rs` | `cargo test -p uie-acceptance --test us_021_model_registry` |
 | Rust | `crates/uie-catalog/tests/scan.rs` | `cargo test -p uie-catalog` |
+| Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance --test live_models live_us_021` |
 
 ## Observability
 

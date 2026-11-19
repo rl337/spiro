@@ -54,6 +54,7 @@ The [model loader registry](../glossary.md#model-loader-registry) on the [runtim
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_007_model_loader.rs` | `cargo test -p uie-acceptance --test us_007_model_loader` |
+| Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance live_us_007_load_path_from_env` |
 
 ## Observability
 

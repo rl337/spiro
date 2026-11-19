@@ -58,8 +58,13 @@ def verify_coverage(cfg: dict) -> list[str]:
     markers = cfg.get("observability_markers") or []
     stories = cfg.get("stories") or {}
 
+    checked: set[str] = set()
     for story_id, meta in stories.items():
-        for rel in meta.get("acceptance") or []:
+        paths = (meta.get("acceptance") or []) + (meta.get("supplemental_acceptance") or [])
+        for rel in paths:
+            if rel in checked:
+                continue
+            checked.add(rel)
             path = REPO / rel
             if not path.is_file():
                 errors.append(f"{story_id}: missing acceptance file {rel}")

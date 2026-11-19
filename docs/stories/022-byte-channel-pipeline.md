@@ -39,6 +39,7 @@
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_022_byte_pipeline.rs` | `cargo test -p uie-acceptance --test us_022_byte_pipeline` |
 | Rust | `crates/uie-pipeline/tests/byte_stack.rs` | `cargo test -p uie-pipeline` |
+| Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance --test live_models live_us_022` |
 
 ## Observability
 

@@ -146,6 +146,7 @@ impl InferenceExecutor for StubExecutor {
     }
 
     fn infer(&self, inputs: &[Tensor], telemetry: &mut ExecutionRecorder) -> Result<Vec<Tensor>> {
+        telemetry.tag_stub_executor(self.kind.id_str());
         telemetry.record_phase_ms(
             format!("stub_modality_{}", self.kind.id_str()),
             ComputeDevice::Cpu,

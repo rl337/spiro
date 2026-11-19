@@ -47,6 +47,16 @@ impl ExecutionRecorder {
         self
     }
 
+    /// Direct executor calls (no runtime) still tag stub/format for acceptance traces.
+    pub fn tag_stub_executor(&mut self, model_name: impl Into<String>) {
+        if self.model_format.is_none() {
+            self.model_format = Some("stub".into());
+        }
+        if self.model_name.is_none() {
+            self.model_name = Some(model_name.into());
+        }
+    }
+
     pub fn metrics_mut(&mut self) -> &mut InferMetrics {
         &mut self.metrics
     }

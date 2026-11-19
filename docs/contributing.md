@@ -13,6 +13,7 @@ CI runs [`scripts/verify-story-governance.py`](../scripts/verify-story-governanc
 
 - Every `US-*` in [`config/story_governance.yaml`](../config/story_governance.yaml) has on-disk acceptance sources.
 - Those sources contain an observability marker (telemetry or event capture).
+- Optional **`supplemental_acceptance`** paths in `story_governance.yaml` (e.g. `live_models.rs`, `deterministic_policy.rs`) are checked the same way.
 - On pull requests, changed paths under `crates/`, `python/`, `models/`, or `docs/stories/` must be justified by a cited `US-0NN` in recent commits and/or an edited story file.
 
 Agents must follow [.cursor/skills/uie-user-stories/SKILL.md](../.cursor/skills/uie-user-stories/SKILL.md).

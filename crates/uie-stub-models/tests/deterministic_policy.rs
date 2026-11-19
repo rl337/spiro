@@ -6,8 +6,8 @@ use uie_core::InferenceExecutor;
 use uie_core::tensor::{Shape, Tensor};
 use uie_telemetry::ExecutionRecorder;
 use uie_stub_models::{
-    infer_blank, BlankPolicy, ModalityKind, RuleStubPolicy, StubExecutor, StubMatcher, StubPolicy,
-    MAX_ASR_TEXT_TOKENS, MAX_NEW_TOKENS,
+    infer_blank, telemetry_assert::assert_stub_executor_telemetry, BlankPolicy, ModalityKind,
+    RuleStubPolicy, StubExecutor, StubMatcher, StubPolicy, MAX_ASR_TEXT_TOKENS, MAX_NEW_TOKENS,
 };
 
 fn token_ids(values: &[i32]) -> Tensor {
@@ -16,7 +16,10 @@ fn token_ids(values: &[i32]) -> Tensor {
 
 fn infer_stub(stub: &StubExecutor, inputs: &[Tensor]) -> Vec<Tensor> {
     let mut telem = ExecutionRecorder::new("deterministic-policy");
-    stub.infer(inputs, &mut telem).unwrap()
+    let out = stub.infer(inputs, &mut telem).unwrap();
+    let trace = telem.finish();
+    assert_stub_executor_telemetry(&trace);
+    out
 }
 
 #[test]

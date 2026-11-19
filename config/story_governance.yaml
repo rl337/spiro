@@ -55,18 +55,26 @@ stories:
   US-007:
     acceptance:
       - crates/uie-acceptance/tests/us_007_model_loader.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
   US-008:
     acceptance:
       - crates/uie-acceptance/tests/us_008_spiro.rs
   US-009:
     acceptance:
       - crates/uie-acceptance/tests/us_009_mnist.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
   US-010:
     acceptance:
       - crates/uie-acceptance/tests/us_010_019_modalities.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
   US-011:
     acceptance:
       - crates/uie-acceptance/tests/us_010_019_modalities.rs
+    supplemental_acceptance:
+      - crates/uie-stub-models/tests/deterministic_policy.rs
   US-012:
     acceptance:
       - crates/uie-acceptance/tests/us_010_019_modalities.rs
@@ -100,10 +108,14 @@ stories:
     acceptance:
       - crates/uie-acceptance/tests/us_021_model_registry.rs
       - crates/uie-catalog/tests/scan.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
   US-022:
     acceptance:
       - crates/uie-acceptance/tests/us_022_byte_pipeline.rs
       - crates/uie-pipeline/tests/byte_stack.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
   US-023:
     acceptance:
       - crates/uie-acceptance/tests/us_023_telemetry.rs

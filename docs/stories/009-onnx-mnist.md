@@ -55,6 +55,7 @@ See `models/README.md` for input/output shapes and license.
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_009_mnist.rs` | `cargo test -p uie-acceptance --test us_009_mnist` |
+| Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance --features live-onnx live_us_009_mnist_onnx_infer` |
 
 ## Observability
 
