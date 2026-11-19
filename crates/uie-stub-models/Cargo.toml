@@ -12,3 +12,8 @@ thiserror = "2.0"
 tracing.workspace = true
 
 [dev-dependencies]
+uie-core = { path = "../uie-core" }
+
+[[test]]
+name = "deterministic_policy"
+path = "tests/deterministic_policy.rs"

@@ -15,3 +15,10 @@ One line per file: modality id (see `uie_stub_models::ModalityKind`).
 | `image_to_image.stub` | I2I | `[1,3,512,512]` → `[1,3,512,512]` |
 
 Run: `cargo run -p uie-stubs -- models/stubs/llm.stub`
+
+## Test extensions
+
+Production stubs use [`BlankPolicy`](../../crates/uie-stub-models/src/policy.rs). Tests can attach
+[`RuleStubPolicy`](../../crates/uie-stub-models/src/policy.rs) via
+`StubExecutor::with_policy` to map inputs → expected outputs without changing blank defaults.
+See integration tests in `crates/uie-stub-models/tests/deterministic_policy.rs`.
