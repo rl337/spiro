@@ -49,4 +49,5 @@ A **modality** is the kind of data crossing the boundary: **text**, **image**, o
 
 | Runner | Path | Command |
 |--------|------|---------|
-| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities` |
+| Rust | `crates/uie-acceptance/tests/us_015_modality_catalog.rs` | `cargo test -p uie-acceptance --test us_015_modality_catalog` |
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | modality stub contracts US-010–019 |

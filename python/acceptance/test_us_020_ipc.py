@@ -104,6 +104,14 @@ class Us020IpcAcceptance(unittest.TestCase):
         }
         result = roundtrip(self.sock_path, infer)
         self.assertEqual(result.get("type"), "infer_result", result)
+        trace = result.get("trace")
+        self.assertIsNotNone(trace, "US-020: infer_result must include trace")
+        assert_ipc_infer_has_trace(trace, "US-020")
+
+
+def assert_ipc_infer_has_trace(trace: dict, story_id: str) -> None:
+    assert trace.get("run_id"), f"{story_id}: trace.run_id required"
+    assert "total_ms" in trace, f"{story_id}: trace.total_ms required"
 
 
 if __name__ == "__main__":

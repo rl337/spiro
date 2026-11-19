@@ -1,6 +1,16 @@
 # Acceptance tests
 
-Every [user story](./stories/README.md) (`US-0NN`) must have at least one automated acceptance test. Agents follow [.cursor/skills/uie-user-stories/SKILL.md](../.cursor/skills/uie-user-stories/SKILL.md).
+Every [user story](./stories/README.md) (`US-0NN`) must have at least one automated acceptance test **with a telemetry or event-capture assertion** relevant to that story. Check-ins must cite `US-0NN` in commit messages when touching product paths (see [contributing.md](./contributing.md)). Agents follow [.cursor/skills/uie-user-stories/SKILL.md](../.cursor/skills/uie-user-stories/SKILL.md).
+
+CI runs [`scripts/verify-story-governance.py`](../scripts/verify-story-governance.py) against [`config/story_governance.yaml`](../config/story_governance.yaml).
+
+### Observability in acceptance tests
+
+| Kind | When | Helpers |
+|------|------|---------|
+| Execution trace | `infer`, IPC `infer_result` | `uie_acceptance::assert_infer_outcome_trace`, `assert_ipc_infer_trace`, `uie_stub_models::telemetry_assert::assert_stub_executor_telemetry`, `uie_core::telemetry::assert_phases` |
+| Story events | Layout, registry scan, tensors without infer | `StoryEventLog`, `assert_story_events` |
+| Python IPC | US-020 | `assert_ipc_infer_has_trace` in `test_us_020_ipc.py` |
 
 ## Two modes
 
@@ -62,6 +72,7 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 |-------|-----------|------|--------|
 | US-001–008 | `us_001` … `us_008` | — | — |
 | US-009 | `us_009` fixture | `live_us_009_mnist_onnx_infer` (`live-onnx`) | — |
+| US-015 | `us_015_modality_catalog` | — | — |
 | US-010–019 | `us_010_019_modalities` | `UIE_LIVE_MODEL_PATH` via `live_us_007_*` | — |
 | US-020 | `us_020_byte_channel` | `UIE_LIVE_MODEL_PATH` + `test_us_020_ipc_live` | stub + live IPC |
 | US-021 | `us_021_model_registry` | `live_us_021_scan_*` | — |
@@ -78,7 +89,8 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 | US-007 | `us_007_model_loader.rs` | — | stub loader |
 | US-008 | `us_008_spiro.rs` | — | workload math |
 | US-009 | `us_009_mnist.rs` | — | fixture; live ONNX in `live_models.rs` |
-| US-010–019 | `us_010_019_modalities.rs` | — | stub I/O contracts |
+| US-015 | `us_015_modality_catalog.rs` | — | modality index |
+| US-010–019 | `us_010_019_modalities.rs` | — | stub I/O + telemetry |
 | US-020 | `us_020_byte_channel.rs` | `test_us_020_ipc.py`, `test_us_020_ipc_live.py` | |
 | US-021 | `us_021_model_registry.rs` | — | tempdir CI; real roots live |
 | US-022 | `us_022_byte_pipeline.rs` | — | multi-hop IPC |

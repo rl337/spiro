@@ -1,6 +1,7 @@
 //! US-020
 mod support;
 
+use uie_acceptance::assert_ipc_infer_trace;
 use uie_ipc::{ByteChannel, IpcMessage, PROTOCOL_VERSION, TensorPayload};
 use uie_ipc::{InferenceEngineHost, InProcessChannel};
 use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
@@ -24,5 +25,5 @@ fn us_020_in_process_infer_roundtrip() {
             inputs: payloads,
         })
         .unwrap();
-    assert!(matches!(resp, IpcMessage::InferResult { .. }));
+    assert_ipc_infer_trace(&resp, "US-020");
 }

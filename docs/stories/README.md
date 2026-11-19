@@ -39,7 +39,7 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 
 ## Acceptance tests
 
-See [acceptance-tests.md](../acceptance-tests.md). Every story must list at least one Rust or Python test in its **Acceptance tests** section.
+See [acceptance-tests.md](../acceptance-tests.md) and [contributing.md](../contributing.md). Every story must list at least one Rust or Python test in its **Acceptance tests** section, and that test must include telemetry or event-capture assertions (enforced by `scripts/verify-story-governance.py`).
 
 ## By crate
 

@@ -18,13 +18,14 @@ live-onnx = ["dep:uie-loader-onnx"]
 gguf = ["dep:uie-loader-gguf"]
 
 [dependencies]
+uie-core = { path = "../uie-core" }
+uie-ipc = { path = "../uie-ipc" }
+uie-telemetry = { path = "../uie-telemetry" }
 uie-loader-onnx = { path = "../uie-loader-onnx", optional = true }
 uie-loader-gguf = { path = "../uie-loader-gguf", optional = true }
 
 [dev-dependencies]
 uie-catalog = { path = "../uie-catalog" }
-uie-core = { path = "../uie-core" }
-uie-ipc = { path = "../uie-ipc" }
 uie-pipeline = { path = "../uie-pipeline" }
 uie-stub-models = { path = "../uie-stub-models" }
 serde_json = { workspace = true }
