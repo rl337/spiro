@@ -14,6 +14,8 @@ This repository began as a small Python Spirograph generator (`spiro.py`). It is
 | `crates/uie-ipc` | Byte-channel protocol + in-process / Unix transports |
 | `crates/uie-serve` | Long-running inference on a Unix domain socket |
 | `python/uie_client.py` | Minimal Python client for the socket API |
+| `crates/uie-loader-gguf` | US-010: GGUF text completions (LM Studio weights) |
+| `crates/uie-llm` | CLI: `list-gguf`, `--prompt` completion |
 | `Cargo.toml` | Rust workspace root |
 
 ## Quick start (Rust demo)
@@ -34,6 +36,17 @@ python3 python/uie_client.py --stub llm
 ```
 
 In-process tests use the same framing via `InProcessChannel` (`cargo test -p uie-ipc`). See [US-020](docs/stories/020-inference-byte-channel.md).
+
+## Text completion (LM Studio GGUF)
+
+```bash
+./scripts/build-gguf.sh
+cp config/model_roots.example.yaml config/model_roots.yaml   # if needed
+cargo run -p uie-llm -- list-gguf
+cargo run -p uie-llm -- --model "$UIE_GGUF_MODEL" --prompt "Hello"
+```
+
+See [US-010](docs/stories/010-llm-text-completions.md).
 
 ## Acceptance tests (per user story)
 

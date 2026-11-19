@@ -1,8 +1,8 @@
 # US-010: Large language models and text completions
 
-**Status:** planned  
+**Status:** partial (GGUF / LM Studio paths; GPU backends later)  
 **Personas:** Liz  
-**Crate / path:** future `uie-loader-*` / `uie-llm` (not shipped)
+**Crate / path:** `crates/uie-loader-gguf`, `crates/uie-llm`, `config/model_roots.yaml`
 
 ## User story
 
@@ -41,12 +41,20 @@ This is **text → text** [modality](./015-modality-catalog.md). It reuses the s
 
 ## Acceptance notes
 
-- **Today:** story only; no LLM loader in repo.
-- **Future acceptance:** `cargo run -p uie-llm -- --prompt "Hello"` prints a completion; docs cite this story.
-- **Dependencies:** tokenizer crate, KV-cache session extension ([US-004](./004-runtime-sessions.md)), likely GPU [backend](./003-backends-cpu.md) for real models.
+- **CI:** stub contract `us_010_llm_stub` (unchanged).
+- **Live (LM Studio GGUF):**
+  ```bash
+  ./scripts/build-gguf.sh
+  uie-llm list-gguf
+  UIE_GGUF_MODEL=~/.lmstudio/models/.../model.gguf \
+    cargo run -p uie-llm -- --prompt "The capital of France is"
+  ```
+- Registry id: `cargo run -p uie-llm -- --registry-id 'lmstudio:...' --prompt "Hello"`
+- **Dependencies:** llama.cpp via `llama-cpp-2`; Metal/CUDA via crate features on a laptop with GPU.
 
 ## Acceptance tests
 
 | Runner | Path | Command |
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_010_llm_stub` |
+| Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance --features gguf live_us_010_gguf_text_completion` |

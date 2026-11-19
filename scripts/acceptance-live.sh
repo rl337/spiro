@@ -2,7 +2,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 export UIE_ACCEPTANCE_MODE=live
-FEATURES="${UIE_ACCEPTANCE_FEATURES:-live-onnx}"
+FEATURES="${UIE_ACCEPTANCE_FEATURES:-gguf,live-onnx}"
+export CXX="${CXX:-g++}"
+export RUSTFLAGS="${RUSTFLAGS:-} -C linker=g++"
 cargo test -p uie-acceptance --features "$FEATURES"
 # Optional: also re-run stub suite
 if [[ "${UIE_ACCEPTANCE_RUN_STUBS_IN_LIVE:-}" == "1" ]]; then

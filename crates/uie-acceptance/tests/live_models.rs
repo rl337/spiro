@@ -151,6 +151,33 @@ fn live_us_009_mnist_onnx_infer() {
     assert_eq!(digit, 1, "fixture is digit one");
 }
 
+#[cfg(feature = "gguf")]
+#[test]
+fn live_us_010_gguf_text_completion() {
+    if support::skip_unless_live("live_us_010_gguf_text_completion") {
+        return;
+    }
+    let model_path = match std::env::var("UIE_GGUF_MODEL").or_else(|_| std::env::var("UIE_LIVE_MODEL_PATH")) {
+        Ok(p) => std::path::PathBuf::from(p),
+        Err(_) => {
+            eprintln!("skip: set UIE_GGUF_MODEL to a .gguf from LM Studio");
+            return;
+        }
+    };
+    if !model_path.is_file() {
+        eprintln!("skip: model not found {}", model_path.display());
+        return;
+    }
+    let prompt = std::env::var("UIE_LLM_PROMPT").unwrap_or_else(|_| "Say hi in one short sentence.".into());
+    let opts = uie_loader_gguf::CompleteOptions {
+        max_new_tokens: 24,
+        ..Default::default()
+    };
+    let out = uie_loader_gguf::complete_from_prompt(&model_path, &prompt, &opts).expect("complete");
+    eprintln!("completion: {}", out.text);
+    assert!(!out.token_ids.is_empty());
+}
+
 #[test]
 fn live_us_022_byte_pipeline_workspace_onnx_or_stub() {
     if support::skip_unless_live("live_us_022_byte_pipeline_workspace_onnx_or_stub") {

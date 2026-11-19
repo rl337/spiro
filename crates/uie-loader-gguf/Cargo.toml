@@ -1,0 +1,17 @@
+[package]
+name = "uie-loader-gguf"
+description = "GGUF LLM loader (llama.cpp) for US-010 text completions"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+uie-core = { path = "../uie-core" }
+uie-stub-models = { path = "../uie-stub-models" }
+llama-cpp-2 = { version = "0.1.161", default-features = false, features = ["sampler"] }
+thiserror.workspace = true
+tracing.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+encoding_rs = "0.8"
