@@ -2,6 +2,8 @@
 
 This repository began as a small Python Spirograph generator (`spiro.py`). It is being evolved into a **universal inference engine** written in Rust, with the original drawing retained as a reference workload.
 
+**Documentation:** user stories and a shared glossary live in [`docs/`](./docs/README.md) (`US-001` … `US-009`).
+
 ## Current layout
 
 | Path | Role |
