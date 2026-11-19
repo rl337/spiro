@@ -14,5 +14,5 @@ jobs:
       - name: Install native build deps (llama.cpp)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq build-essential cmake
       - run: cargo check -p uie-loader-onnx
-      - run: cargo check -p uie-mnist
+      - run: cargo test -p uie-mnist mnist_inference_digit_one
       - run: cargo check -p uie-loader-gguf -p uie-llm

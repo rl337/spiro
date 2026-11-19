@@ -1,6 +1,6 @@
 # US-023: Inference execution telemetry and traces
 
-**Status:** partial (core metrics + JSONL sink; GPU truth from loaders next)  
+**Status:** shipped (phase device tags + CPU/GPU time; GGUF GPU when env set)  
 **Personas:** Pete, Jack  
 **Crate / path:** `crates/uie-telemetry`, `uie-core::infer_with_trace`, IPC `trace` field
 
@@ -19,6 +19,7 @@
 4. GGUF completion fills metrics from real generation ([US-010](./010-llm-text-completions.md)).
 5. IPC [`InferResult`](./020-inference-byte-channel.md) includes optional `trace` summary for clients.
 6. Set `UIE_TRACE_JSONL=/path/traces.jsonl` to append full JSON traces for offline analysis (Twitter thread spreadsheet fuel).
+7. Native loaders tag phases with [`ComputeDevice`](../../crates/uie-telemetry): ONNX is CPU-only; GGUF sets GPU metrics only when `UIE_GGUF_GPU=1`.
 
 ## Related stories
 

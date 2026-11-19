@@ -71,3 +71,35 @@ fn us_023_trace_summary_serializes_for_ipc() {
     assert!(json.contains("total_ms"));
     assert_stub_executor_telemetry(&outcome.trace);
 }
+
+#[test]
+fn us_023_cpu_loader_phases_no_gpu_time() {
+    use uie_core::telemetry::ComputeDevice;
+
+    let rt =
+        InferenceRuntime::new(Box::new(CpuBackend::new())).with_loader(Box::new(StubModelLoader));
+    let path = common::stubs_dir().join("llm.stub");
+    let model = rt.load_model(&path).unwrap();
+    let inputs = sample_input(ModalityKind::LlmTextCompletion).unwrap();
+    let mut session = rt.create_session();
+    let outcome = rt
+        .infer(
+            model.as_ref(),
+            &inputs,
+            &mut session,
+            ExecutionRecorder::new("acc-023-cpu"),
+        )
+        .unwrap();
+
+    assert_stub_executor_telemetry(&outcome.trace);
+    assert!(
+        outcome
+            .trace
+            .phases
+            .iter()
+            .all(|p| p.device == ComputeDevice::Cpu),
+        "stub loader phases should be CPU-tagged"
+    );
+    assert!(outcome.trace.metrics.gpu_time_ms.is_none());
+    assert!(outcome.trace.metrics.cpu_time_ms > 0.0);
+}

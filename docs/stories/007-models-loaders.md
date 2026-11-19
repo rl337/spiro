@@ -1,6 +1,6 @@
 # US-007: Models, loaders, and registries
 
-**Status:** partial (traits shipped; ONNX loader integrating)  
+**Status:** shipped (registry + `InferenceExecutor`; ONNX via US-009)  
 **Personas:** Jack, Liz  
 **Crate / path:** `crates/uie-core/src/model.rs`
 

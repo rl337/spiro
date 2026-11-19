@@ -1,6 +1,6 @@
 # US-022: Multi-model pipelines via byte channel
 
-**Status:** partial (in-process hops; socket per-hop optional)  
+**Status:** shipped (in-process multi-hop CI; socket per-hop optional)  
 **Personas:** Tracy, Pete  
 **Crate / path:** `crates/uie-pipeline`
 

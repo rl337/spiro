@@ -14,7 +14,7 @@ Rust PRs MUST pass `cargo fmt --all --check` and `cargo clippy` with `-D warning
 
 Default `clippy` excludes optional native crates (`uie-loader-onnx`, `uie-loader-gguf`,
 `uie-llm`, `uie-mnist`). [`native-compile.yml`](../../.github/workflows/native-compile.yml)
-runs `cargo check` on those crates on every PR.
+runs `cargo check` on those crates on every PR, and **`cargo test -p uie-mnist mnist_inference_digit_one`** for vendored ONNX MNIST infer (US-009).
 
 ### VAL-02: Python static checks on every PR
 

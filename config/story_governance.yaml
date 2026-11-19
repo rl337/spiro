@@ -66,6 +66,7 @@ stories:
       - crates/uie-acceptance/tests/us_009_mnist.rs
     supplemental_acceptance:
       - crates/uie-acceptance/tests/live_models.rs
+      - crates/uie-mnist/src/main.rs
   US-010:
     acceptance:
       - crates/uie-acceptance/tests/us_010_019_modalities.rs

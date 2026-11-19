@@ -72,6 +72,7 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 |-------|-----------|------|--------|
 | US-001–008 | `us_001` … `us_008` | — | — |
 | US-009 | `us_009` fixture | `live_us_009_mnist_onnx_infer` (`live-onnx`) | — |
+| US-009 (native) | — | — | `native-compile.yml` → `cargo test -p uie-mnist mnist_inference_digit_one` |
 | US-015 | `us_015_modality_catalog` | — | — |
 | US-010–019 | `us_010_019_modalities` | `UIE_LIVE_MODEL_PATH` via `live_us_007_*` | — |
 | US-020 | `us_020_byte_channel` | `UIE_LIVE_MODEL_PATH` + `test_us_020_ipc_live` | stub + live IPC |
