@@ -30,10 +30,13 @@ impl ModelLoader for StubModelLoader {
     fn load(&self, path: &Path, backend: &dyn Backend) -> Result<Box<dyn InferenceExecutor>> {
         let kind = ModalityKind::parse_file(path)?;
         info!(
+            target: "uie_stub",
             path = %path.display(),
             modality = %kind.id_str(),
             story = kind.story_id(),
             backend = %backend.id(),
+            format = "stub",
+            event = "stub_model_loaded",
             "loaded stub model"
         );
         Ok(Box::new(StubExecutor::new(kind)))

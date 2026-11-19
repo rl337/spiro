@@ -23,6 +23,8 @@ Use [30 Rock personas](./personas.md) in the *As a …* line (first name only, e
 3. **Related stories** — links to other `US-*` files
 4. **Terms used** — bullet list linking into the [glossary](./glossary.md)
 5. **Acceptance notes** — how we know it works today (command, test, or limitation)
+6. **Acceptance tests** — table linking to Rust (`crates/uie-acceptance/tests/us_0NN_*.rs`) and/or Python (`python/acceptance/test_us_0NN_*.py`); see [acceptance-tests.md](./acceptance-tests.md)
+7. **Observability** — each linked acceptance test must assert execution **telemetry** or captured **story events** (see [contributing.md](./contributing.md))
 
 ## Cross-references
 
@@ -36,3 +38,4 @@ Use [30 Rock personas](./personas.md) in the *As a …* line (first name only, e
 2. Copy [`stories/_template.md`](./stories/_template.md).
 3. Add glossary entries for any new terms (one definition per anchor).
 4. Link the story from the README index and from related stories.
+5. Register acceptance paths in [`config/story_governance.yaml`](../config/story_governance.yaml).

@@ -8,6 +8,7 @@ rust-version.workspace = true
 
 [dependencies]
 uie-core = { path = "../uie-core" }
+uie-telemetry = { path = "../uie-telemetry" }
 thiserror = "2.0"
 tracing.workspace = true
 

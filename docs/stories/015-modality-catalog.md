@@ -44,3 +44,15 @@ A **modality** is the kind of data crossing the boundary: **text**, **image**, o
 
 - This file stays the index of modality stories; update the table when adding US-020+.
 - Shipped acceptance for the catalog itself: links resolve in `docs/stories/`.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_015_modality_catalog.rs` | `cargo test -p uie-acceptance --test us_015_modality_catalog` |
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | modality stub contracts US-010–019 |
+
+## Observability
+
+- **Events:** `modality_catalog_complete`, per-modality `modality_indexed:*`
+- **CI test:** `us_015_modality_catalog.rs`

@@ -1,0 +1,51 @@
+# US-020: Inference byte channel (in-process and Unix socket)
+
+**Status:** partial (stubs + protocol shipped; PyO3 embed optional)  
+**Personas:** Liz, Pete  
+**Crate / path:** `crates/uie-ipc`, `crates/uie-serve`, `python/uie_client.py`
+
+## User story
+
+**As** Liz, integrating Python tools—and **as** Pete, running a long-lived engine process  
+**I want** every infer request/response to go through a **byte channel** with the same framing everywhere  
+**So that** local in-process tests, `uie-serve` on a Unix socket, and Python clients all speak one protocol.
+
+## In plain terms
+
+1. Client sends **length-prefixed JSON** (`uie-ipc` framing): `hello`, `infer`, `infer_result`, or `error`.
+2. `InferenceEngineHost` owns the [runtime](./004-runtime-sessions.md), [loaders](./007-models-loaders.md), and a model cache.
+3. **In-process:** `InProcessChannel::roundtrip` — no socket; same messages (tests, future PyO3).
+4. **Unix socket:** `cargo run -p uie-serve` → `UIE_SOCKET` (default `/tmp/uie.sock`); Python uses `python/uie_client.py`.
+5. Tensors cross the wire as `name`, `dtype`, `shape`, raw `data` bytes ([tensor](./002-tensors.md) layout).
+
+## Related stories
+
+- [US-004 — Runtime](./004-runtime-sessions.md)
+- [US-007 — Loaders](./007-models-loaders.md)
+- [US-008 — Spiro](./008-spiro-demo.md) (native demo; IPC path for `python/spiro_via_engine.py`)
+
+## Terms used
+
+- [Inference runtime](../glossary.md#inference-runtime)
+- [Byte channel](../glossary.md#byte-channel)
+
+## Acceptance notes
+
+- `cargo test -p uie-ipc`
+- `cargo test -p uie-acceptance --test us_020_byte_channel`
+- `python3 -m unittest python.acceptance.test_us_020_ipc` (build `uie-serve` first)
+- ONNX over IPC: register `OnnxModelLoader` on the host when `uie-loader-onnx` build is green.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_020_byte_channel.rs` | `cargo test -p uie-acceptance --test us_020_byte_channel` |
+| Rust | `crates/uie-ipc/tests/roundtrip.rs` | `cargo test -p uie-ipc` |
+| Python | `python/acceptance/test_us_020_ipc.py` | `python3 -m unittest python.acceptance.test_us_020_ipc` |
+
+## Observability
+
+- **Trace:** `assert_ipc_infer_trace` / `assert_ipc_infer_trace_summary` on `InferResult.trace`
+- **Python:** `assert_ipc_infer_has_trace`
+- **CI:** `us_020_byte_channel.rs`, `uie-ipc/tests/roundtrip.rs`, `test_us_020_ipc.py`

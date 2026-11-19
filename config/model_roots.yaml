@@ -1,0 +1,6 @@
+# Local laptop: scan LM Studio + optional Comfy paths (US-021).
+roots:
+  - id: lmstudio
+    path: ~/.lmstudio/models
+    kind: lm_studio
+    max_depth: 8

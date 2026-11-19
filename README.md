@@ -2,7 +2,7 @@
 
 This repository began as a small Python Spirograph generator (`spiro.py`). It is being evolved into a **universal inference engine** written in Rust, with the original drawing retained as a reference workload.
 
-**Documentation:** user stories and a shared glossary live in [`docs/`](./docs/README.md) (`US-001` … `US-009`).
+**Documentation:** user stories, [acceptance tests](./docs/acceptance-tests.md), and a glossary live in [`docs/`](./docs/README.md) (`US-001` … `US-022`).
 
 ## Current layout
 
@@ -11,6 +11,11 @@ This repository began as a small Python Spirograph generator (`spiro.py`). It is
 | `spiro.py` | Original PIL-based spirograph script |
 | `crates/uie-core` | Core engine: tensors, backends, runtime, model traits |
 | `crates/uie-spiro` | Rust port of the spiro workload + demo binary |
+| `crates/uie-ipc` | Byte-channel protocol + in-process / Unix transports |
+| `crates/uie-serve` | Long-running inference on a Unix domain socket |
+| `python/uie_client.py` | Minimal Python client for the socket API |
+| `crates/uie-loader-gguf` | US-010: GGUF text completions (LM Studio weights) |
+| `crates/uie-llm` | CLI: `list-gguf`, `--prompt` completion |
 | `Cargo.toml` | Rust workspace root |
 
 ## Quick start (Rust demo)
@@ -20,6 +25,37 @@ cargo run -p uie-spiro
 ```
 
 Writes `output.jpg` (same 2048×2048 artwork as the Python script).
+
+## Inference byte channel (IPC)
+
+Run a socket engine and call it from Python (stubs today; ONNX when the loader crate builds):
+
+```bash
+cargo run -p uie-serve
+python3 python/uie_client.py --stub llm
+```
+
+In-process tests use the same framing via `InProcessChannel` (`cargo test -p uie-ipc`). See [US-020](docs/stories/020-inference-byte-channel.md).
+
+## Text completion (LM Studio GGUF)
+
+```bash
+./scripts/build-gguf.sh
+cp config/model_roots.example.yaml config/model_roots.yaml   # if needed
+cargo run -p uie-llm -- list-gguf
+cargo run -p uie-llm -- --model "$UIE_GGUF_MODEL" --prompt "Hello"
+```
+
+See [US-010](docs/stories/010-llm-text-completions.md).
+
+## Acceptance tests (per user story)
+
+```bash
+./scripts/acceptance-ci.sh          # stub mode (CI default)
+./scripts/acceptance-live.sh        # real models on your machine
+```
+
+Agents and contributors: follow [.cursor/skills/uie-user-stories/SKILL.md](.cursor/skills/uie-user-stories/SKILL.md).
 
 ## Architecture (scaffold)
 

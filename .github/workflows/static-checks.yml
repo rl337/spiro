@@ -1,0 +1,28 @@
+name: Static checks (Rust + Python)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.96.0
+        with:
+          components: rustfmt, clippy
+      - run: rustup show
+      - run: chmod +x scripts/rust-static-check.sh
+      - run: ./scripts/rust-static-check.sh
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: chmod +x scripts/python-static-check.sh
+      - run: ./scripts/python-static-check.sh

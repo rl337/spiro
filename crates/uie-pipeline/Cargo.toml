@@ -1,0 +1,19 @@
+[package]
+name = "uie-pipeline"
+description = "Multi-stage inference linked via in-process byte channels"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+uie-catalog = { path = "../uie-catalog" }
+uie-core = { path = "../uie-core" }
+uie-ipc = { path = "../uie-ipc" }
+uie-stub-models = { path = "../uie-stub-models" }
+uie-telemetry = { path = "../uie-telemetry" }
+tracing.workspace = true
+
+[dev-dependencies]
+tempfile = "3.14"
+uie-telemetry = { path = "../uie-telemetry" }

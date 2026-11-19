@@ -1,0 +1,126 @@
+# Machine-readable governance for US-0NN stories, acceptance tests, and check-ins.
+# Enforced by scripts/verify-story-governance.py (CI).
+
+# Rust/Python acceptance sources must include at least one of these substrings.
+observability_markers:
+  - assert_stub_executor_telemetry
+  - assert_stub_modality_telemetry
+  - assert_phases
+  - assert_story_events
+  - assert_infer_outcome_trace
+  - assert_ipc_infer_trace
+  - assert_ipc_infer_trace_summary
+  - assert_trace_summary
+  - StoryEventLog
+  - assert_ipc_infer_has_trace
+
+# Paths that never require a story mapping on diff (tooling, lockfiles, governance itself).
+diff_exempt_globs:
+  - ".github/**"
+  - "config/story_governance.yaml"
+  - "scripts/verify-story-governance.py"
+  - "**/Cargo.lock"
+  - "rust-toolchain.toml"
+  - ".cursor/**"
+
+# Changed files under these globs must be justified by a story (see diff_rules).
+diff_rules:
+  - glob: "crates/**"
+    stories: [US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019, US-020, US-021, US-022, US-023, US-024]
+  - glob: "python/**"
+    stories: [US-020]
+  - glob: "docs/stories/**"
+    stories: [US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019, US-020, US-021, US-022, US-023, US-024]
+  - glob: "models/**"
+    stories: [US-007, US-009, US-010, US-011, US-012, US-013, US-014, US-016, US-017, US-018, US-019]
+
+stories:
+  US-001:
+    acceptance:
+      - crates/uie-acceptance/tests/us_001_why_uie.rs
+  US-002:
+    acceptance:
+      - crates/uie-acceptance/tests/us_002_tensors.rs
+  US-003:
+    acceptance:
+      - crates/uie-acceptance/tests/us_003_cpu_backend.rs
+  US-004:
+    acceptance:
+      - crates/uie-acceptance/tests/us_004_runtime_session.rs
+  US-005:
+    acceptance:
+      - crates/uie-acceptance/tests/us_005_execution_plan.rs
+  US-006:
+    acceptance:
+      - crates/uie-acceptance/tests/us_006_operations.rs
+  US-007:
+    acceptance:
+      - crates/uie-acceptance/tests/us_007_model_loader.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
+  US-008:
+    acceptance:
+      - crates/uie-acceptance/tests/us_008_spiro.rs
+  US-009:
+    acceptance:
+      - crates/uie-acceptance/tests/us_009_mnist.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
+  US-010:
+    acceptance:
+      - crates/uie-acceptance/tests/us_010_019_modalities.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
+  US-011:
+    acceptance:
+      - crates/uie-acceptance/tests/us_010_019_modalities.rs
+    supplemental_acceptance:
+      - crates/uie-stub-models/tests/deterministic_policy.rs
+  US-012:
+    acceptance:
+      - crates/uie-acceptance/tests/us_010_019_modalities.rs
+  US-013:
+    acceptance:
+      - crates/uie-acceptance/tests/us_010_019_modalities.rs
+  US-014:
+    acceptance:
+      - crates/uie-acceptance/tests/us_010_019_modalities.rs
+  US-015:
+    acceptance:
+      - crates/uie-acceptance/tests/us_015_modality_catalog.rs
+  US-016:
+    acceptance:
+      - crates/uie-acceptance/tests/us_010_019_modalities.rs
+  US-017:
+    acceptance:
+      - crates/uie-acceptance/tests/us_010_019_modalities.rs
+  US-018:
+    acceptance:
+      - crates/uie-acceptance/tests/us_010_019_modalities.rs
+  US-019:
+    acceptance:
+      - crates/uie-acceptance/tests/us_010_019_modalities.rs
+  US-020:
+    acceptance:
+      - crates/uie-acceptance/tests/us_020_byte_channel.rs
+      - crates/uie-ipc/tests/roundtrip.rs
+      - python/acceptance/test_us_020_ipc.py
+  US-021:
+    acceptance:
+      - crates/uie-acceptance/tests/us_021_model_registry.rs
+      - crates/uie-catalog/tests/scan.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
+  US-022:
+    acceptance:
+      - crates/uie-acceptance/tests/us_022_byte_pipeline.rs
+      - crates/uie-pipeline/tests/byte_stack.rs
+    supplemental_acceptance:
+      - crates/uie-acceptance/tests/live_models.rs
+  US-023:
+    acceptance:
+      - crates/uie-acceptance/tests/us_023_telemetry.rs
+  US-024:
+    acceptance:
+      - crates/uie-acceptance/tests/us_024_dependency_injection.rs
+      - crates/uie-iv/tests/injector_profiles.rs

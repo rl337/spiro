@@ -36,3 +36,14 @@ Custom ops are how specialized workloads (or imported ONNX nodes) will register 
 
 - `Op`, `OpKind`, `Op::noop` constructor.
 - CPU `execute` handles `Noop` / `Fill`.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_006_operations.rs` | `cargo test -p uie-acceptance --test us_006_operations` |
+
+## Observability
+
+- **Events:** `op_kind_fill_constructed`
+- **CI test:** `us_006_operations.rs`

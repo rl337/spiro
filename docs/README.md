@@ -9,6 +9,9 @@ The **Universal Inference Engine (UIE)** is this repo’s Rust engine for runnin
 | [Glossary](./glossary.md) | Short definitions for every bold term used in stories |
 | [Personas](./personas.md) | 30 Rock first names used in stories (Liz, Jack, …) |
 | [Story conventions](./story-conventions.md) | Story IDs, linking rules, how to add a new story |
+| [Contributing](./contributing.md) | Check-ins ↔ user stories, observability in tests |
+| [Requirements](./requirements/README.md) | Normative engineering constraints (DI-first, …) |
+| [Acceptance tests](./acceptance-tests.md) | One automated test (Rust or Python) per `US-0NN` |
 | [User stories index](./stories/README.md) | All scenarios, in learning order |
 
 ## Learning path

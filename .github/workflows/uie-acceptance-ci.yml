@@ -1,0 +1,23 @@
+name: UIE acceptance (CI stub mode)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  acceptance-stub:
+    runs-on: ubuntu-latest
+    env:
+      UIE_ACCEPTANCE_MODE: ci
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+      - run: rustup show
+      - run: python3 -m pip install -q pyyaml
+      - run: chmod +x scripts/acceptance-ci.sh scripts/verify-story-governance.py scripts/verify-di-first.py
+      - run: git fetch origin main
+      - run: python3 scripts/verify-story-governance.py --diff-base "${{ github.event.pull_request.base.sha || 'origin/main' }}"
+      - run: ./scripts/acceptance-ci.sh

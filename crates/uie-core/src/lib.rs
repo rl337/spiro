@@ -6,14 +6,20 @@
 
 pub mod backend;
 pub mod error;
+pub mod infer;
 pub mod model;
 pub mod ops;
 pub mod runtime;
 pub mod tensor;
 
+pub mod telemetry {
+    pub use uie_telemetry::*;
+}
+
 pub use backend::cpu::CpuBackend;
 pub use backend::{Backend, BackendId, Device, DeviceKind};
 pub use error::{Error, Result};
+pub use infer::InferOutcome;
 pub use model::{
     InferenceExecutor, InferenceModel, IoSpec, ModelLoader, ModelLoaderRegistry, ModelMetadata,
 };

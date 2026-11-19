@@ -25,6 +25,9 @@ pub enum Error {
 
     #[error("runtime: {0}")]
     Runtime(String),
+
+    #[error("io: {0}")]
+    Io(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

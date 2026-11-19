@@ -1,0 +1,75 @@
+name: Bugbot gate
+
+# Waits for the Cursor GitHub App "Cursor Bugbot" check (not an Actions runner review).
+# Requires Bugbot enabled for this repo: Cursor → Agents → Automations → Bugbot.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions:
+  pull-requests: read
+  checks: read
+
+jobs:
+  wait-for-bugbot:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    env:
+      # Set repo variable BUGBOT_GATE_STRICT=true to fail when the App never posts a check.
+      BUGBOT_GATE_STRICT: ${{ vars.BUGBOT_GATE_STRICT }}
+    steps:
+      - name: Wait for Cursor Bugbot check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = context.payload.pull_request.head.sha;
+            const maxAttempts = 60; // 10 minutes
+            const strict = process.env.BUGBOT_GATE_STRICT === "true";
+
+            const findBugbot = (runs) =>
+              runs.find(
+                (r) =>
+                  r.name === "Cursor Bugbot" ||
+                  r.name === "cursor-bugbot"
+              );
+
+            for (let i = 0; i < maxAttempts; i++) {
+              const { data } = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: sha,
+              });
+              const bugbot = findBugbot(data.check_runs);
+              if (bugbot?.status === "completed") {
+                if (
+                  bugbot.conclusion === "success" ||
+                  bugbot.conclusion === "neutral"
+                ) {
+                  core.info(
+                    `Cursor Bugbot completed (${bugbot.conclusion}).`
+                  );
+                  return;
+                }
+                core.setFailed(
+                  `Cursor Bugbot finished with: ${bugbot.conclusion ?? "unknown"}`
+                );
+                return;
+              }
+              if (bugbot?.status === "in_progress" || bugbot?.status === "queued") {
+                core.info(`Cursor Bugbot status: ${bugbot.status}…`);
+              } else {
+                core.info("Waiting for Cursor Bugbot check to appear…");
+              }
+              await new Promise((r) => setTimeout(r, 10_000));
+            }
+
+            core.warning(
+              "Cursor Bugbot did not post a completed check within 10 minutes. " +
+                "Large PRs may be skipped by Bugbot; comment `bugbot run` on the PR to trigger manually."
+            );
+            if (strict) {
+              core.setFailed("Timed out waiting for Cursor Bugbot.");
+            }

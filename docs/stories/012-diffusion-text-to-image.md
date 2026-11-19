@@ -42,3 +42,14 @@ Related variants live in [US-015](./015-modality-catalog.md) (image-to-image, in
 - **Today:** story only; no diffusion loader.
 - **Future acceptance:** `cargo run -p uie-diffusion -- --prompt "sunset"` writes `out.png`.
 - **Limitation:** step schedulers and VAE decode are format-specific; likely separate loader crate.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_012_diffusion_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_012_diffusion_stub`
+- **CI test:** `us_010_019_modalities.rs`

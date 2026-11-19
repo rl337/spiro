@@ -36,3 +36,14 @@ Indexed under [US-015](./015-modality-catalog.md); shares backends with US-012.
 
 - **Today:** story only.
 - **Future acceptance:** img2img CLI with `--strength` flag documented in crate README.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_019_image_to_image_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_019_image_to_image_stub`
+- **CI test:** `us_010_019_modalities.rs`

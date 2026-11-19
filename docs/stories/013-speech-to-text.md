@@ -39,3 +39,14 @@ Pete cares about batch length limits and CPU fallback; Kenneth starts with a 10-
 - **Today:** story only.
 - **Future acceptance:** test fixture WAV → expected transcript string within edit distance.
 - New [I/O spec](../glossary.md#io-spec) for sample rate and channel count required.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_013_stt_stub` |
+
+## Observability
+
+- **Trace:** stub executor phases via `us_013_stt_stub`
+- **CI test:** `us_010_019_modalities.rs`

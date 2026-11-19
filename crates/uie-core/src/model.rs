@@ -5,6 +5,7 @@ use crate::error::{Error, Result};
 use crate::ops::Op;
 use crate::runtime::ExecutionPlan;
 use crate::tensor::{DataType, Shape, Tensor};
+use uie_telemetry::ExecutionRecorder;
 
 #[derive(Debug, Clone, Default)]
 pub struct ModelMetadata {
@@ -28,7 +29,8 @@ pub trait InferenceExecutor: Send + Sync {
 
     fn outputs(&self) -> &[IoSpec];
 
-    fn infer(&self, inputs: &[Tensor]) -> Result<Vec<Tensor>>;
+    /// Every executor must record phases on `telemetry` (stubs, GGUF, ONNX, …).
+    fn infer(&self, inputs: &[Tensor], telemetry: &mut ExecutionRecorder) -> Result<Vec<Tensor>>;
 }
 
 /// Graph / op-plan representation (scaffold path).

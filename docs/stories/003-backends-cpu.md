@@ -40,3 +40,14 @@ The `Backend` trait is the extension point: future crates (CUDA, WASM, etc.) reg
 - `CpuBackend::new()` / `default()`.
 - `allocate` and `Fill` op execution on CPU.
 - `DeviceKind::Accelerator` exists as a placeholder only.
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_003_cpu_backend.rs` | `cargo test -p uie-acceptance --test us_003_cpu_backend` |
+
+## Observability
+
+- **Events:** `cpu_backend_constructed`, `tensor_allocated_on_cpu`
+- **CI test:** `us_003_cpu_backend.rs`

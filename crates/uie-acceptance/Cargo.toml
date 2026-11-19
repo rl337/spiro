@@ -1,0 +1,33 @@
+[package]
+name = "uie-acceptance"
+description = "Per user-story (US-0NN) acceptance tests"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[features]
+default = []
+# Enable real ONNX load/infer in live_us_009_* (requires uie-loader-onnx to compile).
+live-onnx = ["dep:uie-loader-onnx", "uie-iv/live-onnx"]
+# Enable US-010 GGUF text completion in live_us_010_* (requires g++, link with g++).
+gguf = ["dep:uie-loader-gguf", "uie-iv/gguf"]
+
+[dependencies]
+uie-iv = { path = "../uie-iv" }
+uie-core = { path = "../uie-core" }
+uie-ipc = { path = "../uie-ipc" }
+uie-telemetry = { path = "../uie-telemetry" }
+uie-loader-onnx = { path = "../uie-loader-onnx", optional = true }
+uie-loader-gguf = { path = "../uie-loader-gguf", optional = true }
+
+[dev-dependencies]
+uie-catalog = { path = "../uie-catalog" }
+uie-pipeline = { path = "../uie-pipeline" }
+uie-stub-models = { path = "../uie-stub-models" }
+serde_json = { workspace = true }
+tempfile = "3.14"

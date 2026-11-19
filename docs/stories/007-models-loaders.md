@@ -19,6 +19,8 @@ UIE splits “models” into two styles:
 | **Plan-based** | [Inference model](../glossary.md#inference-model) | Expose an [execution plan](./005-execution-plans.md); run via `run_model`. |
 | **End-to-end** | [Inference executor](../glossary.md#inference-executor) | One `infer(inputs)` call; used by ONNX today. |
 
+Every [`InferenceExecutor`](../glossary.md#inference-executor) implements `infer(..., telemetry: &mut ExecutionRecorder)` so stubs and real models emit the same traces ([US-023](./023-inference-telemetry.md)).
+
 A [model loader](../glossary.md#model-loader):
 
 1. Declares its `format_id` (for example `"onnx"`).
@@ -46,3 +48,17 @@ The [model loader registry](../glossary.md#model-loader-registry) on the [runtim
 - `ModelLoader`, `InferenceExecutor`, `IoSpec`, `ModelLoaderRegistry`, `ModelSource`.
 - `InferenceRuntime::with_loader` + `load_model`.
 - ONNX implementation tracked in [US-009](./009-onnx-mnist.md).
+
+## Acceptance tests
+
+| Runner | Path | Command |
+|--------|------|---------|
+| Rust | `crates/uie-acceptance/tests/us_007_model_loader.rs` | `cargo test -p uie-acceptance --test us_007_model_loader` |
+| Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance live_us_007_load_path_from_env` |
+
+## Observability
+
+- **Events:** `stub_executor_loaded`, `loader_infer_trace`
+- **Trace:** `assert_stub_executor_telemetry`, `assert_infer_outcome_trace`
+- **CI test:** `us_007_model_loader.rs`
+- **Live:** `live_us_007_load_path_from_env` records load/infer events when `UIE_LIVE_MODEL_PATH` is set

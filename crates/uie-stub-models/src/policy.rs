@@ -27,9 +27,11 @@ pub struct RuleStubPolicy {
     rules: Vec<StubRule>,
 }
 
+pub type StubRespond = Box<dyn Fn(&[Tensor]) -> Result<Vec<Tensor>> + Send + Sync>;
+
 pub struct StubRule {
     pub matcher: StubMatcher,
-    pub respond: Box<dyn Fn(&[Tensor]) -> Result<Vec<Tensor>> + Send + Sync>,
+    pub respond: StubRespond,
 }
 
 #[derive(Clone, Debug)]
@@ -53,7 +55,11 @@ impl RuleStubPolicy {
         }
     }
 
-    pub fn rule(mut self, matcher: StubMatcher, respond: impl Fn(&[Tensor]) -> Result<Vec<Tensor>> + Send + Sync + 'static) -> Self {
+    pub fn rule(
+        mut self,
+        matcher: StubMatcher,
+        respond: impl Fn(&[Tensor]) -> Result<Vec<Tensor>> + Send + Sync + 'static,
+    ) -> Self {
         self.rules.push(StubRule {
             matcher,
             respond: Box::new(respond),

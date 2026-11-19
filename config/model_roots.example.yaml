@@ -1,0 +1,18 @@
+# Directory-only registry: Spiro scans these at runtime (US-021).
+# Copy to model_roots.yaml and adjust paths for your laptop.
+
+roots:
+  - id: lmstudio
+    path: ~/.lmstudio/models
+    kind: lm_studio
+    max_depth: 6
+
+  - id: comfy
+    path: ~/path/to/ComfyUI/models
+    kind: comfy_ui
+    max_depth: 5
+
+  - id: workspace
+    path: ./models
+    kind: generic
+    max_depth: 3

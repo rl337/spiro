@@ -8,6 +8,10 @@ mod loader;
 mod modality;
 mod policy;
 mod samples;
+mod stub_infer_metrics;
+mod stub_input_validate;
+pub mod telemetry;
+pub mod telemetry_assert;
 mod validate;
 
 pub use conventions::*;
