@@ -55,11 +55,23 @@ UIE_LLM_USE_RUNTIME=1 cargo run -p uie-llm -- --auto-qwen3-2b --chat --prompt "H
 
 Telemetry lines on stderr; completion text on stdout.
 
+### End-to-end harness (preferred)
+
+E2E tests are command objects under the **`uie-e2e`** binary — see [End-to-end tests](../testing/end-to-end-tests.md).
+
+```bash
+cargo run -p uie-e2e --features gguf -- list
+cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion
+cargo run -p uie-e2e --features gguf -- run 'qwen*' -- --prompt "Hello" --max-new 32
+```
+
 ### Convenience script
+
+Wraps the harness target above (builds GGUF native deps first):
 
 ```bash
 ./scripts/e2e-qwen3-2b.sh
-UIE_LLM_PROMPT="Explain RAM in one line." ./scripts/e2e-qwen3-2b.sh
+UIE_LLM_PROMPT="Explain RAM in one line." ./scripts/e2e-qwen3-2b.sh -- --prompt "Explain RAM in one line."
 ```
 
 ## Path B — Serve + IPC (optional)

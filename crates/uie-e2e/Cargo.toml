@@ -1,0 +1,23 @@
+[package]
+name = "uie-e2e"
+description = "End-to-end test harness (application + command-pattern scenarios)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[[bin]]
+name = "uie-e2e"
+path = "src/main.rs"
+
+[features]
+default = []
+gguf = ["dep:uie-loader-gguf", "dep:uie-catalog"]
+
+[dependencies]
+uie-core = { path = "../uie-core" }
+uie-loader-gguf = { path = "../uie-loader-gguf", optional = true }
+uie-catalog = { path = "../uie-catalog", optional = true }
+glob = "0.3"
+thiserror.workspace = true

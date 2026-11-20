@@ -12,6 +12,10 @@ CI runs [`scripts/verify-story-governance.py`](../scripts/verify-story-governanc
 | Story events | Layout, registry scan, tensors without infer | `StoryEventLog`, `assert_story_events` |
 | Python IPC | US-020 | `assert_ipc_infer_has_trace` in `test_us_020_ipc.py` |
 
+## End-to-end tests (local application harness)
+
+Stub/live **acceptance** tests live in `uie-acceptance`. **End-to-end** scenarios are a separate class: a runnable harness (`uie-e2e`) that uses production crates, supports assertions/instrumentation, and selects tests by name or glob. See [testing/end-to-end-tests.md](./testing/end-to-end-tests.md).
+
 ## Two modes
 
 | Mode | Env | What runs |

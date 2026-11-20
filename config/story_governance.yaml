@@ -72,6 +72,7 @@ stories:
       - crates/uie-acceptance/tests/us_010_019_modalities.rs
     supplemental_acceptance:
       - crates/uie-acceptance/tests/live_models.rs
+      - crates/uie-e2e/src/scenarios/qwen3_2b.rs
   US-011:
     acceptance:
       - crates/uie-acceptance/tests/us_010_019_modalities.rs
