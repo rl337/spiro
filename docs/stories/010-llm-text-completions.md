@@ -42,12 +42,10 @@ This is **text → text** [modality](./015-modality-catalog.md). It reuses the s
 ## Acceptance notes
 
 - **CI:** stub contract `us_010_llm_stub` (unchanged).
-- **Live (LM Studio GGUF):**
+- **Live (LM Studio GGUF / Qwen3 2B):** see [runbook: Qwen3 2B e2e](../runbooks/qwen3-2b-e2e.md).
   ```bash
-  ./scripts/build-gguf.sh
-  uie-llm list-gguf
-  UIE_GGUF_MODEL=~/.lmstudio/models/.../model.gguf \
-    cargo run -p uie-llm -- --prompt "The capital of France is"
+  ./scripts/e2e-qwen3-2b.sh
+  cargo run -p uie-llm -- --auto-qwen3-2b --chat --prompt "Hello"
   ```
 - Registry id: `cargo run -p uie-llm -- --registry-id 'lmstudio:...' --prompt "Hello"`
 - **Dependencies:** llama.cpp via `llama-cpp-2`; Metal/CUDA via crate features on a laptop with GPU.

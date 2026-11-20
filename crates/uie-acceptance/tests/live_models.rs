@@ -218,7 +218,11 @@ fn live_us_010_gguf_text_completion() {
         max_new_tokens: 24,
         ..Default::default()
     };
-    let out = uie_loader_gguf::complete_gguf_file(&model_path, &prompt, &opts).expect("complete");
+    let out = if std::env::var("UIE_LLM_CHAT").is_ok_and(|v| v == "1") {
+        uie_loader_gguf::complete_gguf_file_chat(&model_path, &prompt, &opts).expect("complete")
+    } else {
+        uie_loader_gguf::complete_gguf_file(&model_path, &prompt, &opts).expect("complete")
+    };
     eprintln!("completion: {}", out.text);
     assert!(!out.token_ids.is_empty());
     assert!(out.metrics.total_ms >= 0.0);

@@ -5,7 +5,9 @@ use uie_catalog::{expand_home, ModelCatalog, ModelRole, ModelRootsFile};
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::tensor::Tensor;
 use uie_core::InferenceRuntime;
-use uie_loader_gguf::{complete_gguf_file, CompleteOptions, GgufModelLoader};
+use uie_loader_gguf::{
+    complete_gguf_file, complete_gguf_file_chat, CompleteOptions, GgufModelLoader,
+};
 
 fn main() -> uie_core::Result<()> {
     tracing_subscriber::fmt::init();
@@ -15,10 +17,13 @@ fn main() -> uie_core::Result<()> {
         return list_gguf();
     }
 
+    let chat_mode =
+        args.iter().any(|a| a == "--chat") || env::var("UIE_LLM_CHAT").is_ok_and(|v| v == "1");
+
     let prompt = flag_value(&args, "--prompt")
         .or_else(|| env::var("UIE_LLM_PROMPT").ok())
         .unwrap_or_else(|| {
-            eprintln!("usage: uie-llm complete --prompt \"...\" [--model PATH | --registry-id ID]");
+            eprintln!("usage: uie-llm --prompt \"...\" [--chat] [--model PATH | --registry-id ID | --auto-qwen3-2b]");
             eprintln!("       uie-llm list-gguf");
             std::process::exit(2);
         });
@@ -30,9 +35,18 @@ fn main() -> uie_core::Result<()> {
 
     let model_path = resolve_model_path(&args)?;
     eprintln!("model: {}", model_path.display());
+    if chat_mode {
+        eprintln!("mode: chat template (user message)");
+    }
+
+    let temperature: f32 = flag_value(&args, "--temperature")
+        .and_then(|s| s.parse().ok())
+        .or_else(|| env::var("UIE_LLM_TEMPERATURE").ok()?.parse().ok())
+        .unwrap_or(0.7);
 
     let opts = CompleteOptions {
         max_new_tokens: max_new as u32,
+        temperature,
         ..CompleteOptions::default()
     };
 
@@ -41,7 +55,13 @@ fn main() -> uie_core::Result<()> {
             GgufModelLoader::new().with_max_new_tokens(max_new),
         ));
         let model = rt.load_model(&model_path)?;
-        let prompt_t = uie_loader_gguf::prompt_tensor(&prompt, 4096)?;
+        let prompt_text = if chat_mode {
+            let engine = uie_loader_gguf::GgufEngine::load(&model_path)?;
+            uie_loader_gguf::format_user_message_engine(&engine, &prompt)?
+        } else {
+            prompt.clone()
+        };
+        let prompt_t = uie_loader_gguf::prompt_tensor(&prompt_text, 4096)?;
         let mut session = rt.create_session();
         let outcome = rt.infer(
             model.as_ref(),
@@ -53,7 +73,11 @@ fn main() -> uie_core::Result<()> {
         return Ok(());
     }
 
-    let result = complete_gguf_file(&model_path, &prompt, &opts)?;
+    let result = if chat_mode {
+        complete_gguf_file_chat(&model_path, &prompt, &opts)?
+    } else {
+        complete_gguf_file(&model_path, &prompt, &opts)?
+    };
     println!("{}", result.text);
     eprintln!(
         "telemetry: total_ms={:.2} ttft_ms={:?} decode_tps={:?} cpu_ms={:.2} gpu_ms={:?}",
@@ -86,6 +110,17 @@ fn list_gguf() -> uie_core::Result<()> {
 }
 
 fn resolve_model_path(args: &[String]) -> uie_core::Result<PathBuf> {
+    if args.iter().any(|a| a == "--auto-qwen3-2b") {
+        let catalog = ModelCatalog::from_roots(roots_file()?);
+        return find_qwen3_2b_path(&catalog);
+    }
+    if let Ok(id) = env::var("UIE_QWEN3_2B_REGISTRY_ID") {
+        let catalog = ModelCatalog::from_roots(roots_file()?);
+        let entry = catalog.registry().get(&id).ok_or_else(|| {
+            uie_core::Error::ModelLoad(format!("UIE_QWEN3_2B_REGISTRY_ID not found: {id}"))
+        })?;
+        return Ok(entry.path.clone());
+    }
     if let Some(p) = flag_value(args, "--model").map(PathBuf::from) {
         return Ok(expand_home(p));
     }
@@ -136,6 +171,22 @@ fn repo_root() -> PathBuf {
         .join("../..")
         .canonicalize()
         .unwrap_or_else(|_| PathBuf::from("."))
+}
+
+fn find_qwen3_2b_path(catalog: &ModelCatalog) -> uie_core::Result<PathBuf> {
+    let needles = ["qwen", "2b"];
+    for entry in catalog.registry().entries() {
+        if entry.path.extension().is_some_and(|e| e == "gguf") {
+            let hay = format!("{} {}", entry.id, entry.path.display()).to_lowercase();
+            if needles.iter().all(|n| hay.contains(n)) {
+                eprintln!("matched registry id: {}", entry.id);
+                return Ok(entry.path.clone());
+            }
+        }
+    }
+    Err(uie_core::Error::ModelLoad(
+        "no Qwen3 ~2B .gguf under SPIRO_MODEL_ROOTS — see docs/runbooks/qwen3-2b-e2e.md".into(),
+    ))
 }
 
 fn flag_value(args: &[String], flag: &str) -> Option<String> {
