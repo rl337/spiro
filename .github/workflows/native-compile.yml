@@ -16,3 +16,4 @@ jobs:
       - run: cargo check -p uie-loader-onnx
       - run: cargo test -p uie-mnist mnist_inference_digit_one
       - run: cargo check -p uie-loader-gguf -p uie-llm
+      - run: cargo check -p uie-e2e --features gguf

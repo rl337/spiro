@@ -44,7 +44,7 @@ This is **text → text** [modality](./015-modality-catalog.md). It reuses the s
 - **CI:** stub contract `us_010_llm_stub` (unchanged).
 - **Live (LM Studio GGUF / Qwen3 2B):** see [runbook: Qwen3 2B e2e](../runbooks/qwen3-2b-e2e.md).
   ```bash
-  ./scripts/e2e-qwen3-2b.sh
+  cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion
   cargo run -p uie-llm -- --auto-qwen3-2b --chat --prompt "Hello"
   ```
 - Registry id: `cargo run -p uie-llm -- --registry-id 'lmstudio:...' --prompt "Hello"`
@@ -56,9 +56,11 @@ This is **text → text** [modality](./015-modality-catalog.md). It reuses the s
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_010_019_modalities.rs` | `cargo test -p uie-acceptance --test us_010_019_modalities us_010_llm_stub` |
 | Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance --features gguf live_us_010_gguf_text_completion` |
+| E2E harness | `crates/uie-e2e` (`qwen3_2b_chat_completion`) | `cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion` |
 
 ## Observability
 
 - **Trace:** `assert_stub_executor_telemetry` (`stub_validate_inputs`, `stub_policy_infer`, `runtime_session_bind`)
 - **CI test:** `us_010_019_modalities.rs` → `us_010_llm_stub`
 - **Live:** `live_us_010_gguf_text_completion` asserts `CompleteResult.metrics`
+- **E2E:** `qwen3_2b_chat_completion` records `gguf_completion_metrics` and asserts completion token counts

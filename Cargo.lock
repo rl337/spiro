@@ -1776,6 +1776,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "uie-e2e"
+version = "0.1.0"
+dependencies = [
+ "glob",
+ "thiserror",
+ "uie-catalog",
+ "uie-core",
+ "uie-loader-gguf",
+]
+
+[[package]]
 name = "uie-ipc"
 version = "0.1.0"
 dependencies = [
