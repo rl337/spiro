@@ -3,8 +3,8 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
+use crate::detector::{DirectoryModelDetector, ModelDetector};
 use crate::roots::ModelRootsFile;
-use crate::scan::scan_roots;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -65,7 +65,11 @@ impl ModelRegistry {
     }
 
     pub fn refresh(roots: &ModelRootsFile) -> Self {
-        let (entries, stats) = scan_roots(roots);
+        Self::refresh_with_detector(roots, &DirectoryModelDetector)
+    }
+
+    pub fn refresh_with_detector(roots: &ModelRootsFile, detector: &dyn ModelDetector) -> Self {
+        let (entries, stats) = detector.detect(roots);
         let mut by_id = HashMap::new();
         for (i, e) in entries.iter().enumerate() {
             by_id.insert(e.id.clone(), i);
@@ -109,12 +113,20 @@ impl ModelCatalog {
     }
 
     pub fn from_roots(roots: ModelRootsFile) -> Self {
-        let registry = ModelRegistry::refresh(&roots);
+        Self::from_roots_with_detector(roots, &DirectoryModelDetector)
+    }
+
+    pub fn from_roots_with_detector(roots: ModelRootsFile, detector: &dyn ModelDetector) -> Self {
+        let registry = ModelRegistry::refresh_with_detector(&roots, detector);
         Self { roots, registry }
     }
 
     pub fn rescan(&mut self) {
         self.registry = ModelRegistry::refresh(&self.roots);
+    }
+
+    pub fn rescan_with_detector(&mut self, detector: &dyn ModelDetector) {
+        self.registry = ModelRegistry::refresh_with_detector(&self.roots, detector);
     }
 
     pub fn roots(&self) -> &ModelRootsFile {

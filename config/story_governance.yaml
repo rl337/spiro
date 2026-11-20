@@ -113,6 +113,8 @@ stories:
       - crates/uie-catalog/tests/scan.rs
     supplemental_acceptance:
       - crates/uie-acceptance/tests/live_models.rs
+      - crates/uie-catalog/tests/mock_detector.rs
+      - crates/uie-e2e/src/scenarios/mock_registry.rs
   US-022:
     acceptance:
       - crates/uie-acceptance/tests/us_022_byte_pipeline.rs

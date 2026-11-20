@@ -32,8 +32,17 @@ cargo run -p uie-e2e --features gguf -- run 'qwen*' -- --prompt "Hello" --max-ne
 
 | Subcommand | Purpose |
 |------------|---------|
-| `list` | Print registered tests (`name` + `description`) |
-| `run <pattern>` | Run every test whose **name** matches `pattern` (exact or glob `*`, `?`) |
+| `list` | Print registered E2E scenarios (`name` + `description`) |
+| `list-models` | Print **discovered models** from roots (+ mock overlay by default) |
+| `run <pattern>` | Run every scenario whose **name** matches `pattern` (exact or glob `*`, `?`) |
+
+Mock stubs under `models/mock/` are merged by [`TestModelDetector`](../../crates/uie-catalog/src/detector.rs) (LM Studio + Comfy layouts). Disable with `UIE_E2E_MOCK_MODELS=0` or `list-models --no-mock`.
+
+```bash
+cargo run -p uie-e2e -- list-models
+cargo run -p uie-e2e -- run mock_registry_discovery
+cargo run -p uie-e2e -- run mock_registry_discovery -- --load-stub
+```
 
 Arguments after `--` are passed to each matched test’s `run` (test-specific CLI flags).
 

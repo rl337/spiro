@@ -13,11 +13,13 @@ path = "src/main.rs"
 
 [features]
 default = []
-gguf = ["dep:uie-loader-gguf", "dep:uie-catalog"]
+gguf = ["dep:uie-loader-gguf"]
 
 [dependencies]
 uie-core = { path = "../uie-core" }
+uie-catalog = { path = "../uie-catalog" }
+uie-stub-models = { path = "../uie-stub-models" }
+uie-telemetry = { path = "../uie-telemetry" }
 uie-loader-gguf = { path = "../uie-loader-gguf", optional = true }
-uie-catalog = { path = "../uie-catalog", optional = true }
 glob = "0.3"
 thiserror.workspace = true
