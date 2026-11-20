@@ -22,6 +22,9 @@ Acceptance tests prove story contracts in CI with stubs and fast gates. E2E test
 ## Harness: `uie-e2e`
 
 ```bash
+# Linux: set CXX/CC before first GGUF build (see docs/runbooks/qwen3-2b-e2e.md)
+export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.yaml
+
 cargo run -p uie-e2e --features gguf -- list
 cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion
 cargo run -p uie-e2e --features gguf -- run 'qwen*' -- --prompt "Hello" --max-new 32
@@ -51,16 +54,6 @@ pub trait E2eTest {
 - **Instrumentation**: `E2eContext::phase`, `record`, stderr progress; optional hooks for trace JSON later.
 
 New scenarios add a type under `crates/uie-e2e/src/scenarios/`, implement `E2eTest`, and register in `registry.rs`.
-
-## Relation to scripts
-
-[`scripts/e2e-qwen3-2b.sh`](../../scripts/e2e-qwen3-2b.sh) is a thin wrapper that builds native GGUF deps and runs:
-
-```bash
-cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion "$@"
-```
-
-Prefer extending the harness over growing one-off shell logic.
 
 ## Stories
 

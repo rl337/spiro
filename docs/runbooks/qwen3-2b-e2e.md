@@ -15,7 +15,8 @@ cp config/model_roots.example.yaml config/model_roots.yaml
 # Ensure lmstudio root points at ~/.lmstudio/models
 
 export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.yaml
-./scripts/build-gguf.sh
+# Linux: llama.cpp builds with g++ (see scripts/build-gguf.sh)
+export CXX="${CXX:-g++}" CC="${CC:-gcc}" RUSTFLAGS="${RUSTFLAGS:-} -C linker=g++"
 ```
 
 Confirm the registry sees your file:
@@ -55,24 +56,20 @@ UIE_LLM_USE_RUNTIME=1 cargo run -p uie-llm -- --auto-qwen3-2b --chat --prompt "H
 
 Telemetry lines on stderr; completion text on stdout.
 
-### End-to-end harness (preferred)
+### End-to-end harness (US-010 operator test)
 
 E2E tests are command objects under the **`uie-e2e`** binary — see [End-to-end tests](../testing/end-to-end-tests.md).
 
 ```bash
+export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.yaml
+
 cargo run -p uie-e2e --features gguf -- list
 cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion
-cargo run -p uie-e2e --features gguf -- run 'qwen*' -- --prompt "Hello" --max-new 32
+cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion -- \
+  --prompt "Explain RAM in one line." --max-new 32
 ```
 
-### Convenience script
-
-Wraps the harness target above (builds GGUF native deps first):
-
-```bash
-./scripts/e2e-qwen3-2b.sh
-UIE_LLM_PROMPT="Explain RAM in one line." ./scripts/e2e-qwen3-2b.sh -- --prompt "Explain RAM in one line."
-```
+First `cargo run` with `--features gguf` compiles native GGUF deps (slow once); exit **0** means assertions passed, **1** if the model is missing or generation failed.
 
 ## Path B — Serve + IPC (optional)
 

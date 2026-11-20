@@ -45,7 +45,6 @@ This is **text → text** [modality](./015-modality-catalog.md). It reuses the s
 - **Live (LM Studio GGUF / Qwen3 2B):** see [runbook: Qwen3 2B e2e](../runbooks/qwen3-2b-e2e.md).
   ```bash
   cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion
-  ./scripts/e2e-qwen3-2b.sh
   cargo run -p uie-llm -- --auto-qwen3-2b --chat --prompt "Hello"
   ```
 - Registry id: `cargo run -p uie-llm -- --registry-id 'lmstudio:...' --prompt "Hello"`
