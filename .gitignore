@@ -5,3 +5,6 @@ fixtures/lmstudio/**/*.gguf
 output.jpg
 __pycache__/
 *.pyc
+/fixtures/comfy-shared/
+/config/comfy_workflows/qwen_image_api.json
+/config/comfy_workflows/qwen_image_patches.json
