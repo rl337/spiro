@@ -1,4 +1,5 @@
 /target/
+/fixtures/comfy-shared/
 **/*.rs.bk
 output.jpg
 __pycache__/

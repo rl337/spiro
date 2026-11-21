@@ -10,8 +10,4 @@ roots:
   - id: comfy-shared
     path: ~/ComfyUI-Shared/models
     kind: comfy_ui
-<<<<<<< HEAD
     max_depth: 5
-=======
-    max_depth: 5
->>>>>>> de02716 (US-021: Add ComfyUI-Shared models root to model_roots config)
