@@ -1,4 +1,6 @@
-# Local laptop: scan LM Studio + optional Comfy paths (US-021).
+# Local laptop: scan LM Studio + ComfyUI-Shared (US-021).
+# Comfy scanner indexes: checkpoints/, vae/, text_encoders|clip/, loras/, controlnet/, unet/, …
+
 roots:
   - id: lmstudio
     path: ~/.lmstudio/models
@@ -8,4 +10,8 @@ roots:
   - id: comfy-shared
     path: ~/ComfyUI-Shared/models
     kind: comfy_ui
+<<<<<<< HEAD
     max_depth: 5
+=======
+    max_depth: 5
+>>>>>>> de02716 (US-021: Add ComfyUI-Shared models root to model_roots config)
