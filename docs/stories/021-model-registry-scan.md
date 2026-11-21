@@ -13,10 +13,12 @@
 ## In plain terms
 
 1. `model_roots.yaml` lists roots (`id`, `path`, `kind`: `lm_studio` | `comfy_ui` | `generic`).
-2. `ModelRegistry::refresh` walks each root, classifies `.gguf`, `.safetensors`, `.onnx`, `.stub`, etc.
-3. LM Studio layout yields `ModelRole::Llm`; Comfy folders map to `checkpoints`, `vae`, `text_encoders`, …
-4. Each file gets a stable id: `{root_id}:{relative/path}`.
-5. Spiro / `uie-serve` resolve `registry_id` → absolute path for [loaders](./007-models-loaders.md).
+2. `ModelRegistry::refresh` (or `refresh_with_detector`) walks each root, classifies `.gguf`, `.safetensors`, `.onnx`, `.stub`, etc.
+3. **`DirectoryModelDetector`** performs the walk; **`TestModelDetector`** wraps it and overlays `models/mock/` (LM Studio + Comfy stub trees) for E2E.
+4. LM Studio layout yields `ModelRole::Llm`; mock LM roots also index `.stub` as `Llm`.
+5. Comfy folders map to `checkpoints`, `vae`, `text_encoders`, …
+6. Each file gets a stable id: `{root_id}:{relative/path}`.
+7. Spiro / `uie-serve` resolve `registry_id` → absolute path for [loaders](./007-models-loaders.md); stub paths load via [`load_executor_for_entry`](../../crates/uie-catalog/src/executor.rs).
 
 ## Related stories
 
@@ -42,6 +44,8 @@
 |--------|------|---------|
 | Rust | `crates/uie-acceptance/tests/us_021_model_registry.rs` | `cargo test -p uie-acceptance --test us_021_model_registry` |
 | Rust | `crates/uie-catalog/tests/scan.rs` | `cargo test -p uie-catalog` |
+| Rust | `crates/uie-catalog/tests/mock_detector.rs` | `cargo test -p uie-catalog --test mock_detector` |
+| E2E | `crates/uie-e2e` | `cargo run -p uie-e2e -- list-models` |
 | Rust (live) | `crates/uie-acceptance/tests/live_models.rs` | `UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance --test live_models live_us_021` |
 
 ## Observability

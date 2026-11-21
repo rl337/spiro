@@ -1,3 +1,4 @@
+mod catalog;
 #[cfg(feature = "gguf")]
 mod gguf_resolve;
 mod harness;
@@ -22,6 +23,7 @@ fn usage() {
         "uie-e2e — end-to-end harness (application + command-pattern tests)\n\
          \n\
          uie-e2e list\n\
+         uie-e2e list-models [--no-mock]\n\
          uie-e2e run <name-or-glob> [-- TEST_ARGS...]\n\
          \n\
          Examples:\n\
@@ -39,14 +41,31 @@ fn split_test_args(args: &[String]) -> (&[String], &[String]) {
 }
 
 fn cmd_list() -> Result<(), E2eError> {
-    let tests = registry::all_tests();
-    if tests.is_empty() {
-        eprintln!("(no tests — enable crate features, e.g. --features gguf)");
-        return Ok(());
-    }
-    for t in &tests {
+    for t in registry::all_tests() {
         println!("{}\t{}", t.name(), t.description());
     }
+    Ok(())
+}
+
+fn cmd_list_models(no_mock: bool) -> Result<(), E2eError> {
+    let repo = repo_root();
+    let roots = catalog::roots_from_env(&repo).map_err(|e| E2eError::Failed(e.to_string()))?;
+    let catalog = catalog::catalog_with_overlay(&repo, roots, !no_mock);
+    for e in catalog.registry().entries() {
+        println!(
+            "{}\t{:?}\t{:?}\t{}",
+            e.id,
+            e.role,
+            e.format,
+            e.path.display()
+        );
+    }
+    eprintln!(
+        "(indexed {} files from {} roots; mock overlay: {})",
+        catalog.registry().stats().files_indexed,
+        catalog.registry().stats().roots_scanned,
+        !no_mock
+    );
     Ok(())
 }
 
@@ -67,6 +86,10 @@ fn main() {
     let rest = &args[2..];
     let result = match cmd {
         "list" => cmd_list(),
+        "list-models" => {
+            let no_mock = rest.iter().any(|a| a == "--no-mock");
+            cmd_list_models(no_mock)
+        }
         "run" => {
             if rest.is_empty() {
                 eprintln!("missing pattern for `run`");
