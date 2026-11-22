@@ -42,6 +42,7 @@ Mock stubs under `models/mock/` are merged by [`TestModelDetector`](../../crates
 cargo run -p uie-e2e -- list-models
 cargo run -p uie-e2e -- run mock_registry_discovery
 cargo run -p uie-e2e -- run mock_registry_discovery -- --load-stub
+cargo run -p uie-e2e -- run modality_live_smoke   # all 9 stub modalities, live CPU infer (US-010–019)
 ```
 
 Arguments after `--` are passed to each matched test’s `run` (test-specific CLI flags).

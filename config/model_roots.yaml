@@ -4,3 +4,8 @@ roots:
     path: ~/.lmstudio/models
     kind: lm_studio
     max_depth: 8
+
+  - id: comfy-shared
+    path: ~/ComfyUI-Shared/models
+    kind: comfy_ui
+    max_depth: 5
