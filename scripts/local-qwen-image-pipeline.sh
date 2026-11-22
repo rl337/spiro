@@ -51,6 +51,7 @@ python3 scripts/comfy_qwen_image_generate.py \
 
 echo "--- LM Studio vision analysis ---"
 VISION="$(python3 scripts/lmstudio_analyze_image.py --image "$OUT" --question "$QUESTION")"
+printf '%s\n' "$VISION"
 export VISION
 
 if [[ "${UIE_LLM_FOLLOWUP:-0}" == "1" ]]; then
