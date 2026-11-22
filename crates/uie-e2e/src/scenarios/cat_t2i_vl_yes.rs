@@ -97,20 +97,16 @@ fn vl_assert_cat_yes(
     png: &std::path::Path,
     args: &[String],
 ) -> Result<(), E2eError> {
-    use crate::gguf_resolve::{find_qwen_vl_2b_bundle, flag_value};
-    use uie_loader_gguf::{describe_image_mmproj, VisionDescribeOptions};
+    use crate::vl_helpers::describe_with_vl;
 
-    let bundle = find_qwen_vl_2b_bundle(catalog).map_err(|e| E2eError::Failed(e.to_string()))?;
-    let prompt = flag_value(args, "--prompt")
-        .unwrap_or_else(|| "Is there a cat in this image? Answer only yes or no.".into());
-    let mut opts = VisionDescribeOptions::default();
-    opts.max_new_tokens = flag_value(args, "--max-new")
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(24);
-    opts.temperature = 0.1;
-
-    let out = describe_image_mmproj(&bundle.llm, &bundle.mmproj, png, &prompt, &opts)
-        .map_err(|e| E2eError::Failed(format!("vl cat check: {e:?}")))?;
+    let out = describe_with_vl(
+        catalog,
+        png,
+        args,
+        "Is there a cat in this image? Answer only yes or no.",
+        24,
+        0.1,
+    )?;
 
     let answer = out.text.trim().to_ascii_lowercase();
     eprintln!("vl_cat_answer: {}", out.text.trim());

@@ -35,6 +35,7 @@ cargo run -p uie-e2e --features gguf -- run 'qwen*' -- --prompt "Hello" --max-ne
 ./scripts/download-qwen3-vl-0.6b-fixture.sh   # once, for VL weights
 export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.fixture-vl.yaml
 cargo run -p uie-e2e --features spiro-chain -- run cat_t2i_vl_yes
+cargo run -p uie-e2e --features spiro-chain -- run vl_cat_chat
 ```
 
 | Subcommand | Purpose |

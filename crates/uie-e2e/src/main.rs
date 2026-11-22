@@ -7,6 +7,8 @@ mod harness;
 mod registry;
 mod scenarios;
 mod spiro_image;
+#[cfg(feature = "gguf")]
+mod vl_helpers;
 
 use std::env;
 use std::path::PathBuf;
@@ -33,7 +35,8 @@ fn usage() {
          Examples:\n\
            cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion\n\
            cargo run -p uie-e2e --features gguf -- run 'qwen*' -- --prompt Hi --max-new 24\n\
-           cargo run -p uie-e2e --features spiro-chain -- run cat_t2i_vl_yes"
+           cargo run -p uie-e2e --features spiro-chain -- run cat_t2i_vl_yes\n\
+           cargo run -p uie-e2e --features spiro-chain -- run vl_cat_chat"
     );
 }
 
