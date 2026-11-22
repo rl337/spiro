@@ -19,7 +19,6 @@ hf_hub_download(
     repo_id="hf-internal-testing/tiny-random-vit",
     filename="model.safetensors",
     local_dir=str(root / "checkpoints"),
-    local_dir_use_symlinks=False,
 )
 src = root / "checkpoints" / "model.safetensors"
 dst = root / "checkpoints" / "tiny_random_vit.safetensors"
