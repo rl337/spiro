@@ -49,11 +49,12 @@ pub fn save_f32_nchw_rgb(tensor: &Tensor, path: &Path, width: u32, height: u32) 
             slice.len()
         )));
     }
+    let plane = (width as usize) * (height as usize);
     let img: RgbImage = ImageBuffer::from_fn(width, height, |x, y| {
-        let base = (y as usize * width as usize + x as usize) * ch;
-        let r = (slice[base].clamp(0.0, 1.0) * 255.0) as u8;
-        let g = (slice[base + 1].clamp(0.0, 1.0) * 255.0) as u8;
-        let b = (slice[base + 2].clamp(0.0, 1.0) * 255.0) as u8;
+        let i = y as usize * width as usize + x as usize;
+        let r = (slice[i].clamp(0.0, 1.0) * 255.0) as u8;
+        let g = (slice[plane + i].clamp(0.0, 1.0) * 255.0) as u8;
+        let b = (slice[2 * plane + i].clamp(0.0, 1.0) * 255.0) as u8;
         image::Rgb([r, g, b])
     });
     if let Some(parent) = path.parent() {

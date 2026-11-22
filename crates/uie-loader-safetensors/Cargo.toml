@@ -13,6 +13,7 @@ uie-catalog = { path = "../uie-catalog" }
 uie-stub-models = { path = "../uie-stub-models" }
 uie-telemetry = { path = "../uie-telemetry" }
 safetensors = "0.4"
+memmap2 = "0.9"
 tracing.workspace = true
 thiserror.workspace = true
 

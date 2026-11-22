@@ -15,7 +15,7 @@ use llama_cpp_2::sampling::LlamaSampler;
 use uie_core::error::{Error, Result};
 use uie_telemetry::{ComputeDevice, InferMetrics};
 
-use crate::chat::format_user_message_engine;
+use crate::chat::format_user_message_engine_vision;
 use crate::complete::CompleteResult;
 use crate::engine::GgufEngine;
 
@@ -83,7 +83,8 @@ pub fn describe_image_mmproj(
     } else {
         format!("{marker}\n{user_prompt}")
     };
-    let text = format_user_message_engine(&engine, &user_body).unwrap_or(user_body);
+    let text =
+        format_user_message_engine_vision(&engine, &user_body).unwrap_or_else(|_| user_body.clone());
 
     let chunks = mtmd
         .tokenize(

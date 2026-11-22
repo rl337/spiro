@@ -69,6 +69,9 @@ impl E2eTest for SpiroNativeQwenChain {
             .map_err(|e| E2eError::Failed(format!("t2i infer: {e:?}")))?;
         let image_tensors = t2i_out.outputs;
         ctx.assert(!image_tensors.is_empty(), "t2i produced no tensors")?;
+        if diff_entry.format == uie_catalog::ModelFormat::Safetensors {
+            assert_safetensors_hop_telemetry(ctx, &t2i_out.trace)?;
+        }
 
         let out_dir = artifact_dir(args);
         let png = out_dir.join("spiro_native_image.png");
@@ -125,7 +128,31 @@ fn run_qwen_vl_on_image(
 
     ctx.record("qwen_vl_completion_metrics");
     ctx.assert(!out.text.trim().is_empty(), "empty vision description")?;
+    ctx.assert(
+        out.metrics.completion_tokens > 0,
+        "expected vision completion_tokens > 0",
+    )?;
+    ctx.assert(
+        out.metrics.total_ms >= 0.0,
+        "expected non-negative vision total_ms",
+    )?;
     eprintln!("image_description: {}", out.text.trim());
+    Ok(())
+}
+
+fn assert_safetensors_hop_telemetry(
+    ctx: &mut E2eContext,
+    trace: &uie_telemetry::ExecutionTrace,
+) -> Result<(), E2eError> {
+    let mmap = trace
+        .phases
+        .iter()
+        .any(|p| p.name.starts_with("safetensors_mmap_"));
+    ctx.assert(mmap, "missing safetensors_mmap_* phase in t2i trace")?;
+    ctx.assert(
+        trace.phases.iter().any(|p| p.name == "safetensors_weight_bind"),
+        "missing safetensors_weight_bind phase in t2i trace",
+    )?;
     Ok(())
 }
 

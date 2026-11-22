@@ -1,3 +1,4 @@
+use memmap2::Mmap;
 use safetensors::SafeTensors;
 use std::fs::File;
 use std::path::{Path, PathBuf};
@@ -27,10 +28,9 @@ impl SafetensorsExecutor {
             .metadata()
             .map_err(|e| Error::ModelLoad(e.to_string()))?
             .len();
-        let bytes = std::fs::read(path).map_err(|e| Error::ModelLoad(e.to_string()))?;
-        let tensors =
-            SafeTensors::deserialize(&bytes).map_err(|e| Error::ModelLoad(e.to_string()))?;
-        let tensor_count = tensors.names().len();
+        let mmap = unsafe { memmap2::MmapOptions::new().map(&file) }
+            .map_err(|e| Error::ModelLoad(e.to_string()))?;
+        let tensor_count = safetensor_count(&mmap)?;
         let name = path
             .file_name()
             .and_then(|s| s.to_str())
@@ -62,6 +62,12 @@ impl SafetensorsExecutor {
     pub fn tensor_count(&self) -> usize {
         self.tensor_count
     }
+}
+
+fn safetensor_count(mmap: &Mmap) -> Result<usize> {
+    let tensors =
+        SafeTensors::deserialize(mmap).map_err(|e| Error::ModelLoad(e.to_string()))?;
+    Ok(tensors.names().len())
 }
 
 impl InferenceExecutor for SafetensorsExecutor {

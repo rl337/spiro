@@ -122,7 +122,7 @@ pub fn find_qwen_vl_2b_bundle(catalog: &ModelCatalog) -> Result<QwenVisionBundle
             continue;
         };
         let mut score = 5; // qwen + mmproj ⇒ treat as VL (LM Studio layout)
-        if hay.contains("2b") || hay.contains("2.0b") {
+        if hay_has_standalone_2b(&hay) {
             score += 8;
         }
         if hay.contains("0.6b") || hay.contains("0_6b") || hay.contains("0-6b") {
@@ -233,12 +233,32 @@ pub fn find_qwen3_2b_path(catalog: &ModelCatalog) -> Result<PathBuf> {
     ))
 }
 
+/// Match `2b` / `2.0b` size tokens without hitting `12b`, `72b`, etc.
+fn hay_has_standalone_2b(hay: &str) -> bool {
+    if hay.contains("2.0b") {
+        return true;
+    }
+    let bytes = hay.as_bytes();
+    let mut i = 0;
+    while i + 1 < bytes.len() {
+        if bytes[i] == b'2' && bytes[i + 1] == b'b' {
+            let before_digit = i > 0 && bytes[i - 1].is_ascii_digit();
+            let after_digit = i + 2 < bytes.len() && bytes[i + 2].is_ascii_digit();
+            if !before_digit && !after_digit {
+                return true;
+            }
+        }
+        i += 1;
+    }
+    false
+}
+
 #[cfg(test)]
 mod tests {
     use std::fs;
     use std::path::PathBuf;
 
-    use super::mmproj_beside_llm;
+    use super::{hay_has_standalone_2b, mmproj_beside_llm};
 
     #[test]
     fn pairs_lmstudio_model_dot_gguf_with_sole_mmproj() {
@@ -248,6 +268,14 @@ mod tests {
         fs::write(&llm, b"").unwrap();
         fs::write(&mm, b"").unwrap();
         assert_eq!(mmproj_beside_llm(&llm), Some(mm));
+    }
+
+    #[test]
+    fn standalone_2b_size_token() {
+        assert!(hay_has_standalone_2b("qwen3-vl-2b-instruct"));
+        assert!(hay_has_standalone_2b("publisher/qwen2-vl-2.0b/chat"));
+        assert!(!hay_has_standalone_2b("qwen2-vl-72b-instruct"));
+        assert!(!hay_has_standalone_2b("qwen2-vl-12b-instruct"));
     }
 
     #[test]
