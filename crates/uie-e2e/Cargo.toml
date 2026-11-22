@@ -28,3 +28,6 @@ uie-loader-gguf = { path = "../uie-loader-gguf", optional = true }
 image = "0.24"
 glob = "0.3"
 thiserror.workspace = true
+
+[dev-dependencies]
+tempfile = "3"

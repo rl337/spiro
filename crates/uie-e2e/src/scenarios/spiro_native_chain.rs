@@ -23,7 +23,7 @@ impl E2eTest for SpiroNativeQwenChain {
     }
 
     fn description(&self) -> &'static str {
-        "Registry → safetensors T2I hop → PNG artifact → Qwen2-VL 2B describes the image (Spiro GGUF + mmproj)."
+        "Registry → safetensors T2I hop → PNG artifact → Qwen VL ~2B (LM Studio mmproj) describes the image."
     }
 
     fn run(&self, ctx: &mut E2eContext, args: &[String]) -> Result<(), E2eError> {

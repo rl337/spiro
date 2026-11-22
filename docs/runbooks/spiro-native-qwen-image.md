@@ -7,11 +7,11 @@ Use **registry discovery** + **`InferenceRuntime`** + **byte pipeline** only.
 | Step | Loader | What happens |
 |------|--------|----------------|
 | T2I | `SafetensorsModelLoader` | `mmap`/read Comfy checkpoint from `comfy-shared:` id; **contract infer** (US-012 shapes) |
-| Image→text | `uie-loader-gguf` + **mmproj** | **Qwen2-VL ~2B** reads the PNG via llama.cpp MTMD (pixels, not stub) |
+| Image→text | `uie-loader-gguf` + **mmproj** | **Qwen VL ~2B** (your LM Studio download) reads the PNG via llama.cpp MTMD |
 
 Real Qwen-Image **denoise** inside Rust is US-012 follow-on; phase 1 proves **weights load through Spiro** and the multi-hop path runs.
 
-Text-only **Qwen3-2B** cannot see images; use **Qwen2-VL-2B-Instruct** (main `.gguf` + `mmproj-*.gguf` in the same LM Studio folder).
+Use the **same Qwen ~2B VL** you run in LM Studio — not the text-only 2B chat model. Spiro detects VL by a **`mmproj` `.gguf` in the same folder** as the main weights (names often omit `vl`, e.g. `model.gguf` + `mmproj-….gguf`).
 
 ## Local run
 
@@ -27,11 +27,13 @@ Output: `/tmp/uie-artifacts/spiro_native_image.png` (or `--out-dir` / `UIE_ARTIF
 
 Prerequisites for the vision step:
 
-- **Qwen2-VL-2B-Instruct** (or similar) under `lmstudio:` roots — both `*.gguf` and matching `*mmproj*.gguf`
-- Or set `UIE_QWEN_VL_GGUF` and `UIE_QWEN_VL_MMPROJ` to absolute paths
+- Qwen **VL** ~2B under `lmstudio:` roots (main `.gguf` + `*mmproj*.gguf` in that folder)
+- Or `UIE_QWEN_VL_REGISTRY_ID` from `list-models` / `list-gguf`
+- Or `UIE_QWEN_VL_GGUF` + `UIE_QWEN_VL_MMPROJ`
 
 ```bash
-cargo run -p uie-llm -- list-gguf | rg -i 'qwen.*2b'
+cargo run -p uie-e2e --features spiro-chain -- list-models | rg -i qwen
+# pick the folder that contains both model.gguf (or named .gguf) and mmproj
 ```
 
 CI / no local VL weights: `--skip-llm` (stops after PNG; no stub caption).
