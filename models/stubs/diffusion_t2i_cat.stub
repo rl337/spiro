@@ -1,0 +1,2 @@
+diffusion_t2i
+# E2E: uie-e2e CatFixtureDiffusionLoader emits fixtures/images/cat_512.png as T2I output.

@@ -1,10 +1,11 @@
+#[cfg(feature = "gguf")]
+mod cat_fixture_loader;
 mod catalog;
 #[cfg(feature = "gguf")]
 mod gguf_resolve;
 mod harness;
 mod registry;
 mod scenarios;
-#[cfg(feature = "safetensors")]
 mod spiro_image;
 
 use std::env;
@@ -31,7 +32,8 @@ fn usage() {
          \n\
          Examples:\n\
            cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion\n\
-           cargo run -p uie-e2e --features gguf -- run 'qwen*' -- --prompt Hi --max-new 24"
+           cargo run -p uie-e2e --features gguf -- run 'qwen*' -- --prompt Hi --max-new 24\n\
+           cargo run -p uie-e2e --features spiro-chain -- run cat_t2i_vl_yes"
     );
 }
 
