@@ -150,7 +150,10 @@ fn assert_safetensors_hop_telemetry(
         .any(|p| p.name.starts_with("safetensors_mmap_"));
     ctx.assert(mmap, "missing safetensors_mmap_* phase in t2i trace")?;
     ctx.assert(
-        trace.phases.iter().any(|p| p.name == "safetensors_weight_bind"),
+        trace
+            .phases
+            .iter()
+            .any(|p| p.name == "safetensors_weight_bind"),
         "missing safetensors_weight_bind phase in t2i trace",
     )?;
     Ok(())

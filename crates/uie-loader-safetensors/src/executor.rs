@@ -65,8 +65,7 @@ impl SafetensorsExecutor {
 }
 
 fn safetensor_count(mmap: &Mmap) -> Result<usize> {
-    let tensors =
-        SafeTensors::deserialize(mmap).map_err(|e| Error::ModelLoad(e.to_string()))?;
+    let tensors = SafeTensors::deserialize(mmap).map_err(|e| Error::ModelLoad(e.to_string()))?;
     Ok(tensors.names().len())
 }
 

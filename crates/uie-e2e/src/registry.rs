@@ -13,10 +13,8 @@ use crate::scenarios::vl_cat_chat::VlCatChat;
 
 pub fn all_tests() -> Vec<Box<dyn E2eTest>> {
     #[cfg_attr(not(any(feature = "safetensors", feature = "gguf")), allow(unused_mut))]
-    let mut v: Vec<Box<dyn E2eTest>> = vec![
-        Box::new(MockRegistryDiscovery),
-        Box::new(ModalityLiveSmoke),
-    ];
+    let mut v: Vec<Box<dyn E2eTest>> =
+        vec![Box::new(MockRegistryDiscovery), Box::new(ModalityLiveSmoke)];
     #[cfg(feature = "gguf")]
     {
         v.push(Box::new(CatT2iVlYes));

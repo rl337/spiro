@@ -83,8 +83,8 @@ pub fn describe_image_mmproj(
     } else {
         format!("{marker}\n{user_prompt}")
     };
-    let text =
-        format_user_message_engine_vision(&engine, &user_body).unwrap_or_else(|_| user_body.clone());
+    let text = format_user_message_engine_vision(&engine, &user_body)
+        .unwrap_or_else(|_| user_body.clone());
 
     let chunks = mtmd
         .tokenize(
