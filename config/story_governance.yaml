@@ -115,7 +115,7 @@ stories:
       - crates/uie-acceptance/tests/live_models.rs
       - crates/uie-catalog/tests/mock_detector.rs
       - crates/uie-e2e/src/scenarios/mock_registry.rs
-      - crates/uie-e2e/src/scenarios/modality_live.rs
+      - crates/uie-e2e/src/scenarios/modality_live_smoke.rs
   US-022:
     acceptance:
       - crates/uie-acceptance/tests/us_022_byte_pipeline.rs
