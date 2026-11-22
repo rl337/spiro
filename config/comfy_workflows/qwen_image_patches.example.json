@@ -1,0 +1,8 @@
+{
+  "_comment": "Copy to qwen_image_patches.json after you Export (API) a Qwen-Image workflow. Node ids MUST match your graph.",
+  "459:452": {
+    "inputs": {
+      "prompt": "REPLACE_VIA_SHELL_PROMPT"
+    }
+  }
+}
