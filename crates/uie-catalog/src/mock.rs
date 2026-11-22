@@ -21,6 +21,12 @@ pub fn mock_model_roots(repo_root: &Path) -> ModelRootsFile {
                 kind: ModelRootKind::ComfyUi,
                 max_depth: 5,
             },
+            ModelRootConfig {
+                id: "mock-generic".into(),
+                path: base.join("generic"),
+                kind: ModelRootKind::Generic,
+                max_depth: 2,
+            },
         ],
     }
 }

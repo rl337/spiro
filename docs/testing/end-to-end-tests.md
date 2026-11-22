@@ -45,6 +45,17 @@ cargo run -p uie-e2e -- run mock_registry_discovery -- --load-stub
 cargo run -p uie-e2e -- run modality_live_smoke   # all 9 stub modalities, live CPU infer (US-010–019)
 ```
 
+### Live modality tiers (cloud vs laptop)
+
+| Tier | What runs | Where |
+|------|-----------|--------|
+| **A — Stub live** | `modality_live_smoke`: load `.stub` + `sample_input` → real `InferenceRuntime::infer` | Cloud agent (no GPU) |
+| **B — Registry + ONNX** | `list-models`, MNIST `cargo run -p uie-mnist` | Cloud (tiny ONNX in repo) |
+| **C — GGUF LLM** | `qwen3_2b_chat_completion` | Laptop + weights + native build |
+| **D — Comfy weights** | `comfy-shared:` entries from `~/ComfyUI-Shared/models` | Laptop; optional `./scripts/bootstrap-cloud-live.sh` in cloud for scan-only |
+
+`./scripts/bootstrap-cloud-live.sh` creates a Comfy-shaped tree and optionally downloads a ~176 KB HF `safetensors` for catalog smoke (no ComfyUI server).
+
 Arguments after `--` are passed to each matched test’s `run` (test-specific CLI flags).
 
 Environment and registry conventions match [acceptance live mode](../acceptance-tests.md) (`SPIRO_MODEL_ROOTS`, `UIE_GGUF_MODEL`, etc.).
