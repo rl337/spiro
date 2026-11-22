@@ -1,4 +1,4 @@
-//! US-012 → US-016/010: Spiro-native chain (registry paths, safetensors mmap, stub/GGUF), no Comfy/LM Studio HTTP.
+//! US-012 → US-016/017: Spiro-native chain (registry paths, safetensors mmap, Qwen2-VL GGUF), no Comfy/LM Studio HTTP.
 
 use std::env;
 use std::path::PathBuf;
@@ -8,7 +8,6 @@ use uie_core::telemetry::ExecutionRecorder;
 use uie_core::CpuBackend;
 use uie_core::InferenceRuntime;
 use uie_loader_safetensors::{modality_for_catalog_entry, SafetensorsModelLoader};
-use uie_stub_models::telemetry_assert::assert_stub_modality_telemetry;
 use uie_stub_models::{sample_input, ModalityKind, StubModelLoader};
 
 use crate::catalog::catalog_for_e2e;
@@ -24,7 +23,7 @@ impl E2eTest for SpiroNativeQwenChain {
     }
 
     fn description(&self) -> &'static str {
-        "Load weights via Spiro: safetensors T2I hop → image_to_text → optional GGUF caption (registry roots)."
+        "Registry → safetensors T2I hop → PNG artifact → Qwen2-VL 2B describes the image (Spiro GGUF + mmproj)."
     }
 
     fn run(&self, ctx: &mut E2eContext, args: &[String]) -> Result<(), E2eError> {
@@ -77,55 +76,56 @@ impl E2eTest for SpiroNativeQwenChain {
             .map_err(|e| E2eError::Failed(e.to_string()))?;
         ctx.record(format!("wrote_image:{}", png.display()));
 
-        ctx.phase("image_to_text");
-        let i2t_path = ctx.repo_root.join("models/stubs/image_to_text.stub");
-        let i2t = load_executor_for_entry(&rt, &stub_entry(i2t_path))
-            .map_err(|e| E2eError::Failed(e.to_string()))?;
-        session = rt.create_session();
-        let i2t_in = if image_tensors[0].shape().dims() == &[1, 3, 224, 224][..] {
-            vec![image_tensors[0].clone()]
-        } else {
-            sample_input(ModalityKind::ImageToText).map_err(|e| E2eError::Failed(e.to_string()))?
-        };
-        let cap = rt
-            .infer(
-                i2t.as_ref(),
-                &i2t_in,
-                &mut session,
-                ExecutionRecorder::new("US-016"),
-            )
-            .map_err(|e| E2eError::Failed(e.to_string()))?;
-        assert_stub_modality_telemetry(&cap.trace, ModalityKind::ImageToText);
-        ctx.record("image_to_text_stub"); // assert_story_events
+        if args.iter().any(|a| a == "--skip-llm") {
+            ctx.record("skipped_qwen_vl_describe");
+            return Ok(());
+        }
 
         #[cfg(feature = "gguf")]
-        if !args.iter().any(|a| a == "--skip-llm") {
-            ctx.phase("gguf_summarize");
-            run_gguf_followup(ctx, &catalog, &cap.trace)?;
+        {
+            ctx.phase("qwen_vl_describe");
+            run_qwen_vl_on_image(ctx, &catalog, &png, args)?;
         }
         #[cfg(not(feature = "gguf"))]
-        let _ = &catalog;
+        {
+            return Err(E2eError::Failed(
+                "spiro_native_qwen_chain requires --features spiro-chain (gguf vision)".into(),
+            ));
+        }
 
         Ok(())
     }
 }
 
 #[cfg(feature = "gguf")]
-fn run_gguf_followup(
+fn run_qwen_vl_on_image(
     ctx: &mut E2eContext,
     catalog: &ModelCatalog,
-    _cap: &uie_telemetry::ExecutionTrace,
+    png: &std::path::Path,
+    args: &[String],
 ) -> Result<(), E2eError> {
-    use crate::gguf_resolve::find_qwen3_2b_path;
-    use uie_loader_gguf::{complete_gguf_file_chat, CompleteOptions};
+    use crate::gguf_resolve::{find_qwen_vl_2b_bundle, flag_value};
+    use uie_loader_gguf::{describe_image_mmproj, VisionDescribeOptions};
 
-    let model = find_qwen3_2b_path(catalog).map_err(|e| E2eError::Failed(e.to_string()))?;
-    let prompt = "Summarize what the vision stub said about the generated image in one sentence.";
-    let out = complete_gguf_file_chat(&model, prompt, &CompleteOptions::default())
-        .map_err(|e| E2eError::Failed(e.to_string()))?;
-    ctx.record("gguf_completion_metrics");
-    ctx.assert(!out.text.is_empty(), "empty gguf summary")?;
-    eprintln!("llm_summary: {}", out.text);
+    let bundle = find_qwen_vl_2b_bundle(catalog).map_err(|e| E2eError::Failed(e.to_string()))?;
+    ctx.record(format!("qwen_vl_llm:{}", bundle.llm.display()));
+    ctx.record(format!("qwen_vl_mmproj:{}", bundle.mmproj.display()));
+
+    let prompt = flag_value(args, "--prompt").unwrap_or_else(|| {
+        "What is in this image? Describe the main subjects, colors, and layout in 2-3 sentences."
+            .into()
+    });
+    let mut opts = VisionDescribeOptions::default();
+    if let Some(n) = flag_value(args, "--max-new").and_then(|s| s.parse().ok()) {
+        opts.max_new_tokens = n;
+    }
+
+    let out = describe_image_mmproj(&bundle.llm, &bundle.mmproj, png, &prompt, &opts)
+        .map_err(|e| E2eError::Failed(format!("qwen vl describe: {e:?}")))?;
+
+    ctx.record("qwen_vl_completion_metrics");
+    ctx.assert(!out.text.trim().is_empty(), "empty vision description")?;
+    eprintln!("image_description: {}", out.text.trim());
     Ok(())
 }
 

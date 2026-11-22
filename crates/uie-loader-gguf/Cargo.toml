@@ -10,7 +10,7 @@ rust-version.workspace = true
 uie-core = { path = "../uie-core" }
 uie-telemetry = { path = "../uie-telemetry" }
 uie-stub-models = { path = "../uie-stub-models" }
-llama-cpp-2 = { version = "0.1.161", default-features = false, features = ["sampler"] }
+llama-cpp-2 = { version = "0.1.161", default-features = false, features = ["sampler", "mtmd"] }
 thiserror.workspace = true
 tracing.workspace = true
 serde = { workspace = true, features = ["derive"] }

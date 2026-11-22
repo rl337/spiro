@@ -7,6 +7,7 @@ mod complete;
 mod engine;
 mod loader;
 mod model;
+mod vision;
 
 pub use chat::format_user_message_engine;
 pub use complete::{
@@ -34,3 +35,4 @@ pub fn complete_gguf_file_chat(
 }
 pub use loader::GgufModelLoader;
 pub use model::{prompt_tensor, GgufLlmExecutor};
+pub use vision::{describe_image_mmproj, VisionDescribeOptions};
