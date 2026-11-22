@@ -24,12 +24,31 @@ from python.comfy_client import (  # noqa: E402
     wait_outputs,
 )
 
+_REPLACE_SENTINEL = "REPLACE_VIA_SHELL_PROMPT"
+
+
+def substitute_prompt_text(patches: dict, prompt_text: str) -> dict:
+    """Deep-copy patches and fill REPLACE_VIA_SHELL_PROMPT inputs."""
+    out = json.loads(json.dumps(patches))
+    for body in out.values():
+        if not isinstance(body, dict):
+            continue
+        inputs = body.get("inputs")
+        if not isinstance(inputs, dict):
+            continue
+        for key, val in list(inputs.items()):
+            if val == _REPLACE_SENTINEL:
+                inputs[key] = prompt_text
+    return out
+
 
 def load_patches(args: argparse.Namespace) -> dict:
     if args.patches:
-        return json.loads(args.patches.read_text(encoding="utf-8"))
+        raw = json.loads(args.patches.read_text(encoding="utf-8"))
+        return substitute_prompt_text(raw, args.prompt_text)
     if os.environ.get("COMFY_PATCHES_JSON"):
-        return json.loads(os.environ["COMFY_PATCHES_JSON"])
+        raw = json.loads(os.environ["COMFY_PATCHES_JSON"])
+        return substitute_prompt_text(raw, args.prompt_text)
     node = os.environ.get("COMFY_PROMPT_NODE")
     if node:
         field = os.environ.get("COMFY_PROMPT_FIELD", "text")

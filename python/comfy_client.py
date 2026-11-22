@@ -31,10 +31,14 @@ def load_workflow(path: Path) -> dict[str, Any]:
 def apply_patches(workflow: dict[str, Any], patches: dict[str, Any]) -> None:
     """patches: { \"node_id\": { \"inputs\": { \"text\": \"...\" } } }"""
     for node_id, body in patches.items():
+        if node_id.startswith("_"):
+            continue
+        if not isinstance(body, dict):
+            continue
         if node_id not in workflow:
             raise KeyError(f"workflow has no node {node_id!r}")
         node = workflow[node_id]
-        for key, val in body.get("inputs", {}).items():
+        for key, val in (body.get("inputs") or {}).items():
             node.setdefault("inputs", {})[key] = val
 
 
@@ -66,8 +70,15 @@ def wait_outputs(
                 continue
             raise
         entry = history.get(prompt_id)
-        if entry and entry.get("outputs"):
-            return entry["outputs"]
+        if entry:
+            status = entry.get("status") or {}
+            if status.get("status_str") == "error":
+                raise RuntimeError(
+                    f"ComfyUI prompt {prompt_id} failed: {status.get('messages', status)}"
+                )
+            outputs = entry.get("outputs")
+            if outputs:
+                return outputs
         time.sleep(poll_s)
     raise TimeoutError(f"ComfyUI prompt {prompt_id} did not finish within {timeout_s}s")
 

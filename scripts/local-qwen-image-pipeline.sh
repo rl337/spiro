@@ -13,6 +13,7 @@ export SPIRO_MODEL_ROOTS="${SPIRO_MODEL_ROOTS:-$PWD/config/model_roots.yaml}"
 WORKFLOW="${COMFY_WORKFLOW:-$PWD/config/comfy_workflows/qwen_image_api.json}"
 PATCHES="${COMFY_PATCHES:-$PWD/config/comfy_workflows/qwen_image_patches.json}"
 PROMPT="${UIE_IMAGE_PROMPT:-A simple blue square on a white background, flat graphic.}"
+export UIE_IMAGE_PROMPT="$PROMPT"
 OUT="${UIE_ARTIFACT_DIR:-/tmp/uie-artifacts}/comfy_qwen_image.png"
 QUESTION="${UIE_IMAGE_QUESTION:-Describe this image briefly. What is the main subject and dominant colors?}"
 
@@ -29,11 +30,14 @@ if [[ -f "$PATCHES" ]]; then
   COMFY_PATCHES_JSON="$(python3 -c "
 import json, os
 p=json.load(open('$PATCHES'))
+prompt=os.environ.get('UIE_IMAGE_PROMPT') or os.environ.get('PROMPT', '')
 for n in p.values():
+    if not isinstance(n, dict):
+        continue
     ins=n.get('inputs') or {}
     for k,v in list(ins.items()):
         if v == 'REPLACE_VIA_SHELL_PROMPT':
-            ins[k]=os.environ['UIE_IMAGE_PROMPT']
+            ins[k]=prompt
 print(json.dumps(p))
 " )"
 else
@@ -46,15 +50,40 @@ python3 scripts/comfy_qwen_image_generate.py \
   --out "$OUT"
 
 echo "--- LM Studio vision analysis ---"
-python3 scripts/lmstudio_analyze_image.py --image "$OUT" --question "$QUESTION"
+VISION="$(python3 scripts/lmstudio_analyze_image.py --image "$OUT" --question "$QUESTION")"
+export VISION
 
 if [[ "${UIE_LLM_FOLLOWUP:-0}" == "1" ]]; then
   echo "--- UIE Qwen3-2B text follow-up (no image; summarizes vision output) ---"
   export CXX="${CXX:-g++}" CC="${CC:-gcc}" RUSTFLAGS="${RUSTFLAGS:-} -C linker=g++"
-  VISION="$(python3 scripts/lmstudio_analyze_image.py --image "$OUT" --question "$QUESTION")"
-  cargo run -q -p uie-llm --features gguf -- \
-    --auto-qwen3-2b --chat \
-    --prompt "Vision model said: $VISION
+  python3 - "$VISION" <<'PY'
+import os
+import subprocess
+import sys
 
-In one sentence, restate the image content for a log entry."
+vision = sys.argv[1]
+prompt = (
+    "Vision model said: "
+    + vision
+    + "\n\nIn one sentence, restate the image content for a log entry."
+)
+subprocess.run(
+    [
+        "cargo",
+        "run",
+        "-q",
+        "-p",
+        "uie-llm",
+        "--features",
+        "gguf",
+        "--",
+        "--auto-qwen3-2b",
+        "--chat",
+        "--prompt",
+        prompt,
+    ],
+    check=True,
+    env=os.environ,
+)
+PY
 fi
