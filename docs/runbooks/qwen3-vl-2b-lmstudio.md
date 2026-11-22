@@ -28,6 +28,17 @@ lmstudio:lmstudio-community/Qwen3-VL-2B-Instruct-GGUF/Qwen3-VL-2B-Instruct-Q4_K_
 
 (`config/model_roots.yaml` → `id: lmstudio`, path `~/.lmstudio/models`.)
 
+## Cloud VM smoke (0.6B, smaller download)
+
+```bash
+./scripts/download-qwen3-vl-0.6b-fixture.sh
+export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.fixture-vl.yaml
+export CXX=g++ CC=gcc RUSTFLAGS="-C linker=g++"
+cargo run -p uie-e2e --features spiro-chain -- run spiro_native_qwen_chain -- --max-new 96
+```
+
+Source: [oOundefinedOo/Qwen3-0.6B-Visual-GGUF](https://huggingface.co/oOundefinedOo/Qwen3-0.6B-Visual-GGUF) (~545 MiB). GGUF weights are gitignored; use the script to fetch.
+
 ## On your laptop: confirm paths
 
 ```bash

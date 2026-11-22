@@ -1,5 +1,6 @@
 /target/
 /fixtures/comfy-shared/
+fixtures/lmstudio/**/*.gguf
 **/*.rs.bk
 output.jpg
 __pycache__/

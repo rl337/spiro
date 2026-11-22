@@ -1,0 +1,11 @@
+# Cloud / CI: Qwen3-0.6B-Visual GGUF under fixtures/lmstudio (LM Studio layout).
+roots:
+  - id: lmstudio
+    path: /workspace/fixtures/lmstudio
+    kind: lm_studio
+    max_depth: 8
+
+  - id: workspace
+    path: /workspace/models
+    kind: generic
+    max_depth: 4

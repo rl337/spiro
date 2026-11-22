@@ -125,10 +125,13 @@ pub fn find_qwen_vl_2b_bundle(catalog: &ModelCatalog) -> Result<QwenVisionBundle
         if hay.contains("2b") || hay.contains("2.0b") {
             score += 8;
         }
+        if hay.contains("0.6b") || hay.contains("0_6b") || hay.contains("0-6b") {
+            score += 6;
+        }
         if hay.contains("1.7b") {
             score += 4;
         }
-        if hay.contains("vl") || hay.contains("vision") {
+        if hay.contains("visual") || hay.contains("vl") || hay.contains("vision") {
             score += 6;
         }
         if hay.contains("instruct") || hay.contains("chat") {

@@ -15,6 +15,7 @@ use llama_cpp_2::sampling::LlamaSampler;
 use uie_core::error::{Error, Result};
 use uie_telemetry::{ComputeDevice, InferMetrics};
 
+use crate::chat::format_user_message_engine;
 use crate::complete::CompleteResult;
 use crate::engine::GgufEngine;
 
@@ -77,17 +78,18 @@ pub fn describe_image_mmproj(
         .map_err(|e| Error::Runtime(format!("load image for mtmd: {e}")))?;
 
     let marker = mtmd_default_marker();
-    let text = if user_prompt.contains(marker) {
+    let user_body = if user_prompt.contains(marker) {
         user_prompt.to_string()
     } else {
         format!("{marker}\n{user_prompt}")
     };
+    let text = format_user_message_engine(&engine, &user_body).unwrap_or(user_body);
 
     let chunks = mtmd
         .tokenize(
             MtmdInputText {
                 text,
-                add_special: true,
+                add_special: false,
                 parse_special: true,
             },
             &[&bitmap],
