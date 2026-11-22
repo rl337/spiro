@@ -1,0 +1,20 @@
+[package]
+name = "uie-loader-safetensors"
+description = "Safetensors weight loader (mmap + modality contracts; US-012+)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+uie-core = { path = "../uie-core" }
+uie-catalog = { path = "../uie-catalog" }
+uie-stub-models = { path = "../uie-stub-models" }
+uie-telemetry = { path = "../uie-telemetry" }
+safetensors = "0.4"
+tracing.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+uie-telemetry = { path = "../uie-telemetry" }

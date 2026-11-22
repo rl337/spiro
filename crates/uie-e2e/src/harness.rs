@@ -51,6 +51,7 @@ impl E2eContext {
         }
     }
 
+    #[allow(dead_code)]
     pub fn events(&self) -> &[String] {
         &self.events
     }

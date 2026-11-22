@@ -4,6 +4,8 @@ mod gguf_resolve;
 mod harness;
 mod registry;
 mod scenarios;
+#[cfg(feature = "safetensors")]
+mod spiro_image;
 
 use std::env;
 use std::path::PathBuf;
