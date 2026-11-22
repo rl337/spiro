@@ -6,6 +6,7 @@ mod gguf_resolve;
 mod harness;
 mod registry;
 mod scenarios;
+#[cfg(any(feature = "gguf", feature = "safetensors"))]
 mod spiro_image;
 #[cfg(feature = "gguf")]
 mod vl_helpers;
