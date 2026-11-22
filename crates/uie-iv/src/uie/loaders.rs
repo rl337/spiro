@@ -42,6 +42,10 @@ impl ModelLoaderSet for LiveLoaderSet {
         {
             chain.push(Box::new(uie_loader_gguf::GgufModelLoader::default()));
         }
+        #[cfg(feature = "safetensors")]
+        {
+            chain.push(Box::new(uie_loader_safetensors::SafetensorsModelLoader));
+        }
         chain
     }
 }

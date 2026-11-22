@@ -14,12 +14,20 @@ path = "src/main.rs"
 [features]
 default = []
 gguf = ["dep:uie-loader-gguf"]
+safetensors = ["dep:uie-loader-safetensors", "dep:uie-pipeline"]
+spiro-chain = ["safetensors", "gguf"]
 
 [dependencies]
 uie-core = { path = "../uie-core" }
 uie-catalog = { path = "../uie-catalog" }
 uie-stub-models = { path = "../uie-stub-models" }
 uie-telemetry = { path = "../uie-telemetry" }
+uie-pipeline = { path = "../uie-pipeline", optional = true }
+uie-loader-safetensors = { path = "../uie-loader-safetensors", optional = true }
 uie-loader-gguf = { path = "../uie-loader-gguf", optional = true }
+image = "0.24"
 glob = "0.3"
 thiserror.workspace = true
+
+[dev-dependencies]
+tempfile = "3"

@@ -28,6 +28,14 @@ export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.yaml
 cargo run -p uie-e2e --features gguf -- list
 cargo run -p uie-e2e --features gguf -- run qwen3_2b_chat_completion
 cargo run -p uie-e2e --features gguf -- run 'qwen*' -- --prompt "Hello" --max-new 32
+
+**Cat + VL smoke** (proves T2I tensor → PNG → Qwen VL yes/no on a known cat fixture):
+
+```bash
+./scripts/download-qwen3-vl-0.6b-fixture.sh   # once, for VL weights
+export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.fixture-vl.yaml
+cargo run -p uie-e2e --features spiro-chain -- run cat_t2i_vl_yes
+cargo run -p uie-e2e --features spiro-chain -- run vl_cat_chat
 ```
 
 | Subcommand | Purpose |

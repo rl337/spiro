@@ -13,6 +13,7 @@ members = [
     "crates/uie-pipeline",
     "crates/uie-acceptance",
     "crates/uie-loader-gguf",
+    "crates/uie-loader-safetensors",
     "crates/uie-llm",
     "crates/uie-telemetry",
     "crates/uie-iv",

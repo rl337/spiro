@@ -21,3 +21,16 @@ pub fn format_user_message(model: &LlamaModel, user_message: &str) -> Result<Str
 pub fn format_user_message_engine(engine: &GgufEngine, user_message: &str) -> Result<String> {
     format_user_message(&engine.model, user_message)
 }
+
+/// Vision / short-caption path: Qwen3 templates default to thinking; disable when possible.
+pub fn format_user_message_engine_vision(
+    engine: &GgufEngine,
+    user_message: &str,
+) -> Result<String> {
+    let hay = engine.path.to_string_lossy().to_ascii_lowercase();
+    let mut msg = user_message.to_string();
+    if hay.contains("qwen3") && !msg.contains("/no_think") {
+        msg.push_str(" /no_think");
+    }
+    format_user_message_engine(engine, &msg)
+}
