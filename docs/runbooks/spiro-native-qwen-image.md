@@ -11,7 +11,7 @@ Use **registry discovery** + **`InferenceRuntime`** + **byte pipeline** only.
 
 Real Qwen-Image **denoise** inside Rust is US-012 follow-on; phase 1 proves **weights load through Spiro** and the multi-hop path runs.
 
-Use the **same Qwen ~2B VL** you run in LM Studio — not the text-only 2B chat model. Spiro detects VL by a **`mmproj` `.gguf` in the same folder** as the main weights (names often omit `vl`, e.g. `model.gguf` + `mmproj-….gguf`).
+Use the **same Qwen ~2B VL** you run in LM Studio — not the text-only 2B chat model. Spiro detects VL by a **`mmproj` `.gguf` in the same folder** as the main weights (names often omit `vl`, e.g. `model.gguf` + `mmproj-….gguf`). Expected catalog entry: [Qwen3-VL 2B in LM Studio](https://www.lmstudio.ai/models/qwen/qwen3-vl-2b) — see [qwen3-vl-2b-lmstudio.md](./qwen3-vl-2b-lmstudio.md) for typical paths.
 
 ## Local run
 

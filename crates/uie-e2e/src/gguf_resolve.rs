@@ -43,6 +43,33 @@ pub struct QwenVisionBundle {
 ///
 /// Vision is detected by the **mmproj file**, not by "vl" in the filename (many LM Studio
 /// trees use `model.gguf` + `mmproj-….gguf` for Qwen3-VL ~2B).
+/// Every registry GGUF with `qwen` in the id and a sibling mmproj (for `list-vl-bundles`).
+pub fn list_qwen_vl_bundles(catalog: &ModelCatalog) -> Vec<QwenVisionBundle> {
+    let mut out = Vec::new();
+    for entry in catalog.registry().entries() {
+        if entry.path.extension().is_none_or(|e| e != "gguf") {
+            continue;
+        }
+        let name = entry.path.file_name().unwrap_or_default().to_string_lossy();
+        if name.to_lowercase().contains("mmproj") {
+            continue;
+        }
+        let hay = format!("{} {}", entry.id, entry.path.display()).to_lowercase();
+        if !hay.contains("qwen") {
+            continue;
+        }
+        let Some(mmproj) = mmproj_beside_llm(&entry.path) else {
+            continue;
+        };
+        out.push(QwenVisionBundle {
+            llm: entry.path.clone(),
+            mmproj,
+        });
+    }
+    out.sort_by(|a, b| a.llm.to_string_lossy().cmp(&b.llm.to_string_lossy()));
+    out
+}
+
 pub fn find_qwen_vl_2b_bundle(catalog: &ModelCatalog) -> Result<QwenVisionBundle> {
     if let Ok(llm) = env::var("UIE_QWEN_VL_GGUF") {
         let mmproj = env::var("UIE_QWEN_VL_MMPROJ").map_err(|_| {
