@@ -4,6 +4,7 @@
 //! representing tensors, scheduling execution, and dispatching work to
 //! pluggable compute backends.
 
+pub mod accelerator;
 pub mod backend;
 pub mod capability;
 pub mod error;
@@ -18,6 +19,11 @@ pub mod telemetry {
     pub use uie_telemetry::*;
 }
 
+pub use accelerator::{
+    backend_for_choice, require_accelerator, select_accelerator, select_accelerator_traced,
+    AcceleratorChoice, AcceleratorEvent, AcceleratorKind, AcceleratorProbe, FakeAcceleratorProbe,
+    StubAcceleratorBackend,
+};
 pub use backend::cpu::CpuBackend;
 pub use backend::{Backend, BackendId, Device, DeviceKind};
 pub use capability::{

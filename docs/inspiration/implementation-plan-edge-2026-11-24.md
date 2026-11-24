@@ -81,9 +81,9 @@ US-026 (WASM MNIST) stays the small Chromium gate; it is not replaced by these s
 **Depends on:** Phase 4 probes; actual **hardware access** before live work.  
 **Status:** deferred until silicon/SDK access — contract acceptance markers only on mainline.
 
-1. Extend capability probes for “Pi GPU present” / “NPU present” (CI fakes first).
-2. Register backends via DI; same admission + telemetry as CPU.
-3. Prefer existing EP / llama.cpp / Vulkan (or vendor NPU runtime) over greenfield kernels.
+1. [x] Extend accelerator probes for “Pi GPU present” / “NPU present” (CI fakes + stub Backend).
+2. [x] Register probe via DI (`OverrideFakeAcceleratorProbeModule`); stub backends share `Backend` trait.
+3. Prefer existing EP / llama.cpp / Vulkan (or vendor NPU runtime) over greenfield kernels — deferred to live silicon.
 4. Live acceptance stays opt-in in `.env` / injectables — no CI failure when silicon is absent.
 5. Measure with US-028 brackets; never treat cloud-GPU numbers as Pi GPU/NPU forecasts.
 

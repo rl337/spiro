@@ -1,8 +1,8 @@
 # US-030: Raspberry Pi GPU backend
 
-**Status:** planned (gated on hardware access)  
+**Status:** partial (CI fake probe + stub Backend; live Pi GPU gated)  
 **Personas:** Pete, Jack  
-**Crate / path:** future `uie-backend-pi-gpu` (or similar); `Backend` trait in `uie-core`  
+**Crate / path:** `uie-core::accelerator` (`AcceleratorKind::PiGpu`, `StubAcceleratorBackend`); future real EP/Vulkan crate  
 **Depends on:** [US-003](./003-backends-cpu.md), [US-024](./024-dependency-injection.md), [US-029](./029-capability-aware-kernels.md) probes
 
 ## User story
@@ -36,8 +36,7 @@
 
 ## Acceptance notes
 
-- **Today:** planned; no Pi GPU required in CI.
-- **CI (future):** fake “no GPU” / “GPU present” probes; dispatch events; fallback.
+- **Today (CI):** `FakeAcceleratorProbe` + `StubAcceleratorBackend` — present → stub accel device; absent → CPU fallback; `require_accelerator` → explicit unsupported. Bound via `uie-iv`.
 - **Live (future):** gated on real Pi 4/5 (or equivalent) with GPU access — set via `.env` / injectable, not hardcoded paths.
 
 ## Acceptance tests

@@ -1,8 +1,8 @@
 # US-031: NPU / on-device accelerator backend
 
-**Status:** planned (gated on hardware access)  
+**Status:** partial (CI fake probe + stub Backend; live NPU gated)  
 **Personas:** Pete, Jack  
-**Crate / path:** future `uie-backend-npu` (or vendor-specific crates behind one trait); `uie-core` `Backend`  
+**Crate / path:** `uie-core::accelerator` (`AcceleratorKind::Npu`, `StubAcceleratorBackend`); future vendor crates behind same trait  
 **Depends on:** [US-003](./003-backends-cpu.md), [US-024](./024-dependency-injection.md), [US-029](./029-capability-aware-kernels.md)
 
 ## User story
@@ -36,8 +36,7 @@
 
 ## Acceptance notes
 
-- **Today:** planned; no NPU required in CI.
-- **CI (future):** fake probe; dispatch / fallback events.
+- **Today (CI):** `FakeAcceleratorProbe` + `StubAcceleratorBackend` — present → stub NPU device; absent → CPU fallback; never pretend NPU ran. Bound via `uie-iv`.
 - **Live (future):** gated on operator-provided NPU access (injectable device selector in `.env` / modules).
 
 ## Acceptance tests

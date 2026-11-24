@@ -2,6 +2,7 @@
 
 use std::sync::Arc;
 
+use uie_core::accelerator::AcceleratorProbe;
 use uie_core::resource::{InferenceStateBudget, MemoryBudget};
 
 use crate::error::IvError;
@@ -14,6 +15,7 @@ pub struct Binder {
     pub(crate) loader_set: Option<Arc<dyn ModelLoaderSet>>,
     pub(crate) memory_budget: Option<Arc<dyn MemoryBudget>>,
     pub(crate) inference_state_budget: Option<Arc<dyn InferenceStateBudget>>,
+    pub(crate) accelerator_probe: Option<Arc<dyn AcceleratorProbe>>,
 }
 
 impl Binder {
@@ -69,5 +71,20 @@ impl Binder {
 
     pub fn override_inference_state_budget(&mut self, budget: Arc<dyn InferenceStateBudget>) {
         self.inference_state_budget = Some(budget);
+    }
+
+    pub fn bind_accelerator_probe(
+        &mut self,
+        probe: Arc<dyn AcceleratorProbe>,
+    ) -> Result<(), IvError> {
+        if self.accelerator_probe.is_some() {
+            return Err(IvError::Duplicate("accelerator_probe"));
+        }
+        self.accelerator_probe.replace(probe);
+        Ok(())
+    }
+
+    pub fn override_accelerator_probe(&mut self, probe: Arc<dyn AcceleratorProbe>) {
+        self.accelerator_probe = Some(probe);
     }
 }
