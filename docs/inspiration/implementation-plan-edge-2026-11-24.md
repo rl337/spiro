@@ -78,7 +78,8 @@ US-026 (WASM MNIST) stays the small Chromium gate; it is not replaced by these s
 ### Phase 5 — Pi GPU + NPU backends (hardware-gated)
 
 **Stories:** [US-030](../stories/030-pi-gpu-backend.md), [US-031](../stories/031-npu-backend.md).  
-**Depends on:** Phase 4 probes; actual **hardware access** before live work.
+**Depends on:** Phase 4 probes; actual **hardware access** before live work.  
+**Status:** deferred until silicon/SDK access — contract acceptance markers only on mainline.
 
 1. Extend capability probes for “Pi GPU present” / “NPU present” (CI fakes first).
 2. Register backends via DI; same admission + telemetry as CPU.
