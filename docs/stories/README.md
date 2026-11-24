@@ -44,6 +44,17 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 | [US-024](./024-dependency-injection.md) | Dependency injection (uie-iv / pyiv-style) | Jack, Pete | shipped |
 | [US-026](./026-browser-wasm-inference.md) | Browser WASM inference (ONNX MNIST) | Pete, Liz | shipped |
 
+## Edge resources & measurement (planned)
+
+Derived from Trouble inspiration (`docs/inspiration/`); see the [implementation plan](../inspiration/implementation-plan-edge-2026-11-24.md).
+
+| ID | Title | Personas | Status |
+|----|--------|----------|--------|
+| [US-025](./025-bounded-model-admission.md) | Bounded model admission & residency | Jack, Liz | planned |
+| [US-027](./027-bounded-inference-state.md) | Bounded inference state | Liz, Pete | planned |
+| [US-028](./028-constrained-benchmark-controls.md) | Constrained benchmarks & trustworthy comparisons | Pete, Jack | planned |
+| [US-029](./029-capability-aware-kernels.md) | Capability-aware optimized execution | Pete, Toofer | planned |
+
 ## Acceptance tests
 
 See [acceptance-tests.md](../acceptance-tests.md) and [contributing.md](../contributing.md). Every story must list at least one Rust or Python test in its **Acceptance tests** section, and that test must include telemetry or event-capture assertions (enforced by `scripts/verify-story-governance.py`).
@@ -58,3 +69,4 @@ See [acceptance-tests.md](../acceptance-tests.md) and [contributing.md](../contr
 - **`uie-catalog`, `config/model_roots.example.yaml`:** US-021  
 - **`uie-pipeline`:** US-022  
 - **`uie-acceptance`, `python/acceptance/`:** all US-*  
+- **Edge (planned):** US-025 admission, US-027 state, US-028 bench controls, US-029 kernels — see [`docs/inspiration/implementation-plan-edge-2026-11-24.md`](../inspiration/implementation-plan-edge-2026-11-24.md)

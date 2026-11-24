@@ -4,6 +4,14 @@ Alphabetical list of terms used in [user stories](./stories/README.md). Anchors 
 
 ---
 
+### Capability probe {#capability-probe}
+
+A **capability probe** detects CPU/GPU features (e.g. NEON, dot-product) before selecting an optimized kernel path, so missing features fall back or error explicitly instead of trapping ([US-029](./stories/029-capability-aware-kernels.md)).
+
+**See also:** [US-003](./stories/003-backends-cpu.md), [US-029](./stories/029-capability-aware-kernels.md)
+
+---
+
 ### Chatbot {#chatbot}
 
 A **chatbot** is an application that keeps conversation state and repeatedly asks a [large language model](#large-language-model) for the next [completion](#completion). In UIE, Liz’s target design binds `prompt` and history in a [session](#session) ([US-010](./stories/010-llm-text-completions.md)).
@@ -36,6 +44,14 @@ An **execution trace** is a structured record of one inference run: phase timing
 
 ---
 
+### Inference state {#inference-state}
+
+**Inference state** is the per-session working memory of a running model—typically KV cache, scratch, and related buffers—distinct from weight residency. Bounded by [US-027](./stories/027-bounded-inference-state.md).
+
+**See also:** [US-004](./stories/004-runtime-sessions.md), [US-010](./stories/010-llm-text-completions.md), [US-027](./stories/027-bounded-inference-state.md)
+
+---
+
 ### Infer metrics {#infer-metrics}
 
 **Infer metrics** are aggregate numbers for a run: prompt/completion token counts, **time to first token (TTFT)**, prefill vs decode latency, tokens/sec, and summed time on CPU vs GPU. Used to evaluate quantization, batching, and kernel swaps.
@@ -49,6 +65,14 @@ An **execution trace** is a structured record of one inference run: phase timing
 A **byte channel** is UIE’s transport for inference: clients and the engine exchange **length-prefixed JSON** frames carrying `infer` requests and tensor payloads. Implementations include in-process [`InProcessChannel`](../crates/uie-ipc) and Unix domain sockets via [`uie-serve`](../crates/uie-serve).
 
 **See also:** [US-020](./stories/020-inference-byte-channel.md)
+
+---
+
+### Benchmark bracket {#benchmark-bracket}
+
+A **benchmark bracket** is a controlled **control / candidate / control** experiment pair used to decide whether an optimization is an eligible win, drift/inconclusive, or invalid ([US-028](./stories/028-constrained-benchmark-controls.md)).
+
+**See also:** [US-023](./stories/023-inference-telemetry.md), [US-028](./stories/028-constrained-benchmark-controls.md)
 
 ---
 
@@ -161,6 +185,14 @@ A **large language model** (LLM) predicts language from context—typically from
 An **I/O spec** names a model input or output: [tensor](#tensor) [shape](#shape), [data type](#datatype), and a label. Loaders use specs so callers know what to pass in.
 
 **See also:** [US-007](./stories/007-models-loaders.md)
+
+---
+
+### Memory budget {#memory-budget}
+
+A **memory budget** is a configured capacity (often cgroup `memory.max` live, or a fake provider in CI) used to admit or reject model loads and to bound residency in the host cache ([US-025](./stories/025-bounded-model-admission.md)).
+
+**See also:** [US-025](./stories/025-bounded-model-admission.md), [US-024](./stories/024-dependency-injection.md)
 
 ---
 
