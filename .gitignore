@@ -8,3 +8,12 @@ __pycache__/
 /fixtures/comfy-shared/
 /config/comfy_workflows/qwen_image_api.json
 /config/comfy_workflows/qwen_image_patches.json
+# WASM MNIST demo build artifacts (US-026)
+web/mnist/pkg/
+web/mnist/node_modules/
+web/mnist/models/
+web/mnist/playwright-report/
+web/mnist/test-results/
+web/qwen/node_modules/
+web/qwen/test-results/
+web/qwen/playwright-report/

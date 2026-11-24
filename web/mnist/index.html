@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>UIE WASM MNIST (US-026)</title>
+    <style>
+      body {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        max-width: 40rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.45;
+      }
+      #status {
+        white-space: pre-wrap;
+      }
+      .ok {
+        color: #0a7;
+      }
+      .err {
+        color: #c22;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>UIE browser WASM — MNIST</h1>
+    <p>
+      Loads vendored <code>mnist-8.onnx</code> and the digit-one fixture via
+      <code>uie-wasm</code> (CPU Tract). WebGPU is reserved.
+    </p>
+    <pre id="status">starting…</pre>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

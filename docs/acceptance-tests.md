@@ -101,6 +101,7 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 | US-022 | `us_022_byte_pipeline.rs` | — | multi-hop IPC |
 | US-023 | `us_023_telemetry.rs` | — | TTFT / trace phases |
 | US-024 | `us_024_dependency_injection.rs` | — | `uie-iv` CI/live injector |
+| US-026 | `us_026_browser_wasm.rs` | — | WASM packaging; Chromium via `wasm-mnist-ci.sh`; live offline Qwen chat via `browser-qwen-ci.sh` |
 
 Additional crate tests (also cited in stories):
 

@@ -1,3 +1,4 @@
+use std::io::Cursor;
 use std::path::Path;
 use std::sync::Mutex;
 
@@ -53,9 +54,23 @@ pub struct OnnxModel {
 }
 
 impl OnnxModel {
+    /// Load ONNX weights from a filesystem path (native CLI / CI).
     pub fn from_path(path: &Path) -> Result<Self> {
+        let name = path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("onnx")
+            .to_string();
+        let bytes = std::fs::read(path)
+            .map_err(|e| Error::ModelLoad(format!("read {}: {e}", path.display())))?;
+        Self::from_bytes(&name, &bytes)
+    }
+
+    /// Load ONNX weights from an in-memory buffer (WASM / fetch).
+    pub fn from_bytes(name: &str, bytes: &[u8]) -> Result<Self> {
+        let mut cursor = Cursor::new(bytes);
         let runnable = tract_onnx::onnx()
-            .model_for_path(path)
+            .model_for_read(&mut cursor)
             .map_err(|e| Error::ModelLoad(e.to_string()))?
             .into_optimized()
             .map_err(|e| Error::ModelLoad(e.to_string()))?
@@ -80,15 +95,9 @@ impl OnnxModel {
             outputs.push(io_spec_from_fact(fact, format!("output_{i}"))?);
         }
 
-        let name = path
-            .file_stem()
-            .and_then(|s| s.to_str())
-            .unwrap_or("onnx")
-            .to_string();
-
         Ok(Self {
             metadata: ModelMetadata {
-                name,
+                name: name.to_string(),
                 format: "onnx".into(),
                 ops: runnable.model().nodes().len(),
             },

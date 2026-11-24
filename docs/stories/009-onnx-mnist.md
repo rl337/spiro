@@ -35,6 +35,7 @@ See `models/README.md` for input/output shapes and license.
 - [US-007 — Loaders](./007-models-loaders.md)
 - [US-002 — Tensors](./002-tensors.md) (`F32`, shape `[1,1,28,28]`)
 - [US-004 — Runtime](./004-runtime-sessions.md) (`infer`, session output binding)
+- [US-026 — Browser WASM](./026-browser-wasm-inference.md) (same MNIST weights in Chromium)
 
 ## Terms used
 
