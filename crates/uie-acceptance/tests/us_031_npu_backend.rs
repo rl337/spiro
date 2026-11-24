@@ -5,7 +5,7 @@ use uie_core::accelerator::{
     AcceleratorEvent, AcceleratorKind, AcceleratorProbe, FakeAcceleratorProbe,
 };
 use uie_core::ops::Op;
-use uie_core::{Backend as _, DeviceKind, Error};
+use uie_core::{DeviceKind, Error};
 use uie_iv::{
     uie::{AcceptanceEnvModule, OverrideCiModule, OverrideFakeAcceleratorProbeModule},
     Injector,
