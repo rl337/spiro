@@ -1,0 +1,247 @@
+{
+  "theme": "inference-optimizations",
+  "created_at": "2026-11-24",
+  "timezone": "America/Los_Angeles",
+  "trouble_repo": "rl337/trouble",
+  "trouble_ref_observed": "main (GitHub code search blobs at 50b1dfa01b524a001abf018462a9559f400bfea2)",
+  "spiro_mapping_basis": [
+    "uie-core tensors, CpuBackend, InferenceRuntime/Session, Op graph (executor not yet wired)",
+    "uie-loader-gguf / uie-llm GGUF text completion",
+    "uie-ipc / uie-serve Unix-socket serving",
+    "README next steps: ONNX/SafeTensors/GGUF loaders, graph executor, backend plugins, Python bridge"
+  ],
+  "publication_policy": "Only Trouble public facet (summary_md, pull_quotes, referenced_urls, author, posted_at) is copied into this public repo. private.thread / raw text / media are not included.",
+  "scan": {
+    "topic_indexes": {
+      "local-models": {
+        "posts_indexed": 2777,
+        "note": "Used as the primary topic pool; not every post was opened."
+      }
+    },
+    "tag_indexes_read": {
+      "gguf": 2,
+      "llamacpp": 6,
+      "llminference": 2,
+      "llmcompression": 1,
+      "fastinference": 1,
+      "inference": 2,
+      "aiefficiency": 1,
+      "vllm": 2,
+      "sglang": 2,
+      "mlx": 6,
+      "moe": 2,
+      "llama": 2,
+      "localllm": "many rows; fixture id 9990001112223334444 ignored"
+    },
+    "featured_local_models_urls_followed": [
+      "github.com/wici-ai/inferssd",
+      "github.com/FlashML-org/FreeToken",
+      "github.com/ewhacc/tandem.cpp",
+      "arxiv.org/c050635cc244e27f (https://arxiv.org/abs/2610.41672, title only; post not opened)"
+    ],
+    "code_search_on_data_x_posts": {
+      "quantization": 210,
+      "speculative": 108,
+      "speculative decoding": 90,
+      "kv cache": 89,
+      "llama.cpp": 332,
+      "paged attention": 2,
+      "flash attention": 2
+    },
+    "notes": [
+      "Code-search hits include private-facet text, so overlap \u2014 not unique-post counts \u2014 was used to prioritize which files to open.",
+      "archive_day is typically the America/Los_Angeles date of posted_at, which is not always the UTC calendar date."
+    ]
+  },
+  "posts_read": [
+    "2115743193350168923",
+    "2115867579147559383",
+    "2116335245318644016",
+    "2116719214350459152",
+    "2116867578572447943",
+    "2117144643486056951",
+    "2117161286060425550",
+    "2117161591053693422",
+    "2117961582995206635",
+    "2118837018989834247",
+    "2119100672301760948",
+    "2119265167041282176",
+    "2119878964529315999",
+    "2120136967400931607",
+    "2120195759681446042",
+    "2120290482014376202",
+    "2120392776336724074",
+    "2120878862682701986",
+    "2121246997298794817",
+    "2121636496704778653",
+    "2122470286817677590",
+    "2122472292693451062",
+    "2122625874680058122",
+    "2122725376279421125",
+    "2122729590322090366",
+    "2122761865923379597",
+    "2123144676345532438",
+    "2123163906914836641",
+    "2123405923159015443",
+    "2123433678898413951",
+    "2123582225530908678",
+    "2124470699985449036"
+  ],
+  "items": [
+    {
+      "id": "inferssd-moe-ssd-stream",
+      "kept": true,
+      "primary_post_id": "2117161286060425550",
+      "related_post_ids": [
+        "2121246997298794817"
+      ]
+    },
+    {
+      "id": "tandem-cpp-moe-offload",
+      "kept": true,
+      "primary_post_id": "2117144643486056951",
+      "related_post_ids": []
+    },
+    {
+      "id": "freetoken-moe-consumer-gpu",
+      "kept": true,
+      "primary_post_id": "2120195759681446042",
+      "related_post_ids": [
+        "2117161591053693422"
+      ]
+    },
+    {
+      "id": "paged-attention-impl",
+      "kept": true,
+      "primary_post_id": "2120136967400931607",
+      "related_post_ids": []
+    },
+    {
+      "id": "samir-vllm-mini-engine",
+      "kept": true,
+      "primary_post_id": "2119878964529315999",
+      "related_post_ids": []
+    },
+    {
+      "id": "glm53-mtp-fp8kv-prefix-cache",
+      "kept": true,
+      "primary_post_id": "2122472292693451062",
+      "related_post_ids": [
+        "2121636496704778653"
+      ]
+    },
+    {
+      "id": "kvuse-reusable-kv",
+      "kept": true,
+      "primary_post_id": "2124470699985449036",
+      "related_post_ids": []
+    },
+    {
+      "id": "nemotron-bolt-2bit-qad-drafter",
+      "kept": true,
+      "primary_post_id": "2115867579147559383",
+      "related_post_ids": []
+    },
+    {
+      "id": "quantized-draft-kv-cache",
+      "kept": true,
+      "primary_post_id": "2122729590322090366",
+      "related_post_ids": []
+    },
+    {
+      "id": "leech-lattice-vq",
+      "kept": true,
+      "primary_post_id": "2118837018989834247",
+      "related_post_ids": []
+    },
+    {
+      "id": "lafa-self-speculative",
+      "kept": true,
+      "primary_post_id": "2115743193350168923",
+      "related_post_ids": []
+    },
+    {
+      "id": "tensorfold-exl3-speculative",
+      "kept": true,
+      "primary_post_id": "2116719214350459152",
+      "related_post_ids": []
+    },
+    {
+      "id": "webgpu-in-kernel-dequant-flash-attn",
+      "kept": true,
+      "primary_post_id": "2116335245318644016",
+      "related_post_ids": []
+    },
+    {
+      "id": "atdev-serve-kernels",
+      "kept": true,
+      "primary_post_id": "2117961582995206635",
+      "related_post_ids": []
+    },
+    {
+      "id": "inference-optimisation-skill",
+      "kept": true,
+      "primary_post_id": "2122625874680058122",
+      "related_post_ids": [
+        "2122725376279421125",
+        "2123144676345532438",
+        "2123163906914836641",
+        "2123433678898413951"
+      ]
+    },
+    {
+      "id": "llm-optimization-handbook",
+      "kept": true,
+      "primary_post_id": "2123405923159015443",
+      "related_post_ids": []
+    },
+    {
+      "id": "inference-cheatsheet",
+      "kept": true,
+      "primary_post_id": "2120392776336724074",
+      "related_post_ids": []
+    },
+    {
+      "id": "five-engine-l4-bench",
+      "kept": true,
+      "primary_post_id": "2123582225530908678",
+      "related_post_ids": []
+    }
+  ],
+  "rejected_after_read": [
+    {
+      "post_id": "2119265167041282176",
+      "reason": "GGUF Atlas is a visual workbench, not an inference optimization."
+    },
+    {
+      "post_id": "2119100672301760948",
+      "reason": "Q6_K GGUF model release, no new technique."
+    },
+    {
+      "post_id": "2122470286817677590",
+      "reason": "llama.cpp Flash Attention bench of one GGUF, no new method."
+    },
+    {
+      "post_id": "2120290482014376202",
+      "reason": "Agent-memory skill; harness context, not engine inference."
+    },
+    {
+      "post_id": "2122761865923379597",
+      "reason": "MLX 4/6/8-bit model port; useful later for a Metal backend, not a new algorithm."
+    },
+    {
+      "post_id": "2116867578572447943",
+      "reason": "CPU-only LFM3 GGUF bench in llama.cpp, no new technique."
+    },
+    {
+      "post_id": "2120878862682701986",
+      "reason": "Short pointer at llama.cpp quantize README, no new technique."
+    }
+  ],
+  "counts": {
+    "posts_read": 32,
+    "kept_items": 18,
+    "unique_kept_primary_or_related_post_ids": 25,
+    "rejected_after_read": 7
+  }
+}
