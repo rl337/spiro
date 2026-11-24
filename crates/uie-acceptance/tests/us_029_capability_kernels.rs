@@ -2,7 +2,7 @@
 use uie_acceptance::{assert_story_events, StoryEventLog};
 use uie_core::capability::{
     fill_f32_dispatch, fill_f32_scalar, require_feature, select_kernel_traced, CapabilityEvent,
-    CpuFeature, FakeCapabilityProbe, KernelPath,
+    CapabilityProbe, CpuFeature, FakeCapabilityProbe, KernelPath,
 };
 use uie_core::Error;
 
