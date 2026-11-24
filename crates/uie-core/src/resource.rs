@@ -241,6 +241,158 @@ impl MemoryBudget for FakeMemoryBudget {
     }
 }
 
+/// Context / KV state request before prefill (US-027).
+#[derive(Debug, Clone)]
+pub struct ContextRequest {
+    pub prompt_tokens: u32,
+    pub max_new_tokens: u32,
+}
+
+impl ContextRequest {
+    pub fn total_span(&self) -> u32 {
+        self.prompt_tokens.saturating_add(self.max_new_tokens)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum StateAdmission {
+    /// Request fits the configured context budget.
+    Accept { n_ctx: u32 },
+    /// Explicit shorter context offered — caller must re-request; never silent truncate.
+    Negotiate { requested: u32, offered_n_ctx: u32 },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum StateEvent {
+    Accept { prompt: u32, max_new: u32, n_ctx: u32 },
+    Negotiate { requested: u32, offered: u32 },
+    Reject { prompt: u32, max_new: u32, limit: u32 },
+    Release { n_ctx: u32 },
+}
+
+/// Bounds per-session KV / context (US-027). Separate from weight [`MemoryBudget`].
+pub trait InferenceStateBudget: Send + Sync {
+    fn budget_source(&self) -> &str;
+    fn max_context_tokens(&self) -> u32;
+    /// When true, over-budget requests get [`StateAdmission::Negotiate`] instead of hard reject.
+    fn allow_negotiate(&self) -> bool {
+        false
+    }
+    fn admit(&self, req: &ContextRequest) -> Result<StateAdmission>;
+    fn release(&self, admission: &StateAdmission);
+    fn take_events(&self) -> Vec<StateEvent> {
+        Vec::new()
+    }
+}
+
+/// Deterministic context cap for CI (US-027).
+pub struct FakeInferenceStateBudget {
+    max_context_tokens: u32,
+    allow_negotiate: bool,
+    active: Mutex<u32>,
+    events: Mutex<Vec<StateEvent>>,
+}
+
+impl FakeInferenceStateBudget {
+    pub fn with_max_context(max_context_tokens: u32) -> Arc<Self> {
+        Arc::new(Self {
+            max_context_tokens,
+            allow_negotiate: false,
+            active: Mutex::new(0),
+            events: Mutex::new(Vec::new()),
+        })
+    }
+
+    pub fn with_negotiate(max_context_tokens: u32) -> Arc<Self> {
+        Arc::new(Self {
+            max_context_tokens,
+            allow_negotiate: true,
+            active: Mutex::new(0),
+            events: Mutex::new(Vec::new()),
+        })
+    }
+
+    fn push(&self, ev: StateEvent) {
+        if let Ok(mut g) = self.events.lock() {
+            g.push(ev);
+        }
+    }
+}
+
+impl InferenceStateBudget for FakeInferenceStateBudget {
+    fn budget_source(&self) -> &str {
+        "fake_state"
+    }
+
+    fn max_context_tokens(&self) -> u32 {
+        self.max_context_tokens
+    }
+
+    fn allow_negotiate(&self) -> bool {
+        self.allow_negotiate
+    }
+
+    fn admit(&self, req: &ContextRequest) -> Result<StateAdmission> {
+        let span = req.total_span();
+        if span <= self.max_context_tokens {
+            if let Ok(mut active) = self.active.lock() {
+                *active = active.saturating_add(self.max_context_tokens);
+            }
+            let adm = StateAdmission::Accept {
+                n_ctx: self.max_context_tokens,
+            };
+            self.push(StateEvent::Accept {
+                prompt: req.prompt_tokens,
+                max_new: req.max_new_tokens,
+                n_ctx: self.max_context_tokens,
+            });
+            return Ok(adm);
+        }
+        if self.allow_negotiate && req.prompt_tokens < self.max_context_tokens {
+            let offered = self.max_context_tokens;
+            self.push(StateEvent::Negotiate {
+                requested: span,
+                offered,
+            });
+            return Ok(StateAdmission::Negotiate {
+                requested: span,
+                offered_n_ctx: offered,
+            });
+        }
+        self.push(StateEvent::Reject {
+            prompt: req.prompt_tokens,
+            max_new: req.max_new_tokens,
+            limit: self.max_context_tokens,
+        });
+        Err(Error::StateBudgetRejected {
+            prompt_tokens: req.prompt_tokens,
+            max_new_tokens: req.max_new_tokens,
+            limit_tokens: self.max_context_tokens,
+            reason: format!(
+                "context span {span} exceeds limit {} (source={})",
+                self.max_context_tokens,
+                self.budget_source()
+            ),
+        })
+    }
+
+    fn release(&self, admission: &StateAdmission) {
+        if let StateAdmission::Accept { n_ctx } = admission {
+            if let Ok(mut active) = self.active.lock() {
+                *active = active.saturating_sub(*n_ctx);
+            }
+            self.push(StateEvent::Release { n_ctx: *n_ctx });
+        }
+    }
+
+    fn take_events(&self) -> Vec<StateEvent> {
+        self.events
+            .lock()
+            .map(|mut g| std::mem::take(&mut *g))
+            .unwrap_or_default()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -262,5 +414,50 @@ mod tests {
         let r = b.try_reserve(&MemoryEstimate::exact(80, "a")).unwrap();
         b.release(r);
         b.try_reserve(&MemoryEstimate::exact(80, "b")).unwrap();
+    }
+
+    #[test]
+    fn state_budget_rejects_over_context() {
+        let b = FakeInferenceStateBudget::with_max_context(128);
+        let err = b
+            .admit(&ContextRequest {
+                prompt_tokens: 100,
+                max_new_tokens: 50,
+            })
+            .unwrap_err();
+        assert!(matches!(err, Error::StateBudgetRejected { .. }));
+    }
+
+    #[test]
+    fn state_budget_negotiate_when_enabled() {
+        let b = FakeInferenceStateBudget::with_negotiate(128);
+        let adm = b
+            .admit(&ContextRequest {
+                prompt_tokens: 100,
+                max_new_tokens: 50,
+            })
+            .unwrap();
+        assert!(matches!(
+            adm,
+            StateAdmission::Negotiate {
+                offered_n_ctx: 128,
+                ..
+            }
+        ));
+    }
+
+    #[test]
+    fn state_budget_accept_and_release() {
+        let b = FakeInferenceStateBudget::with_max_context(128);
+        let adm = b
+            .admit(&ContextRequest {
+                prompt_tokens: 32,
+                max_new_tokens: 32,
+            })
+            .unwrap();
+        b.release(&adm);
+        let ev = b.take_events();
+        assert!(ev.iter().any(|e| matches!(e, StateEvent::Accept { .. })));
+        assert!(ev.iter().any(|e| matches!(e, StateEvent::Release { .. })));
     }
 }

@@ -1,8 +1,8 @@
 # US-027: Bounded inference state
 
-**Status:** planned  
+**Status:** partial (CI fake context budget; GGUF live wiring later)  
 **Personas:** Liz, Pete  
-**Crate / path:** `crates/uie-core` sessions, `uie-loader-gguf` / llama.cpp bindings  
+**Crate / path:** `crates/uie-core` (`InferenceStateBudget`), `uie-loader-gguf` (`CompleteOptions.context_tokens` / `n_ctx`)  
 **Inspiration:** EDGE-STATE-02 in [`docs/inspiration/trouble-edge-inference-2026-11-24.md`](../inspiration/trouble-edge-inference-2026-11-24.md)
 
 ## User story
@@ -36,9 +36,8 @@
 
 ## Acceptance notes
 
-- **Today:** planned; CI asserts contract events.
-- **CI (future):** deterministic block-allocator fixture (or loader-native controls) — allocate / release / reject / optional cache hit.
-- **Live (future):** GGUF context settings vs measured peak; same prompt/tokenizer; deterministic output where supported.
+- **Today (CI):** `FakeInferenceStateBudget` — accept within limit + release; hard reject when over; negotiate offers shorter `n_ctx` without silent truncation. GGUF already exposes `CompleteOptions.context_tokens` → llama `n_ctx`; callers should admit via the state budget first.
+- **Live (future):** wire admit into `uie-llm` / complete path; measure peak vs `n_ctx`; same prompt/tokenizer.
 
 ## Acceptance tests
 
@@ -48,5 +47,5 @@
 
 ## Observability
 
-- **Events:** `StoryEventLog` contract markers (`state_contract_*`); later assert allocate / release / reject / prefix_hit.
+- **Events:** `StoryEventLog` (`state_contract_*`) + `StateEvent` (`Accept` / `Reject` / `Negotiate` / `Release`).
 - **CI test:** `us_027_bounded_state.rs`

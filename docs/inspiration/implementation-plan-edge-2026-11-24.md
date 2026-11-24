@@ -61,10 +61,11 @@ US-026 (WASM MNIST) stays the small Chromium gate; it is not replaced by these s
 
 **Depends on:** Phase 1 for “model already admitted”; audit llama.cpp `n_ctx` / KV first.
 
-1. Document existing binding knobs; add only what’s missing.
-2. Session-level budget check before prefill; reject or negotiate shorter context.
-3. Cancellation releases; optional prefix cache only with exact keys.
-4. Un-ignore `us_027_reject_over_context_budget`.
+1. [x] Document GGUF `context_tokens` → `n_ctx`; add `InferenceStateBudget` (no second KV stack).
+2. [x] Fake CI budget: accept / reject / negotiate (no silent truncation); release on cancel.
+3. [ ] Optional prefix cache with exact keys — deferred.
+4. [x] Acceptance behavioral tests for reject / negotiate / release.
+5. [ ] Live: call `admit` from `uie-llm` / complete before `new_context`.
 
 ### Phase 4 — US-029 capability kernels
 

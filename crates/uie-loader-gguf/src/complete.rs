@@ -15,6 +15,10 @@ use uie_telemetry::{ComputeDevice, InferMetrics};
 
 use crate::engine::GgufEngine;
 
+/// GGUF completion knobs. `context_tokens` maps to llama.cpp `n_ctx` (US-010).
+/// Callers that enforce [US-027](../../../../docs/stories/027-bounded-inference-state.md)
+/// should [`uie_core::InferenceStateBudget::admit`] before creating a context — never silently
+/// shrink prompts inside this function.
 #[derive(Debug, Clone)]
 pub struct CompleteOptions {
     pub max_new_tokens: u32,

@@ -39,6 +39,17 @@ pub enum Error {
         budget_source: String,
         reason: String,
     },
+
+    /// Context / KV state refused by an [inference state budget](crate::resource::InferenceStateBudget) (US-027).
+    #[error(
+        "state budget rejected: prompt {prompt_tokens} + new {max_new_tokens} exceeds limit {limit_tokens}: {reason}"
+    )]
+    StateBudgetRejected {
+        prompt_tokens: u32,
+        max_new_tokens: u32,
+        limit_tokens: u32,
+        reason: String,
+    },
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
