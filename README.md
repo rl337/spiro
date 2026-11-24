@@ -2,7 +2,13 @@
 
 This repository began as a small Python Spirograph generator (`spiro.py`). It is being evolved into a **universal inference engine** written in Rust, with the original drawing retained as a reference workload.
 
-**Documentation:** user stories, [acceptance tests](./docs/acceptance-tests.md), and a glossary live in [`docs/`](./docs/README.md) (`US-001` … `US-022`).
+**Mandate:** build a **good inference engine at any scale**, with emphasis on
+**edge and embedded compute** — in-browser / embedded WASM, Raspberry Pi–class
+ARM boards, and other tight-resource hosts — while still supporting larger
+desktop and server backends when they share the same engine story.
+See [`docs/mandate.md`](./docs/mandate.md).
+
+**Documentation:** user stories, [acceptance tests](./docs/acceptance-tests.md), and a glossary live in [`docs/`](./docs/README.md).
 
 ## Current layout
 

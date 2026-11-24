@@ -332,9 +332,17 @@ A **composition root** binds CI vs live implementations through [`uie-iv`](../cr
 
 ## UIE {#uie}
 
-**UIE** (Universal Inference Engine) is the Rust workspace in this repo: shared core (`uie-core`), demos (`uie-spiro`, `uie-mnist`), and loader crates (`uie-loader-onnx`).
+**UIE** (Universal Inference Engine) is the Rust workspace in this repo: shared core (`uie-core`), demos (`uie-spiro`, `uie-mnist`), loaders, IPC/serve, and WASM surfaces. The [mandate](./mandate.md) is good inference **at any scale**, with emphasis on **edge and embedded** hosts.
 
-**See also:** [US-001](./stories/001-why-uie.md)
+**See also:** [US-001](./stories/001-why-uie.md), [mandate](./mandate.md)
+
+---
+
+### Edge compute {#edge-compute}
+
+**Edge compute** here means inference on resource-constrained hosts close to the user or device—e.g. Raspberry Pi–class ARM boards, containers with tight cgroup limits, and **embedded WASM** in the browser—not only cloud GPUs. See the [mandate](./mandate.md).
+
+**See also:** [US-025](./stories/025-bounded-model-admission.md), [US-026](./stories/026-browser-wasm-inference.md), [US-028](./stories/028-constrained-benchmark-controls.md)
 
 ---
 

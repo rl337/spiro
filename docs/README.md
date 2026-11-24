@@ -2,10 +2,14 @@
 
 The **Universal Inference Engine (UIE)** is this repo’s Rust engine for running models and demo workloads. These docs explain it in plain language.
 
+**Mandate:** good inference **at any scale**, with emphasis on **edge and embedded**
+(WASM, Raspberry Pi–class ARM, tight RAM/CPU). See [mandate.md](./mandate.md).
+
 ## Start here
 
 | Doc | Purpose |
 |-----|---------|
+| [Mandate](./mandate.md) | Product goal: any-scale inference, edge/embedded emphasis |
 | [Glossary](./glossary.md) | Short definitions for every bold term used in stories |
 | [Personas](./personas.md) | 30 Rock first names used in stories (Liz, Jack, …) |
 | [Story conventions](./story-conventions.md) | Story IDs, linking rules, how to add a new story |
