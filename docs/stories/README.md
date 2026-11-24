@@ -54,7 +54,7 @@ Derived from Trouble inspiration (`docs/inspiration/`); see the [implementation 
 |----|--------|----------|--------|
 | [US-025](./025-bounded-model-admission.md) | Bounded model admission & residency | Jack, Liz | partial |
 | [US-027](./027-bounded-inference-state.md) | Bounded inference state | Liz, Pete | planned |
-| [US-028](./028-constrained-benchmark-controls.md) | Constrained benchmarks & trustworthy comparisons | Pete, Jack | planned |
+| [US-028](./028-constrained-benchmark-controls.md) | Constrained benchmarks & trustworthy comparisons | Pete, Jack | partial |
 | [US-029](./029-capability-aware-kernels.md) | Capability-aware optimized execution | Pete, Toofer | planned |
 | [US-030](./030-pi-gpu-backend.md) | Raspberry Pi GPU backend | Pete, Jack | planned (hardware-gated) |
 | [US-031](./031-npu-backend.md) | NPU / on-device accelerator backend | Pete, Jack | planned (hardware-gated) |

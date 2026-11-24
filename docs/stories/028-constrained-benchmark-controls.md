@@ -1,8 +1,8 @@
 # US-028: Constrained benchmarks and trustworthy comparisons
 
-**Status:** planned  
+**Status:** partial (CI bracket evaluator + fixtures; live A/B/A later)  
 **Personas:** Pete, Jack  
-**Crate / path:** `crates/uie-telemetry`, `crates/uie-e2e`, `crates/uie-acceptance`  
+**Crate / path:** `crates/uie-telemetry` (`bracket`), `crates/uie-acceptance`  
 **Inspiration:** EDGE-BENCH-03 + measurement amendment in [`docs/inspiration/trouble-edge-inference-2026-11-24.md`](../inspiration/trouble-edge-inference-2026-11-24.md) and [`docs/inspiration/trouble-measurement-controls-2026-11-24.md`](../inspiration/trouble-measurement-controls-2026-11-24.md)
 
 ## User story
@@ -37,8 +37,7 @@
 
 ## Acceptance notes
 
-- **Today:** planned; CI asserts contract events (extends US-023, does not replace it).
-- **CI (future):** fixture rates e.g. baseline 100 / candidate 108 / control 110 → drift; fake stream 3 chunks / 9 tokens → usage-based counts; incomplete bracket rejected.
+- **Today (CI):** `uie_telemetry::evaluate_aba` — frozen [`WorkloadFingerprint`](../../crates/uie-telemetry/src/bracket.rs); control/candidate/control; 100/108/110 → `DriftInconclusive`; stable controls + clear lift → `EligibleWin`; missing rates → `Incomplete` (not zero); usage tokens ignore chunk counts; negative controls block promotion.
 - **Live (future):** interleaved A/B/A on ARM64 containers; median + spread; no universal speed threshold until baselines exist.
 
 ## Acceptance tests
@@ -49,5 +48,5 @@
 
 ## Observability
 
-- **Events / traces:** `StoryEventLog` contract markers (`bench_contract_*`); later assert bracket ids, reason codes, and US-023 phase fields with cold/warm tags.
+- **Events / traces:** `StoryEventLog` (`bench_contract_*`) + `BracketVerdict` reason codes. US-023 remains the per-run metrics schema.
 - **CI test:** `us_028_benchmark_controls.rs`

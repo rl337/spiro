@@ -49,13 +49,13 @@ US-026 (WASM MNIST) stays the small Chromium gate; it is not replaced by these s
 
 **Why second:** makes Phase 1 / later opts measurable without importing GPU folklore.
 
-1. Workload descriptor (ids, hashes, cold/warm, caps) + bracket runner in `uie-e2e` or `uie-acceptance`.
-2. Injected clock / trace fixtures: drift vs eligible win; incomplete → not comparable.
-3. Token accounting from usage/tokenizer; unknown ≠ 0.
-4. Negative-control hooks (wrong answer / over budget) block promotion.
-5. Optional live A/B/A script for Pi; no numeric SLO until baselines exist.
+1. [x] `WorkloadFingerprint` + `evaluate_aba` in `uie-telemetry::bracket`.
+2. [x] Fixture rates: drift vs eligible win; incomplete when rates unknown.
+3. [x] Token accounting from usage; chunk counts ignored; unknown ≠ 0.
+4. [x] Negative-control flag blocks promotion.
+5. [ ] Optional live A/B/A script for Pi; no numeric SLO until baselines exist.
 
-**Exit:** CI bracket tests un-ignored; US-023 remains the schema source of truth.
+**Exit:** CI bracket tests green; US-023 remains the per-run schema source of truth.
 
 ### Phase 3 — US-027 bounded state
 

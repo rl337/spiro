@@ -101,7 +101,7 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 | US-025 | `us_025_bounded_admission.rs` | — | fake budget admit/reject/evict; live cgroup later |
 | US-026 | `us_026_browser_wasm.rs` | — | WASM packaging; Chromium via `wasm-mnist-ci.sh`; live offline Qwen chat via `browser-qwen-ci.sh` |
 | US-027 | `us_027_bounded_state.rs` | — | planned contract markers; behavioral tests `#[ignore]` |
-| US-028 | `us_028_benchmark_controls.rs` | — | planned contract markers; extends US-023 |
+| US-028 | `us_028_benchmark_controls.rs` | — | A/B/A bracket verdicts; extends US-023 |
 | US-029 | `us_029_capability_kernels.rs` | — | planned contract markers; behavioral tests `#[ignore]` |
 | US-030 | `us_030_pi_gpu_backend.rs` | — | planned; live gated on Pi GPU access |
 | US-031 | `us_031_npu_backend.rs` | — | planned; live gated on NPU access |
