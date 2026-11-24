@@ -30,7 +30,7 @@ Scripts:
 ./scripts/acceptance-live.sh        # laptop / nightly (--features live-onnx when ONNX builds)
 ```
 
-Example env: [`config/acceptance.env.example`](../config/acceptance.env.example).
+Example env: [`.env.example`](../.env.example) → copy to gitignored `.env` (loaded by `scripts/load-dotenv.sh`).
 
 ### CI (GitHub)
 
@@ -39,10 +39,7 @@ Example env: [`config/acceptance.env.example`](../config/acceptance.env.example)
 ### Live on your laptop
 
 ```bash
-cp config/acceptance.env.example .env.acceptance  # edit paths
-export UIE_ACCEPTANCE_MODE=live
-export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.yaml
-export UIE_LIVE_MODEL_PATH=/path/to/model.gguf   # or .onnx when loader works
+cp .env.example .env   # edit local paths / model locations
 ./scripts/acceptance-live.sh
 ```
 

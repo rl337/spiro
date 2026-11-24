@@ -12,9 +12,10 @@ npm start
 # Open http://127.0.0.1:18766
 ```
 
-By default the static server reads
+Set `SPIRO_QWEN_MODEL` in the repo-root gitignored `.env` (see `.env.example`), or export it
+in the shell. `./scripts/browser-qwen-ci.sh` loads `.env` automatically. If unset, the
+server falls back to
 `~/.lmstudio/models/Qwen/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q8_0.gguf`.
-Override with `SPIRO_QWEN_MODEL=/absolute/path/to/Qwen3-0.6B.gguf`.
 The model is served from disk; no weights are copied into the repository.
 The loopback-only server serves files, HEAD and byte ranges, and provides
 COOP/COEP for WASM threads. It has no inference API.

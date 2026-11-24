@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$0")/.."
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+# shellcheck source=/dev/null
+source "$ROOT/scripts/load-dotenv.sh"
+# This script always runs the live suite; other knobs (paths, features) come from `.env`.
 export UIE_ACCEPTANCE_MODE=live
 FEATURES="${UIE_ACCEPTANCE_FEATURES:-gguf,live-onnx}"
 export CXX="${CXX:-g++}"
