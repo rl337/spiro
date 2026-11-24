@@ -7,8 +7,8 @@
 ## User story
 
 **As** Liz, who inherited a Spirograph art script—and **as** Jack, who wants one platform for demos and models  
-**I want** a single Rust engine that can run both toy workloads and real models **at any scale**, with an emphasis on edge and embedded hosts  
-**So that** Liz is not maintaining parallel scripts and Jack can ship the same engine from a Pi or browser WASM build up to larger machines.
+**I want** a single Rust engine that can run both toy workloads and real models **at any scale** — and when we must compromise, favor edge and embedded hosts  
+**So that** Liz is not maintaining parallel scripts and Jack can grow the same engine from a Pi or browser WASM build up to larger machines without forking the product.
 
 ## In plain terms
 
@@ -18,7 +18,7 @@ This repo began as `spiro.py`, which fills a big pixel grid and saves a JPEG. UI
 2. A [backend](../glossary.md#backend) runs the math.
 3. A [runtime](./004-runtime-sessions.md) ties sessions, models, and plans together.
 4. Demos like the [Spirograph](./008-spiro-demo.md) prove the plumbing; [model loaders](./007-models-loaders.md) extend it to ONNX and beyond.
-5. The [project mandate](../mandate.md) prioritizes **edge and embedded** (WASM, Raspberry Pi–class ARM) without abandoning larger-scale backends.
+5. The [project mandate](../mandate.md) keeps an **any-scale** trajectory; edge/embedded (WASM, Raspberry Pi–class ARM) is the direction we compromise toward when forced to choose.
 
 You do not need to know Rust internals to follow the stories—start with [US-002](./002-tensors.md) if you care how data is stored.
 

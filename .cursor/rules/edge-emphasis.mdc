@@ -1,13 +1,15 @@
-# Edge & embedded emphasis
+# Edge compromise direction
 
-Product mandate: **good inference at any scale**, with emphasis on **edge and
-embedded** (WASM, Raspberry Pi–class ARM). Normative prose:
-[`docs/mandate.md`](../../docs/mandate.md).
+Product mandate ([`docs/mandate.md`](../../docs/mandate.md)): build a **good
+inference engine at any scale**. That trajectory does not change.
+
+**When a design must compromise**, prefer **edge / embedded performance**
+(tight RAM/CPU, WASM, Raspberry Pi–class ARM) over datacenter-only assumptions.
 
 When adding features, loaders, backends, or acceptance:
 
-- Prefer designs that work under **tight RAM/CPU** and explicit budgets
-  ([US-025](../../docs/stories/025-bounded-model-admission.md)–[US-029](../../docs/stories/029-capability-aware-kernels.md)).
-- Treat **embedded WASM** and **small-board live** paths as first-class, not demos bolted on after a GPU-only design.
-- Server/GPU scale remains in scope when it shares the same loaders, telemetry, and DI wiring — do not fork a “cloud engine.”
-- Park datacenter-only techniques in [`docs/inspiration/`](../../docs/inspiration/) until a user story claims them.
+- Keep one engine story across scales — do not fork a “cloud engine.”
+- If you must choose (API shape, default budgets, what CI gates, what to defer),
+  choose the option that stays viable on edge/embedded hosts.
+- Park datacenter-only techniques in [`docs/inspiration/`](../../docs/inspiration/)
+  until a user story claims them.

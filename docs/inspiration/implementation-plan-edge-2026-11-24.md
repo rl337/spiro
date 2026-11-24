@@ -2,7 +2,7 @@
 
 **Branch / PR:** work on `inspiration/trouble-measurement-controls-2026-11-24` (#22).  
 **Status:** planning — stories are `planned`; no production behavior yet.  
-**Mandate:** [`docs/mandate.md`](../mandate.md) — any-scale inference with edge/embedded emphasis.  
+**Mandate:** [`docs/mandate.md`](../mandate.md) — any-scale inference; when compromising, prefer edge/embedded.  
 **Inputs:** [`trouble-edge-inference-2026-11-24.md`](./trouble-edge-inference-2026-11-24.md), [`trouble-measurement-controls-2026-11-24.md`](./trouble-measurement-controls-2026-11-24.md), [`inference-optimizations.md`](./inference-optimizations.md).
 
 ## Story map (EDGE → US)

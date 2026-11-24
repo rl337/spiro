@@ -1,8 +1,8 @@
 # Contributing to UIE (Spiro)
 
-**Mandate:** [docs/mandate.md](./mandate.md) — good inference at any scale, with
-emphasis on edge and embedded (WASM, Raspberry Pi–class ARM). Prefer designs that
-fit tight resource budgets; do not treat server GPU as the only design center.
+**Mandate:** [docs/mandate.md](./mandate.md) — good inference at any scale. That
+trajectory is unchanged; when a design must compromise, prefer edge/embedded
+performance (WASM, Pi-class ARM) over datacenter-only assumptions.
 
 ## Check-ins and user stories
 

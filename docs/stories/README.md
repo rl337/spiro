@@ -2,7 +2,7 @@
 
 Each story has an ID (`US-*`) so you can cite it in issues and PRs. Terms link to the [glossary](../glossary.md). Personas are [30 Rock first names](../personas.md).
 
-Product mandate ([docs/mandate.md](../mandate.md)): good inference **at any scale**, with emphasis on **edge and embedded** (WASM, Raspberry Pi–class ARM).
+Product mandate ([docs/mandate.md](../mandate.md)): good inference **at any scale**; when we must compromise, prefer **edge/embedded** performance.
 
 ## Foundation (shipped / partial)
 

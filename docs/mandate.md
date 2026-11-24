@@ -1,29 +1,43 @@
 # Project mandate
 
-**Spiro / UIE** builds a **good inference engine at any scale**, with a deliberate
-**emphasis on edge and embedded compute**.
+**Spiro / UIE** builds a **good inference engine at any scale**.
 
-## What we optimize for
+That trajectory does **not** change when we talk about edge or embedded. Edge is
+where we **break ties**: if a design choice must compromise one way or another,
+we compromise in favor of **edge and embedded performance** (tight RAM/CPU,
+WASM, Raspberry Pi–class ARM), not the other way around.
 
-| Priority | Meaning |
-|----------|---------|
-| **Correct & portable** | Same engine story from laptop CI stubs to live models — not a fork per device class. |
-| **Edge-first defaults** | Designs assume tight RAM/CPU, explicit admission, measurable cost, and safe fallbacks ([US-025](./stories/025-bounded-model-admission.md)–[US-029](./stories/029-capability-aware-kernels.md)). |
-| **Embedded WASM** | In-browser / `wasm32` CPU paths are first-class (e.g. [US-026](./stories/026-browser-wasm-inference.md)); WebGPU stays a reserved, non-silent path. |
-| **Small boards** | Targets such as **Raspberry Pi 4/5** (ARM64 containers) guide live acceptance and resource budgets — datacenter GPU tricks are optional, not the default design center. |
-| **Any scale still welcome** | Server GPU, desktop Metal/CUDA, and larger models remain in scope when they share the same loaders, telemetry, and DI wiring. |
+## Trajectory (unchanged)
+
+- One engine story from CI stubs → live models → larger desktop/server backends.
+- Shared loaders, telemetry, and DI wiring — not a cloud fork and an edge fork.
+- Server GPU, Metal/CUDA, and bigger models remain in scope when they ride the same core.
+
+## When we must compromise
+
+Prefer the option that keeps **edge/embedded** viable and measurable:
+
+| Prefer | Over |
+|--------|------|
+| Explicit budgets, admission, and safe fallbacks | Assuming “enough RAM/GPU” |
+| Paths that work on **WASM** and **Pi-class** hosts | Designs that only pay off in the datacenter |
+| Measurable cost ([US-023](./stories/023-inference-telemetry.md), [US-028](./stories/028-constrained-benchmark-controls.md)) | Unverified vendor tok/s folklore |
+| Claiming techniques with a user story | Importing every GPU serving idea by default |
+
+Edge resource stories ([US-025](./stories/025-bounded-model-admission.md)–[US-029](./stories/029-capability-aware-kernels.md)) and embedded WASM ([US-026](./stories/026-browser-wasm-inference.md)) exist to make that compromise concrete — not to redefine the product as “Pi-only.”
 
 ## What this is not
 
-- Not “cloud-only inference with an edge afterthought.”
-- Not a mandate to reimplement every GPU serving stack on the Pi.
-- Not a promise that every optimization from the [inspiration](./inspiration/README.md) backlog ships — claim them with a user story first.
+- Not “abandon any-scale; only ship for the Pi.”
+- Not “cloud-only with edge as an afterthought.”
+- Not a mandate to reimplement every GPU serving stack on embedded hardware.
+- Not a promise that every item in [inspiration](./inspiration/README.md) ships — claim them with a user story first.
 
 ## How we keep score
 
 - User stories and acceptance tests ([contributing](./contributing.md)).
-- Structured telemetry ([US-023](./stories/023-inference-telemetry.md)) and trustworthy comparisons ([US-028](./stories/028-constrained-benchmark-controls.md)).
-- DI-owned config ([US-024](./stories/024-dependency-injection.md)) so edge vs live knobs stay injectable, not scattered env checks.
+- Structured telemetry and trustworthy comparisons.
+- DI-owned config ([US-024](./stories/024-dependency-injection.md)) so scale/profile knobs stay injectable.
 
 ## See also
 

@@ -2,8 +2,8 @@
 
 The **Universal Inference Engine (UIE)** is this repo’s Rust engine for running models and demo workloads. These docs explain it in plain language.
 
-**Mandate:** good inference **at any scale**, with emphasis on **edge and embedded**
-(WASM, Raspberry Pi–class ARM, tight RAM/CPU). See [mandate.md](./mandate.md).
+**Mandate:** good inference **at any scale**; when we must compromise, prefer
+**edge/embedded** performance. See [mandate.md](./mandate.md).
 
 ## Start here
 
