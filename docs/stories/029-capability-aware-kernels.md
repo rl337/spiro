@@ -1,8 +1,8 @@
 # US-029: Capability-aware optimized execution
 
-**Status:** planned  
+**Status:** partial (CI probe/dispatch/fallback; real NEON/Pi live later)  
 **Personas:** Pete, Toofer  
-**Crate / path:** `crates/uie-core` backends / ops; optional ARM NEON paths; prefer llama.cpp / ONNX delegation first  
+**Crate / path:** `crates/uie-core` (`capability`), backends / ops; prefer llama.cpp / ONNX delegation for heavy kernels  
 **Inspiration:** EDGE-ARM-04 in [`docs/inspiration/trouble-edge-inference-2026-11-24.md`](../inspiration/trouble-edge-inference-2026-11-24.md)
 
 ## User story
@@ -36,9 +36,8 @@
 
 ## Acceptance notes
 
-- **Today:** planned; CI asserts contract events.
-- **CI (future):** scalar vs optimized fixture equality / tolerance; dispatch event; forced-unsupported path falls back cleanly.
-- **Live (future):** Pi 4/5 kernel and end-to-end cost; feature detection for NEON / dotprod rather than assume.
+- **Today (CI):** `FakeCapabilityProbe` + `select_kernel_traced` — missing feature → scalar fallback (never trap); present feature → optimized dispatch; `require_feature` → explicit `UnsupportedOp`; scalar vs dispatch fill match on odd lengths.
+- **Live (future):** host feature detection (NEON/dotprod); Pi 4/5 measurements; real SIMD kernels or continue delegating to Tract/llama.cpp.
 
 ## Acceptance tests
 
@@ -48,5 +47,5 @@
 
 ## Observability
 
-- **Events:** `StoryEventLog` contract markers (`kernel_contract_*`); later assert `dispatch` / `fallback` / `unsupported`.
+- **Events:** `StoryEventLog` (`kernel_contract_*`) + `CapabilityEvent` (`Probe` / `Dispatch` / `Fallback`).
 - **CI test:** `us_029_capability_kernels.rs`

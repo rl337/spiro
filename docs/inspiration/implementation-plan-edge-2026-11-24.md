@@ -71,9 +71,9 @@ US-026 (WASM MNIST) stays the small Chromium gate; it is not replaced by these s
 
 **Depends on:** Phase 2 to prove wins; prefer Tract/llama.cpp/ONNX before new NEON kernels.
 
-1. Capability probe injectable.
-2. Dispatch telemetry event; forced-missing feature → fallback test.
-3. Pi live optional.
+1. [x] `CapabilityProbe` / `FakeCapabilityProbe` + `select_kernel` / `select_kernel_traced`.
+2. [x] Dispatch + fallback events; `require_feature` → explicit unsupported; numeric match fixture.
+3. [ ] Pi live / real NEON — optional follow-up.
 
 ### Phase 5 — Pi GPU + NPU backends (hardware-gated)
 

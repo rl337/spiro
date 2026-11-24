@@ -5,6 +5,7 @@
 //! pluggable compute backends.
 
 pub mod backend;
+pub mod capability;
 pub mod error;
 pub mod infer;
 pub mod model;
@@ -19,6 +20,11 @@ pub mod telemetry {
 
 pub use backend::cpu::CpuBackend;
 pub use backend::{Backend, BackendId, Device, DeviceKind};
+pub use capability::{
+    fill_f32_dispatch, fill_f32_scalar, require_feature, select_kernel, select_kernel_traced,
+    CapabilityEvent, CapabilityProbe, CpuFeature, DispatchDecision, FakeCapabilityProbe,
+    KernelPath,
+};
 pub use error::{Error, Result};
 pub use infer::InferOutcome;
 pub use model::{
