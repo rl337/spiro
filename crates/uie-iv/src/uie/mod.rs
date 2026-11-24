@@ -4,8 +4,8 @@ pub mod profile;
 
 pub use loaders::{LiveLoaderSet, ModelLoaderSet, StubOnlyLoaderSet};
 pub use modules::{
-    AcceptanceEnvModule, OverrideCiModule, OverrideFakeMemoryBudgetModule, OverrideLiveModule,
-    ServeEnvModule,
+    AcceptanceEnvModule, OverrideCiModule, OverrideFakeInferenceStateBudgetModule,
+    OverrideFakeMemoryBudgetModule, OverrideLiveModule, ServeEnvModule,
 };
 pub use profile::{
     acceptance_mode_from_env, serve_loader_mode_from_env, AcceptanceMode, AcceptanceProfile,

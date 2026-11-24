@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use uie_core::resource::MemoryBudget;
+use uie_core::resource::{InferenceStateBudget, MemoryBudget};
 
 use crate::error::IvError;
 use crate::uie::loaders::ModelLoaderSet;
@@ -13,6 +13,7 @@ pub struct Binder {
     pub(crate) acceptance_profile: Option<Arc<dyn AcceptanceProfile>>,
     pub(crate) loader_set: Option<Arc<dyn ModelLoaderSet>>,
     pub(crate) memory_budget: Option<Arc<dyn MemoryBudget>>,
+    pub(crate) inference_state_budget: Option<Arc<dyn InferenceStateBudget>>,
 }
 
 impl Binder {
@@ -43,6 +44,17 @@ impl Binder {
         Ok(())
     }
 
+    pub fn bind_inference_state_budget(
+        &mut self,
+        budget: Arc<dyn InferenceStateBudget>,
+    ) -> Result<(), IvError> {
+        if self.inference_state_budget.is_some() {
+            return Err(IvError::Duplicate("inference_state_budget"));
+        }
+        self.inference_state_budget = Some(budget);
+        Ok(())
+    }
+
     pub fn override_acceptance_profile(&mut self, profile: Arc<dyn AcceptanceProfile>) {
         self.acceptance_profile = Some(profile);
     }
@@ -53,5 +65,9 @@ impl Binder {
 
     pub fn override_memory_budget(&mut self, budget: Arc<dyn MemoryBudget>) {
         self.memory_budget = Some(budget);
+    }
+
+    pub fn override_inference_state_budget(&mut self, budget: Arc<dyn InferenceStateBudget>) {
+        self.inference_state_budget = Some(budget);
     }
 }

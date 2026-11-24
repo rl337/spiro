@@ -285,6 +285,55 @@ pub trait InferenceStateBudget: Send + Sync {
     }
 }
 
+/// Always admits (default until a state budget is injected).
+#[derive(Debug, Default)]
+pub struct UnlimitedInferenceStateBudget;
+
+impl InferenceStateBudget for UnlimitedInferenceStateBudget {
+    fn budget_source(&self) -> &str {
+        "unlimited_state"
+    }
+
+    fn max_context_tokens(&self) -> u32 {
+        u32::MAX
+    }
+
+    fn admit(&self, _req: &ContextRequest) -> Result<StateAdmission> {
+        // Callers clamp to CompleteOptions.context_tokens via resolve_context_n_ctx.
+        Ok(StateAdmission::Accept { n_ctx: u32::MAX })
+    }
+
+    fn release(&self, _admission: &StateAdmission) {}
+}
+
+/// Resolve llama `n_ctx` from a budgeted admission (US-027).
+///
+/// [`StateAdmission::Negotiate`] becomes [`Error::StateBudgetNegotiate`] — never silent truncate.
+pub fn resolve_context_n_ctx(
+    budget: &dyn InferenceStateBudget,
+    req: &ContextRequest,
+    requested_n_ctx: u32,
+) -> Result<(u32, StateAdmission)> {
+    let admission = budget.admit(req)?;
+    match &admission {
+        StateAdmission::Accept { n_ctx } => {
+            let effective = requested_n_ctx.min(*n_ctx).max(256);
+            Ok((effective, admission))
+        }
+        StateAdmission::Negotiate {
+            requested,
+            offered_n_ctx,
+        } => Err(Error::StateBudgetNegotiate {
+            requested: *requested,
+            offered_n_ctx: *offered_n_ctx,
+            reason: format!(
+                "re-request with context_tokens<={offered_n_ctx} (source={})",
+                budget.budget_source()
+            ),
+        }),
+    }
+}
+
 /// Deterministic context cap for CI (US-027).
 pub struct FakeInferenceStateBudget {
     max_context_tokens: u32,

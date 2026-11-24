@@ -5,8 +5,9 @@ use uie_catalog::{expand_home, ModelCatalog, ModelRole, ModelRootsFile};
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::tensor::Tensor;
 use uie_core::InferenceRuntime;
+use uie_iv::{serve_injector, Injector};
 use uie_loader_gguf::{
-    complete_gguf_file, complete_gguf_file_chat, CompleteOptions, GgufModelLoader,
+    complete_gguf_file_budgeted, complete_gguf_file_chat_budgeted, CompleteOptions, GgufModelLoader,
 };
 
 fn main() -> uie_core::Result<()> {
@@ -73,10 +74,15 @@ fn main() -> uie_core::Result<()> {
         return Ok(());
     }
 
+    // US-027: admit context via injected InferenceStateBudget before llama new_context.
+    let inj: Injector = serve_injector().map_err(|e| {
+        uie_core::Error::Runtime(format!("injector: {e}"))
+    })?;
+    let state_budget = inj.inference_state_budget();
     let result = if chat_mode {
-        complete_gguf_file_chat(&model_path, &prompt, &opts)?
+        complete_gguf_file_chat_budgeted(&model_path, &prompt, &opts, state_budget.as_ref())?
     } else {
-        complete_gguf_file(&model_path, &prompt, &opts)?
+        complete_gguf_file_budgeted(&model_path, &prompt, &opts, state_budget.as_ref())?
     };
     println!("{}", result.text);
     eprintln!(

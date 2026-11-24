@@ -50,6 +50,16 @@ pub enum Error {
         limit_tokens: u32,
         reason: String,
     },
+
+    /// Budget offered a shorter `n_ctx` — caller must re-request; never silent truncate (US-027).
+    #[error(
+        "state budget negotiate: requested span {requested} offered n_ctx {offered_n_ctx}: {reason}"
+    )]
+    StateBudgetNegotiate {
+        requested: u32,
+        offered_n_ctx: u32,
+        reason: String,
+    },
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

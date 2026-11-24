@@ -32,9 +32,9 @@ pub use model::{
 };
 pub use ops::{Op, OpKind};
 pub use resource::{
-    AdmissionEvent, ContextRequest, EstimateConfidence, FakeInferenceStateBudget, FakeMemoryBudget,
-    InferenceStateBudget, MemoryBudget, MemoryEstimate, Reservation, StateAdmission, StateEvent,
-    UnlimitedMemoryBudget,
+    resolve_context_n_ctx, AdmissionEvent, ContextRequest, EstimateConfidence,
+    FakeInferenceStateBudget, FakeMemoryBudget, InferenceStateBudget, MemoryBudget, MemoryEstimate,
+    Reservation, StateAdmission, StateEvent, UnlimitedInferenceStateBudget, UnlimitedMemoryBudget,
 };
 pub use runtime::{ExecutionPlan, InferenceRuntime, Session, SessionConfig};
 pub use tensor::{DataType, Shape, Tensor, TensorView};

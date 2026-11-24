@@ -1,7 +1,7 @@
 # Implementation plan: edge resource + measurement stories
 
 **Branch / PR:** work on `inspiration/trouble-measurement-controls-2026-11-24` (#22).  
-**Status:** planning — stories are `planned`; no production behavior yet.  
+**Status:** Phases 1–4 CI paths implemented (`partial` stories); live/hardware follow-ups open.  
 **Mandate:** [`docs/mandate.md`](../mandate.md) — any-scale inference; when compromising, prefer edge/embedded.  
 **Inputs:** [`trouble-edge-inference-2026-11-24.md`](./trouble-edge-inference-2026-11-24.md), [`trouble-measurement-controls-2026-11-24.md`](./trouble-measurement-controls-2026-11-24.md), [`inference-optimizations.md`](./inference-optimizations.md).
 
@@ -65,7 +65,7 @@ US-026 (WASM MNIST) stays the small Chromium gate; it is not replaced by these s
 2. [x] Fake CI budget: accept / reject / negotiate (no silent truncation); release on cancel.
 3. [ ] Optional prefix cache with exact keys — deferred.
 4. [x] Acceptance behavioral tests for reject / negotiate / release.
-5. [ ] Live: call `admit` from `uie-llm` / complete before `new_context`.
+5. [x] Call `admit` from budgeted GGUF complete + `uie-llm` via injected state budget (before `new_context`).
 
 ### Phase 4 — US-029 capability kernels
 

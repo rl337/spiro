@@ -1,8 +1,8 @@
 # US-027: Bounded inference state
 
-**Status:** partial (CI fake context budget; GGUF live wiring later)  
+**Status:** partial (CI fake + GGUF complete admit; peak-vs-n_ctx live metrics later)  
 **Personas:** Liz, Pete  
-**Crate / path:** `crates/uie-core` (`InferenceStateBudget`), `uie-loader-gguf` (`CompleteOptions.context_tokens` / `n_ctx`)  
+**Crate / path:** `crates/uie-core` (`InferenceStateBudget`), `uie-loader-gguf` (budgeted complete), `uie-iv` / `uie-llm`  
 **Inspiration:** EDGE-STATE-02 in [`docs/inspiration/trouble-edge-inference-2026-11-24.md`](../inspiration/trouble-edge-inference-2026-11-24.md)
 
 ## User story
@@ -36,8 +36,8 @@
 
 ## Acceptance notes
 
-- **Today (CI):** `FakeInferenceStateBudget` — accept within limit + release; hard reject when over; negotiate offers shorter `n_ctx` without silent truncation. GGUF already exposes `CompleteOptions.context_tokens` → llama `n_ctx`; callers should admit via the state budget first.
-- **Live (future):** wire admit into `uie-llm` / complete path; measure peak vs `n_ctx`; same prompt/tokenizer.
+- **Today (CI):** `FakeInferenceStateBudget` + `resolve_context_n_ctx` — accept / reject / negotiate-as-error (no silent truncation). GGUF `complete_*_budgeted` admits before `new_context` and releases after; `uie-llm` uses the injected budget from `serve_injector`.
+- **Live (future):** measure peak vs `n_ctx`; same prompt/tokenizer; optional tighter cgroup-linked state caps.
 
 ## Acceptance tests
 

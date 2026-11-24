@@ -3,7 +3,9 @@
 use std::sync::Arc;
 
 use uie_core::model::ModelLoader;
-use uie_core::resource::{MemoryBudget, UnlimitedMemoryBudget};
+use uie_core::resource::{
+    InferenceStateBudget, MemoryBudget, UnlimitedInferenceStateBudget, UnlimitedMemoryBudget,
+};
 
 use crate::binder::Binder;
 use crate::error::IvError;
@@ -16,6 +18,7 @@ pub struct Injector {
     acceptance_profile: Arc<dyn AcceptanceProfile>,
     loader_set: Arc<dyn ModelLoaderSet>,
     memory_budget: Arc<dyn MemoryBudget>,
+    inference_state_budget: Arc<dyn InferenceStateBudget>,
 }
 
 impl Injector {
@@ -34,6 +37,9 @@ impl Injector {
             memory_budget: binder
                 .memory_budget
                 .unwrap_or_else(|| Arc::new(UnlimitedMemoryBudget)),
+            inference_state_budget: binder
+                .inference_state_budget
+                .unwrap_or_else(|| Arc::new(UnlimitedInferenceStateBudget)),
         })
     }
 
@@ -48,5 +54,10 @@ impl Injector {
     /// Injected memory budget (US-025); defaults to unlimited when unbound.
     pub fn memory_budget(&self) -> Arc<dyn MemoryBudget> {
         Arc::clone(&self.memory_budget)
+    }
+
+    /// Injected KV / context budget (US-027); defaults to unlimited when unbound.
+    pub fn inference_state_budget(&self) -> Arc<dyn InferenceStateBudget> {
+        Arc::clone(&self.inference_state_budget)
     }
 }
