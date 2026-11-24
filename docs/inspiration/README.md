@@ -8,8 +8,12 @@ Because this repository is public, every entry uses only Trouble's **public** fa
 
 | Path | Purpose |
 |------|---------|
-| [inference-optimizations.md](./inference-optimizations.md) | Curated inference-optimization ideas, grouped by theme |
+| [inference-optimizations.md](./inference-optimizations.md) | Curated inference-optimization ideas, grouped by theme (18 kept items from 2026-11-24 scan) |
+| [trouble-edge-inference-2026-11-24.md](./trouble-edge-inference-2026-11-24.md) | Edge / Pi-first candidate requirements (`EDGE-MEM-01` … `EDGE-ARM-04`) |
+| [trouble-measurement-controls-2026-11-24.md](./trouble-measurement-controls-2026-11-24.md) | Measurement-validity amendment for `EDGE-BENCH-03` / US-023 |
 | [`sources/`](./sources/) | Machine-readable ingest records (post ids scanned vs kept) |
+
+Read order for promotion: **edge candidates** (what to build) → **measurement controls** (how to prove wins) → **inference-optimizations** (broader technique backlog).
 
 This tree is **not** a user story. It does not live under `docs/stories/`, does not get a `US-0NN` id, and does not need an acceptance test. `scripts/verify-story-governance.py` only requires a story citation for changes under `crates/`, `python/`, `models/`, or `docs/stories/`.
 
