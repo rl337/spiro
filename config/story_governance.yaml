@@ -26,11 +26,11 @@ diff_exempt_globs:
 # Changed files under these globs must be justified by a story (see diff_rules).
 diff_rules:
   - glob: "crates/**"
-    stories: [US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019, US-020, US-021, US-022, US-023, US-024, US-025, US-026, US-027, US-028, US-029]
+    stories: [US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019, US-020, US-021, US-022, US-023, US-024, US-025, US-026, US-027, US-028, US-029, US-030, US-031]
   - glob: "python/**"
     stories: [US-020]
   - glob: "docs/stories/**"
-    stories: [US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019, US-020, US-021, US-022, US-023, US-024, US-025, US-026, US-027, US-028, US-029]
+    stories: [US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019, US-020, US-021, US-022, US-023, US-024, US-025, US-026, US-027, US-028, US-029, US-030, US-031]
   - glob: "web/**"
     stories: [US-026]
   - glob: "models/**"
@@ -148,3 +148,9 @@ stories:
   US-029:
     acceptance:
       - crates/uie-acceptance/tests/us_029_capability_kernels.rs
+  US-030:
+    acceptance:
+      - crates/uie-acceptance/tests/us_030_pi_gpu_backend.rs
+  US-031:
+    acceptance:
+      - crates/uie-acceptance/tests/us_031_npu_backend.rs

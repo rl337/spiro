@@ -25,6 +25,7 @@
 - [US-005](./005-execution-plans.md) / [US-006](./006-operations.md) — graph ops
 - [US-009](./009-onnx-mnist.md) — Tract ONNX path already used in WASM ([US-026](./026-browser-wasm-inference.md))
 - [US-028](./028-constrained-benchmark-controls.md) — prove a fast path is a real win
+- [US-030](./030-pi-gpu-backend.md) / [US-031](./031-npu-backend.md) — accelerator backends after probes exist
 
 ## Terms used
 

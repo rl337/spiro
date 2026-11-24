@@ -74,6 +74,17 @@ US-026 (WASM MNIST) stays the small Chromium gate; it is not replaced by these s
 2. Dispatch telemetry event; forced-missing feature → fallback test.
 3. Pi live optional.
 
+### Phase 5 — Pi GPU + NPU backends (hardware-gated)
+
+**Stories:** [US-030](../stories/030-pi-gpu-backend.md), [US-031](../stories/031-npu-backend.md).  
+**Depends on:** Phase 4 probes; actual **hardware access** before live work.
+
+1. Extend capability probes for “Pi GPU present” / “NPU present” (CI fakes first).
+2. Register backends via DI; same admission + telemetry as CPU.
+3. Prefer existing EP / llama.cpp / Vulkan (or vendor NPU runtime) over greenfield kernels.
+4. Live acceptance stays opt-in in `.env` / injectables — no CI failure when silicon is absent.
+5. Measure with US-028 brackets; never treat cloud-GPU numbers as Pi GPU/NPU forecasts.
+
 ## Deferred from the Troublescan (until a story claims them)
 
 | Theme | Examples | Parked under |

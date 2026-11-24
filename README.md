@@ -91,5 +91,5 @@ flowchart TB
 
 1. **Real model loaders** — ONNX / SafeTensors / GGUF implementing `ModelLoader`.
 2. **Graph executor** — wire `Session` I/O to `Backend::execute` for each `Op` in `ExecutionPlan`.
-3. **Backend plugins** — dynamic registration (`BackendRegistry`) and optional `uie-backend-*` crates.
+3. **Backend plugins** — dynamic registration (`BackendRegistry`) and optional `uie-backend-*` crates (CPU today; **Pi GPU** [US-030](docs/stories/030-pi-gpu-backend.md) and **NPU** [US-031](docs/stories/031-npu-backend.md) when hardware is available).
 4. **Python bridge** — optional PyO3 crate wrapping `uie-core` so `spiro.py` can call the Rust runtime.

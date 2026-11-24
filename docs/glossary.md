@@ -92,6 +92,14 @@ The **CPU backend** is the reference [backend](#backend) that runs on the host m
 
 ---
 
+### NPU {#npu}
+
+An **NPU** (neural processing unit) is an on-device accelerator specialized for neural-net inference (distinct from a general GPU). UIE plans an NPU [backend](#backend) when hardware/SDK access exists ([US-031](./stories/031-npu-backend.md)).
+
+**See also:** [US-030](./stories/030-pi-gpu-backend.md), [US-031](./stories/031-npu-backend.md), [mandate](./mandate.md)
+
+---
+
 ### Diffusion model {#diffusion-model}
 
 A **diffusion model** generates or edits images by gradually denoising latent noise, usually conditioned on text. UIE stories use it for [text-to-image](#text-to-image) and image-to-image ([US-012](./stories/012-diffusion-text-to-image.md), [US-019](./stories/019-image-to-image.md)).

@@ -13,6 +13,17 @@ WASM, Raspberry Pi–class ARM), not the other way around.
 - Shared loaders, telemetry, and DI wiring — not a cloud fork and an edge fork.
 - Server GPU, Metal/CUDA, and bigger models remain in scope when they ride the same core.
 
+## Accelerator roadmap (when we have access)
+
+Edge does not mean CPU-only forever. As hardware becomes available to the project:
+
+| Track | Story | Gate |
+|-------|-------|------|
+| **Raspberry Pi GPU** | [US-030](./stories/030-pi-gpu-backend.md) | Real Pi GPU (or equivalent) + drivers in a lab/operator environment |
+| **NPU / on-device accelerators** | [US-031](./stories/031-npu-backend.md) | Access to at least one NPU SDK + board/SoC |
+
+Until then: keep the `Backend` trait and capability probes honest (CPU + fake probes in CI). Do not block the any-scale roadmap on owning that silicon today.
+
 ## When we must compromise
 
 Prefer the option that keeps **edge/embedded** viable and measurable:

@@ -56,6 +56,8 @@ Derived from Trouble inspiration (`docs/inspiration/`); see the [implementation 
 | [US-027](./027-bounded-inference-state.md) | Bounded inference state | Liz, Pete | planned |
 | [US-028](./028-constrained-benchmark-controls.md) | Constrained benchmarks & trustworthy comparisons | Pete, Jack | planned |
 | [US-029](./029-capability-aware-kernels.md) | Capability-aware optimized execution | Pete, Toofer | planned |
+| [US-030](./030-pi-gpu-backend.md) | Raspberry Pi GPU backend | Pete, Jack | planned (hardware-gated) |
+| [US-031](./031-npu-backend.md) | NPU / on-device accelerator backend | Pete, Jack | planned (hardware-gated) |
 
 ## Acceptance tests
 
@@ -71,4 +73,4 @@ See [acceptance-tests.md](../acceptance-tests.md) and [contributing.md](../contr
 - **`uie-catalog`, `config/model_roots.example.yaml`:** US-021  
 - **`uie-pipeline`:** US-022  
 - **`uie-acceptance`, `python/acceptance/`:** all US-*  
-- **Edge (planned):** US-025 admission, US-027 state, US-028 bench controls, US-029 kernels — see [`docs/inspiration/implementation-plan-edge-2026-11-24.md`](../inspiration/implementation-plan-edge-2026-11-24.md)
+- **Edge (planned):** US-025 admission, US-027 state, US-028 bench controls, US-029 kernels, US-030 Pi GPU, US-031 NPU — see [`docs/inspiration/implementation-plan-edge-2026-11-24.md`](../inspiration/implementation-plan-edge-2026-11-24.md)
