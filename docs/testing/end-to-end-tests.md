@@ -19,6 +19,8 @@ The harness selects tests when you run it:
 
 Acceptance tests prove story contracts in CI with stubs and fast gates. E2E tests prove **operator paths** on a laptop (GGUF load, registry scan, completion latency) without bloating default CI.
 
+Browser WASM MNIST (US-026) is a separate Chromium gate: `./scripts/wasm-mnist-ci.sh` / `.github/workflows/uie-wasm-chromium.yml`.
+
 ## Harness: `uie-e2e`
 
 ```bash

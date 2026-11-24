@@ -42,6 +42,7 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 | [US-022](./022-byte-channel-pipeline.md) | Multi-hop byte channel pipeline | Tracy, Pete | shipped |
 | [US-023](./023-inference-telemetry.md) | Execution telemetry (TTFT, throughput) | Pete, Jack | shipped |
 | [US-024](./024-dependency-injection.md) | Dependency injection (uie-iv / pyiv-style) | Jack, Pete | shipped |
+| [US-026](./026-browser-wasm-inference.md) | Browser WASM inference (ONNX MNIST) | Pete, Liz | shipped |
 
 ## Acceptance tests
 

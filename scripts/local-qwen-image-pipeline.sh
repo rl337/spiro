@@ -7,7 +7,10 @@
 #   - config/comfy_workflows/qwen_image_api.json (you export) + patches in config/comfy_workflows/qwen_image_patches.json
 #
 set -euo pipefail
-cd "$(dirname "$0")/.."
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+# shellcheck source=/dev/null
+source "$ROOT/scripts/load-dotenv.sh"
 
 export SPIRO_MODEL_ROOTS="${SPIRO_MODEL_ROOTS:-$PWD/config/model_roots.yaml}"
 WORKFLOW="${COMFY_WORKFLOW:-$PWD/config/comfy_workflows/qwen_image_api.json}"

@@ -1,0 +1,26 @@
+name: UIE WASM Chromium (MNIST)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  wasm-mnist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.96.0
+          targets: wasm32-unknown-unknown
+      - uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: v0.13.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run WASM MNIST Chromium CI
+        run: |
+          chmod +x scripts/wasm-mnist-ci.sh
+          ./scripts/wasm-mnist-ci.sh

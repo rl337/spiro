@@ -30,7 +30,7 @@ Scripts:
 ./scripts/acceptance-live.sh        # laptop / nightly (--features live-onnx when ONNX builds)
 ```
 
-Example env: [`config/acceptance.env.example`](../config/acceptance.env.example).
+Example env: [`.env.example`](../.env.example) → copy to gitignored `.env` (loaded by `scripts/load-dotenv.sh`).
 
 ### CI (GitHub)
 
@@ -39,10 +39,7 @@ Example env: [`config/acceptance.env.example`](../config/acceptance.env.example)
 ### Live on your laptop
 
 ```bash
-cp config/acceptance.env.example .env.acceptance  # edit paths
-export UIE_ACCEPTANCE_MODE=live
-export SPIRO_MODEL_ROOTS=$PWD/config/model_roots.yaml
-export UIE_LIVE_MODEL_PATH=/path/to/model.gguf   # or .onnx when loader works
+cp .env.example .env   # edit local paths / model locations
 ./scripts/acceptance-live.sh
 ```
 
@@ -101,6 +98,7 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 | US-022 | `us_022_byte_pipeline.rs` | — | multi-hop IPC |
 | US-023 | `us_023_telemetry.rs` | — | TTFT / trace phases |
 | US-024 | `us_024_dependency_injection.rs` | — | `uie-iv` CI/live injector |
+| US-026 | `us_026_browser_wasm.rs` | — | WASM packaging; Chromium via `wasm-mnist-ci.sh`; live offline Qwen chat via `browser-qwen-ci.sh` |
 
 Additional crate tests (also cited in stories):
 

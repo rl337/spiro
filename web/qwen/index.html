@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Qwen browser chat</title>
+<style>
+body { font: 16px system-ui; max-width: 48rem; margin: 3rem auto; padding: 0 1rem; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f3f4f6; padding: 1rem; }
+textarea { width: 100%; min-height: 5rem; font: inherit; }
+button { padding: .6rem 1rem; margin: .5rem .5rem .5rem 0; }
+</style>
+<h1>Qwen browser chat</h1>
+<p>Qwen3 0.6B runs locally in your browser on CPU. Loading the model may take a moment.</p>
+<p id="status" role="status">Loading…</p>
+<pre id="transcript" aria-live="polite"></pre>
+<form><label for="prompt">Message</label><textarea id="prompt" required></textarea>
+<button id="send" disabled>Send</button><button id="reset" type="button" disabled>New conversation</button></form>
+<script type="module" src="./main.js"></script>
+</html>
