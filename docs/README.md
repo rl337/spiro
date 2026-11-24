@@ -13,6 +13,7 @@ The **Universal Inference Engine (UIE)** is this repo’s Rust engine for runnin
 | [Requirements](./requirements/README.md) | Normative engineering constraints (DI-first, …) |
 | [Acceptance tests](./acceptance-tests.md) | One automated test (Rust or Python) per `US-0NN` |
 | [User stories index](./stories/README.md) | All scenarios, in learning order |
+| [Inspiration](./inspiration/README.md) | Curated Trouble ingest notes (not user stories) |
 
 ## Learning path
 
