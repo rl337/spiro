@@ -9,6 +9,7 @@ pub mod error;
 pub mod infer;
 pub mod model;
 pub mod ops;
+pub mod resource;
 pub mod runtime;
 pub mod tensor;
 
@@ -24,5 +25,9 @@ pub use model::{
     InferenceExecutor, InferenceModel, IoSpec, ModelLoader, ModelLoaderRegistry, ModelMetadata,
 };
 pub use ops::{Op, OpKind};
+pub use resource::{
+    AdmissionEvent, EstimateConfidence, FakeMemoryBudget, MemoryBudget, MemoryEstimate,
+    Reservation, UnlimitedMemoryBudget,
+};
 pub use runtime::{ExecutionPlan, InferenceRuntime, Session, SessionConfig};
 pub use tensor::{DataType, Shape, Tensor, TensorView};

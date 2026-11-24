@@ -1,6 +1,6 @@
 # US-025: Bounded model admission and residency
 
-**Status:** planned  
+**Status:** partial (CI fake budget + host admission; live cgroup provider later)  
 **Personas:** Jack, Liz  
 **Crate / path:** `crates/uie-ipc` (host cache), `crates/uie-iv` (budget provider), loaders metadata  
 **Inspiration:** EDGE-MEM-01 in [`docs/inspiration/trouble-edge-inference-2026-11-24.md`](../inspiration/trouble-edge-inference-2026-11-24.md)
@@ -37,8 +37,8 @@
 
 ## Acceptance notes
 
-- **Today:** planned; CI asserts story packaging + contract event names.
-- **CI (future):** fake budget + fake loader — reserve / reject / release / concurrent failure with `StoryEventLog`.
+- **Today (CI):** `FakeMemoryBudget` + `InferenceEngineHost::with_budget` — reserve/commit, hard reject when over capacity (no eviction), idle eviction then admit, failed load releases reservation. Events via `AdmissionEvent` + `StoryEventLog`.
+- **DI:** `uie-iv` binds `UnlimitedMemoryBudget` by default; tests override with `OverrideFakeMemoryBudgetModule` / direct `with_budget`.
 - **Live (future):** Linux cgroup v2 `memory.max` / `current` / `peak` / `events` in a bounded container; no OOM kill under the controlled workload. Report process RSS separately from cgroup usage.
 
 ## Acceptance tests
@@ -49,5 +49,5 @@
 
 ## Observability
 
-- **Events:** `StoryEventLog` contract markers (`admission_contract_*`); behavioral tests will assert `reserve` / `reject` / `release` / `evict_idle` once implemented.
+- **Events:** `StoryEventLog` (`admission_contract_*`) plus `FakeMemoryBudget::take_events` (`Reserve` / `Reject` / `Commit` / `Release` / `ReleaseResidency`).
 - **CI test:** `us_025_bounded_admission.rs`

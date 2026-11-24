@@ -5,6 +5,7 @@ use std::sync::{Arc, Mutex};
 use tracing::{debug, info};
 use uie_core::backend::cpu::CpuBackend;
 use uie_core::model::{InferenceExecutor, ModelLoader};
+use uie_core::resource::{MemoryBudget, MemoryEstimate, UnlimitedMemoryBudget};
 use uie_core::InferenceRuntime;
 use uie_telemetry::{ExecutionRecorder, TraceSummary};
 
@@ -13,10 +14,23 @@ use crate::message::{InferRequest, IpcMessage, TensorPayload, PROTOCOL_VERSION};
 pub struct InferenceEngineHost {
     runtime: InferenceRuntime,
     models: Mutex<HashMap<PathBuf, Arc<dyn InferenceExecutor>>>,
+    budget: Arc<dyn MemoryBudget>,
+    /// When a reserve fails, drop cached models held only by the host (US-025).
+    evict_idle_on_pressure: bool,
 }
 
 impl InferenceEngineHost {
+    /// Unlimited budget (backward compatible).
     pub fn new(loaders: Vec<Box<dyn ModelLoader>>) -> Self {
+        Self::with_budget(loaders, Arc::new(UnlimitedMemoryBudget), false)
+    }
+
+    /// Bounded admission via an injected [`MemoryBudget`] (US-025).
+    pub fn with_budget(
+        loaders: Vec<Box<dyn ModelLoader>>,
+        budget: Arc<dyn MemoryBudget>,
+        evict_idle_on_pressure: bool,
+    ) -> Self {
         let mut runtime = InferenceRuntime::new(Box::new(CpuBackend::new()));
         for loader in loaders {
             runtime.register_loader(loader);
@@ -24,7 +38,13 @@ impl InferenceEngineHost {
         Self {
             runtime,
             models: Mutex::new(HashMap::new()),
+            budget,
+            evict_idle_on_pressure,
         }
+    }
+
+    pub fn budget(&self) -> &dyn MemoryBudget {
+        self.budget.as_ref()
     }
 
     pub fn handle_message(&self, msg: IpcMessage) -> IpcMessage {
@@ -104,6 +124,35 @@ impl InferenceEngineHost {
         })
     }
 
+    fn estimate_path(path: &Path) -> MemoryEstimate {
+        match std::fs::metadata(path) {
+            Ok(meta) => MemoryEstimate::from_file_len(meta.len(), path.display().to_string()),
+            Err(_) => MemoryEstimate {
+                bytes: 0,
+                confidence: uie_core::EstimateConfidence::Unknown,
+                source: path.display().to_string(),
+            },
+        }
+    }
+
+    /// Evict cache entries solely held by the host; release residency on the budget.
+    fn evict_idle_locked(
+        budget: &dyn MemoryBudget,
+        guard: &mut HashMap<PathBuf, Arc<dyn InferenceExecutor>>,
+    ) -> usize {
+        let idle: Vec<PathBuf> = guard
+            .iter()
+            .filter(|(_, m)| Arc::strong_count(m) == 1)
+            .map(|(p, _)| p.clone())
+            .collect();
+        for path in &idle {
+            guard.remove(path);
+            budget.release_residency(&path.display().to_string());
+            info!(path = %path.display(), "evicted idle cached model (US-025)");
+        }
+        idle.len()
+    }
+
     fn load_cached(&self, path: &Path) -> uie_core::Result<Arc<dyn InferenceExecutor>> {
         let mut guard = self
             .models
@@ -112,9 +161,37 @@ impl InferenceEngineHost {
         if let Some(m) = guard.get(path) {
             return Ok(Arc::clone(m));
         }
-        info!(path = %path.display(), "loading model for ipc");
-        let loaded = self.runtime.load_model(path)?;
+
+        let estimate = Self::estimate_path(path);
+        let reservation = match self.budget.try_reserve(&estimate) {
+            Ok(r) => r,
+            Err(e) if self.evict_idle_on_pressure => {
+                let n = Self::evict_idle_locked(self.budget.as_ref(), &mut guard);
+                if n == 0 {
+                    return Err(e);
+                }
+                self.budget.try_reserve(&estimate)?
+            }
+            Err(e) => return Err(e),
+        };
+
+        info!(
+            path = %path.display(),
+            estimate_bytes = estimate.bytes,
+            budget = self.budget.budget_source(),
+            "loading model for ipc (admission reserved)"
+        );
+
+        let loaded = match self.runtime.load_model(path) {
+            Ok(m) => m,
+            Err(e) => {
+                self.budget.release(reservation);
+                return Err(e);
+            }
+        };
         let arc: Arc<dyn InferenceExecutor> = Arc::from(loaded);
+        let key = path.display().to_string();
+        self.budget.commit(reservation, &key);
         guard.insert(path.to_path_buf(), Arc::clone(&arc));
         Ok(arc)
     }

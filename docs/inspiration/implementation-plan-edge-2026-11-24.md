@@ -36,14 +36,14 @@ US-026 (WASM MNIST) stays the small Chromium gate; it is not replaced by these s
 
 **Why first:** inspected gap — path-keyed host cache with no capacity / eviction; prevents live bench chaos.
 
-1. Define `MemoryBudget` / `Reservation` traits in a small injectable (likely `uie-iv` module + thin type in core or ipc).
-2. Fake provider for CI: fixed capacity, deterministic peaks.
-3. Wire `InferenceEngineHost::load_cached` (or successor): estimate → reserve → load → commit / release on failure.
-4. Policy: reject by default when over budget; optional idle eviction behind a flag.
-5. Un-ignore `us_025_reject_when_over_budget`; assert reserve / reject / release events.
-6. Live: cgroup v2 reader behind `OverrideLiveModule` — separate PR if Linux-only.
+1. [x] Define `MemoryBudget` / `Reservation` in `uie-core::resource`; bind via `uie-iv`.
+2. [x] Fake provider for CI: fixed capacity, deterministic events.
+3. [x] Wire `InferenceEngineHost::with_budget` / `load_cached`: estimate → reserve → load → commit / release on failure.
+4. [x] Policy: hard reject when `evict_idle_on_pressure=false`; idle eviction when `true`.
+5. [x] Acceptance: reject / reserve+evict / failed-load release with `StoryEventLog`.
+6. [ ] Live: cgroup v2 reader — follow-up when Linux lab access is ready.
 
-**Exit:** CI green with fake budget; docs mark US-025 `partial` or `shipped` for the fake path.
+**Exit:** CI green with fake budget; US-025 marked `partial` for the fake path.
 
 ### Phase 2 — US-028 trustworthy comparison (extends US-023)
 

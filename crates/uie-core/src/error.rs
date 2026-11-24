@@ -28,6 +28,17 @@ pub enum Error {
 
     #[error("io: {0}")]
     Io(String),
+
+    /// Model admission refused by a [memory budget](crate::resource::MemoryBudget) (US-025).
+    #[error(
+        "admission rejected: need {estimate_bytes} bytes, remaining {remaining_bytes} ({budget_source}): {reason}"
+    )]
+    AdmissionRejected {
+        estimate_bytes: u64,
+        remaining_bytes: u64,
+        budget_source: String,
+        reason: String,
+    },
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

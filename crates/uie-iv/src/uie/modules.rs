@@ -5,6 +5,8 @@ use std::sync::Arc;
 use crate::binder::Binder;
 use crate::module::Module;
 use crate::uie::loaders::{loader_set_for_serve, LiveLoaderSet, StubOnlyLoaderSet};
+use uie_core::resource::{FakeMemoryBudget, UnlimitedMemoryBudget};
+
 use crate::uie::profile::{
     acceptance_mode_from_env, profile_for_mode, serve_loader_mode_from_env, AcceptanceMode,
 };
@@ -21,6 +23,8 @@ impl Module for AcceptanceEnvModule {
             AcceptanceMode::Live => Arc::new(LiveLoaderSet),
         };
         let _ = binder.bind_loader_set(set);
+        // Unlimited until a live cgroup provider ships; tests override with FakeMemoryBudget.
+        let _ = binder.bind_memory_budget(Arc::new(UnlimitedMemoryBudget));
     }
 }
 
@@ -34,6 +38,7 @@ impl Module for ServeEnvModule {
         let _ = binder.bind_loader_set(Arc::from(set));
         // Default profile for serve is CI unless acceptance mode overrides in combined graphs.
         let _ = binder.bind_acceptance_profile(profile_for_mode(AcceptanceMode::Ci));
+        let _ = binder.bind_memory_budget(Arc::new(UnlimitedMemoryBudget));
     }
 }
 
@@ -54,5 +59,16 @@ impl Module for OverrideCiModule {
     fn install(&self, binder: &mut Binder) {
         binder.override_acceptance_profile(profile_for_mode(AcceptanceMode::Ci));
         binder.override_loader_set(Arc::new(StubOnlyLoaderSet));
+    }
+}
+
+/// Test override: fixed-capacity fake memory budget (US-025).
+pub struct OverrideFakeMemoryBudgetModule {
+    pub capacity: u64,
+}
+
+impl Module for OverrideFakeMemoryBudgetModule {
+    fn install(&self, binder: &mut Binder) {
+        binder.override_memory_budget(FakeMemoryBudget::with_capacity(self.capacity));
     }
 }
