@@ -130,9 +130,8 @@ fn resolve_gpu_offload(args: &[String]) -> GgufGpuOffload {
             kind,
         };
     }
-    // Default: auto from live ggml probe (Metal on this Mac; Vulkan on Pi).
-    let probe = LiveGgmlAcceleratorProbe::detect();
-    GgufGpuOffload::from_probe(probe.as_ref(), 99)
+    // Metal/CUDA may offload; Pi V3D stays CPU (16KiB SMEM — see US-030 / llama.cpp#9801).
+    GgufGpuOffload::auto_safe()
 }
 
 fn list_gpu() -> uie_core::Result<()> {

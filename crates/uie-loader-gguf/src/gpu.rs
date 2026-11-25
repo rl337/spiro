@@ -34,6 +34,29 @@ impl GgufGpuOffload {
             None => Self::cpu_only(),
         }
     }
+
+    /// Auto offload for crystalline / Pi: detect devices, but **do not** place layers on
+    /// Broadcom V3D — current llama.cpp Vulkan matmul needs >16KiB shared memory
+    /// ([ggml-org/llama.cpp#9801](https://github.com/ggml-org/llama.cpp/issues/9801)).
+    /// Use [`Self::from_probe`] + explicit `--gpu-layers` only when experimenting with forks.
+    pub fn auto_safe() -> Self {
+        let _ = LlamaBackend::init();
+        let devices = list_llama_ggml_backend_devices();
+        if devices.iter().any(device_is_v3d) {
+            // Still report PiGpu via LiveGgmlAcceleratorProbe; weights stay on CPU.
+            return Self {
+                n_gpu_layers: 0,
+                kind: Some(AcceleratorKind::PiGpu),
+            };
+        }
+        let probe = LiveGgmlAcceleratorProbe::detect();
+        Self::from_probe(probe.as_ref(), 99)
+    }
+}
+
+fn device_is_v3d(d: &llama_cpp_2::LlamaBackendDevice) -> bool {
+    let blob = format!("{} {} {}", d.backend, d.name, d.description).to_ascii_lowercase();
+    blob.contains("v3d") || blob.contains("v3dv")
 }
 
 /// Classify ggml devices into UIE accelerator kinds (no silent GPU claim).

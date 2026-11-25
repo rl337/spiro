@@ -36,18 +36,28 @@ ssh_c() {
   ssh -o BatchMode=yes -o ConnectTimeout=10 "$TARGET" "$@"
 }
 
-docker_gpu() {
-  local render_gid video_gid
-  render_gid="$(ssh_c 'getent group render | cut -d: -f3')"
-  video_gid="$(ssh_c 'getent group video | cut -d: -f3')"
-  ssh_c "docker run --rm \
-    --device /dev/dri \
-    --group-add ${render_gid} \
-    --group-add ${video_gid} \
+docker_run() {
+  # $1 = dri|nodri ; remaining args passed to uie-llm
+  local dri_mode="$1"
+  shift
+  local dri_flags=""
+  if [[ "$dri_mode" == "dri" ]]; then
+    local render_gid video_gid
+    render_gid="$(ssh_c 'getent group render | cut -d: -f3')"
+    video_gid="$(ssh_c 'getent group video | cut -d: -f3')"
+    dri_flags="--device /dev/dri --group-add ${render_gid} --group-add ${video_gid}"
+  fi
+  # Quote each arg for remote shell.
+  local qargs=()
+  local a
+  for a in "$@"; do
+    qargs+=("$(printf %q "$a")")
+  done
+  ssh_c "docker run --rm ${dri_flags} \
     -v $(printf %q "$REMOTE_MODELS"):/models:ro \
     -e UIE_GGUF_MODEL=/models/model.gguf \
     $(printf %q "$IMAGE") \
-    $*"
+    ${qargs[*]}"
 }
 
 cmd="${1:-}"
@@ -82,22 +92,32 @@ case "$cmd" in
       ."
     ;;
   list-gpu)
-    docker_gpu list-gpu
+    # Needs /dev/dri so ggml sees V3D (PiGpu). Does not load a model.
+    docker_run dri list-gpu
     ;;
   prompt)
+    # Default: CPU weights. V3D Vulkan matmul currently fails (16KiB SMEM).
     prompt="${1:?usage: $0 prompt \"text\"}"
-    docker_gpu --prompt "$(printf %q "$prompt")" --max-new 32
+    docker_run nodri --cpu-only --prompt "$prompt" --max-new 32
     ;;
-  cpu-prompt)
-    prompt="${1:?usage: $0 cpu-prompt \"text\"}"
-    docker_gpu --prompt "$(printf %q "$prompt")" --max-new 32 --cpu-only
+  try-gpu-prompt)
+    # Experimental: mount DRI + force layers (expected to fail on stock V3D today).
+    prompt="${1:?usage: $0 try-gpu-prompt \"text\"}"
+    layers="${2:-1}"
+    docker_run dri --gpu-layers "$layers" --prompt "$prompt" --max-new 32
     ;;
   *)
     cat >&2 <<EOF
-usage: $0 {sync-model|build|list-gpu|prompt|cpu-prompt} ...
+usage: $0 {sync-model|build|list-gpu|prompt|try-gpu-prompt} ...
+
+crystalline Pi 5 notes:
+  - hn_laya is left alone; this uses image ${IMAGE}
+  - list-gpu: Vulkan V3D present → AcceleratorKind::PiGpu
+  - prompt: CPU path (no /dev/dri) — works today
+  - try-gpu-prompt: mounts DRI; llama.cpp Vulkan on V3D hits 16KiB SMEM limit
+    (https://github.com/ggml-org/llama.cpp/issues/9801)
 HN_ROOT=$HN_ROOT
 TARGET=$TARGET
-IMAGE=$IMAGE
 EOF
     exit 2
     ;;

@@ -38,7 +38,7 @@
 
 - **Today (CI):** `FakeAcceleratorProbe` + `StubAcceleratorBackend`; offload preference prefers `PiGpu` over `HostGpu`.
 - **Today (lab):** `LiveGgmlAcceleratorProbe` maps ggml **Vulkan→PiGpu**, **Metal/CUDA→HostGpu**. `uie-llm` auto-offloads with `n_gpu_layers=99` when either is present (`--cpu-only` / `--gpu-layers N` override). `uie-llm list-gpu` prints devices.
-- **Live Pi (crystalline):** Raspberry Pi 5 (`CRYSTALLINE_HOST` in `home_network/inventory.env`). Separate Docker image `uie-llm:vulkan-pi` with `/dev/dri` + Mesa V3DV; does not replace `hn_laya`. Script: `scripts/crystalline-pi-gpu-experiment.sh`.
+- **Live Pi (crystalline):** Raspberry Pi 5 (`CRYSTALLINE_HOST` in `~/dev/home_network/inventory.env`). Image `uie-llm:vulkan-pi` (Trixie + llama Vulkan) runs beside `hn_laya`. `list-gpu` sees **V3D 7.1 → PiGpu**. Stock llama.cpp cannot **execute** on V3D yet (16KiB shared memory / WG limits — [llama.cpp#9801](https://github.com/ggml-org/llama.cpp/issues/9801)); CPU completions work without `/dev/dri`. Script: `scripts/crystalline-pi-gpu-experiment.sh`.
 
 ## Acceptance tests
 
