@@ -1,9 +1,12 @@
 # US-030 experiment image for crystalline (Raspberry Pi 5).
 # Host: leave hn_laya alone; run this as a separate container with /dev/dri.
 #
+# Use Debian Trixie to match crystalline's Vulkan 1.4 / Mesa headers — Bookworm's
+# vulkan-hpp is too old for current llama.cpp ggml-vulkan (LayerSettingEXT).
+#
 # Build on-node (aarch64): see scripts/crystalline-pi-gpu-experiment.sh
 
-FROM rust:1-bookworm AS build
+FROM rust:1-trixie AS build
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -29,7 +32,7 @@ ENV CARGO_BUILD_JOBS=2 \
 RUN cargo build -p uie-llm --release --features vulkan \
  && cargo build -p uie-loader-gguf --release --features vulkan --example list_ggml_devices
 
-FROM debian:bookworm-slim AS runtime
+FROM debian:trixie-slim AS runtime
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
