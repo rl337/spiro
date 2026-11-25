@@ -15,6 +15,8 @@ RUN apt-get update \
       libvulkan-dev \
       glslang-tools \
       glslc \
+      spirv-headers \
+      spirv-tools \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
