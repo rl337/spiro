@@ -10,6 +10,11 @@ rust-version.workspace = true
 name = "uie-llm"
 path = "src/main.rs"
 
+[features]
+default = []
+# Build llama.cpp with Vulkan (Pi 5 V3D / Mesa). Used by crystalline experiment image.
+vulkan = ["uie-loader-gguf/vulkan"]
+
 [dependencies]
 uie-catalog = { path = "../uie-catalog" }
 uie-core = { path = "../uie-core" }

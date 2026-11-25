@@ -1,8 +1,8 @@
 # US-030: Raspberry Pi GPU backend
 
-**Status:** partial (CI fake probe + stub Backend; live Pi GPU gated)  
+**Status:** partial (CI fakes + GGUF `n_gpu_layers` offload; Vulkan=Pi, Metal/CUDA=HostGpu lab)  
 **Personas:** Pete, Jack  
-**Crate / path:** `uie-core::accelerator` (`AcceleratorKind::PiGpu`, `StubAcceleratorBackend`); future real EP/Vulkan crate  
+**Crate / path:** `uie-core::accelerator`, `uie-loader-gguf` (`LiveGgmlAcceleratorProbe`, `GgufGpuOffload`); Pi live still hardware-gated  
 **Depends on:** [US-003](./003-backends-cpu.md), [US-024](./024-dependency-injection.md), [US-029](./029-capability-aware-kernels.md) probes
 
 ## User story
@@ -36,8 +36,9 @@
 
 ## Acceptance notes
 
-- **Today (CI):** `FakeAcceleratorProbe` + `StubAcceleratorBackend` — present → stub accel device; absent → CPU fallback; `require_accelerator` → explicit unsupported. Bound via `uie-iv`.
-- **Live (future):** gated on real Pi 4/5 (or equivalent) with GPU access — set via `.env` / injectable, not hardcoded paths.
+- **Today (CI):** `FakeAcceleratorProbe` + `StubAcceleratorBackend`; offload preference prefers `PiGpu` over `HostGpu`.
+- **Today (lab):** `LiveGgmlAcceleratorProbe` maps ggml **Vulkan→PiGpu**, **Metal/CUDA→HostGpu**. `uie-llm` auto-offloads with `n_gpu_layers=99` when either is present (`--cpu-only` / `--gpu-layers N` override). `uie-llm list-gpu` prints devices.
+- **Live Pi (crystalline):** Raspberry Pi 5 (`CRYSTALLINE_HOST` in `home_network/inventory.env`). Separate Docker image `uie-llm:vulkan-pi` with `/dev/dri` + Mesa V3DV; does not replace `hn_laya`. Script: `scripts/crystalline-pi-gpu-experiment.sh`.
 
 ## Acceptance tests
 

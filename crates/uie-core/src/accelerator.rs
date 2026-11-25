@@ -13,8 +13,10 @@ use crate::tensor::{DataType, Shape, Tensor};
 /// On-device accelerators beyond host CPU (US-030 / US-031).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AcceleratorKind {
-    /// Raspberry Pi GPU (Vulkan / vendor path later).
+    /// Raspberry Pi GPU (Vulkan / vendor path on the board).
     PiGpu,
+    /// Desktop/lab host GPU (Metal / CUDA) — used to develop the same GGUF offload path before Pi silicon.
+    HostGpu,
     /// Neural processing unit / similar dedicated inference silicon.
     Npu,
 }
@@ -23,7 +25,19 @@ impl AcceleratorKind {
     pub fn as_str(self) -> &'static str {
         match self {
             Self::PiGpu => "pi_gpu",
+            Self::HostGpu => "host_gpu",
             Self::Npu => "npu",
+        }
+    }
+
+    /// Prefer Pi GPU when present; otherwise lab host GPU for offload experiments.
+    pub fn preferred_gguf_offload(probe: &dyn AcceleratorProbe) -> Option<AcceleratorKind> {
+        if probe.has(Self::PiGpu) {
+            Some(Self::PiGpu)
+        } else if probe.has(Self::HostGpu) {
+            Some(Self::HostGpu)
+        } else {
+            None
         }
     }
 

@@ -7,7 +7,8 @@ use uie_core::tensor::Tensor;
 use uie_core::InferenceRuntime;
 use uie_iv::{serve_injector, Injector};
 use uie_loader_gguf::{
-    complete_gguf_file_budgeted, complete_gguf_file_chat_budgeted, CompleteOptions, GgufModelLoader,
+    complete_gguf_file_budgeted_offload, complete_gguf_file_chat_budgeted_offload, CompleteOptions,
+    GgufGpuOffload, GgufModelLoader, LiveGgmlAcceleratorProbe,
 };
 
 fn main() -> uie_core::Result<()> {
@@ -17,6 +18,9 @@ fn main() -> uie_core::Result<()> {
     if args.len() >= 2 && (args[1] == "list" || args[1] == "list-gguf") {
         return list_gguf();
     }
+    if args.len() >= 2 && args[1] == "list-gpu" {
+        return list_gpu();
+    }
 
     let chat_mode =
         args.iter().any(|a| a == "--chat") || env::var("UIE_LLM_CHAT").is_ok_and(|v| v == "1");
@@ -24,8 +28,9 @@ fn main() -> uie_core::Result<()> {
     let prompt = flag_value(&args, "--prompt")
         .or_else(|| env::var("UIE_LLM_PROMPT").ok())
         .unwrap_or_else(|| {
-            eprintln!("usage: uie-llm --prompt \"...\" [--chat] [--model PATH | --registry-id ID | --auto-qwen3-2b]");
+            eprintln!("usage: uie-llm --prompt \"...\" [--chat] [--gpu-layers N | --cpu-only] [--model PATH | --registry-id ID | --auto-qwen3-2b]");
             eprintln!("       uie-llm list-gguf");
+            eprintln!("       uie-llm list-gpu");
             std::process::exit(2);
         });
 
@@ -75,13 +80,31 @@ fn main() -> uie_core::Result<()> {
     }
 
     // US-027: admit context via injected InferenceStateBudget before llama new_context.
+    // US-030: probe ggml devices; Metal/CUDA → HostGpu lab offload; Vulkan → PiGpu.
     let inj: Injector =
         serve_injector().map_err(|e| uie_core::Error::Runtime(format!("injector: {e}")))?;
     let state_budget = inj.inference_state_budget();
+    let offload = resolve_gpu_offload(&args);
+    eprintln!(
+        "gguf offload: n_gpu_layers={} kind={:?}",
+        offload.n_gpu_layers, offload.kind
+    );
     let result = if chat_mode {
-        complete_gguf_file_chat_budgeted(&model_path, &prompt, &opts, state_budget.as_ref())?
+        complete_gguf_file_chat_budgeted_offload(
+            &model_path,
+            &prompt,
+            &opts,
+            state_budget.as_ref(),
+            offload,
+        )?
     } else {
-        complete_gguf_file_budgeted(&model_path, &prompt, &opts, state_budget.as_ref())?
+        complete_gguf_file_budgeted_offload(
+            &model_path,
+            &prompt,
+            &opts,
+            state_budget.as_ref(),
+            offload,
+        )?
     };
     println!("{}", result.text);
     eprintln!(
@@ -92,6 +115,36 @@ fn main() -> uie_core::Result<()> {
         result.metrics.cpu_time_ms,
         result.metrics.gpu_time_ms,
     );
+    Ok(())
+}
+
+fn resolve_gpu_offload(args: &[String]) -> GgufGpuOffload {
+    if args.iter().any(|a| a == "--cpu-only") {
+        return GgufGpuOffload::cpu_only();
+    }
+    if let Some(n) = flag_value(args, "--gpu-layers").and_then(|s| s.parse().ok()) {
+        let probe = LiveGgmlAcceleratorProbe::detect();
+        let kind = uie_core::accelerator::AcceleratorKind::preferred_gguf_offload(probe.as_ref());
+        return GgufGpuOffload {
+            n_gpu_layers: n,
+            kind,
+        };
+    }
+    // Default: auto from live ggml probe (Metal on this Mac; Vulkan on Pi).
+    let probe = LiveGgmlAcceleratorProbe::detect();
+    GgufGpuOffload::from_probe(probe.as_ref(), 99)
+}
+
+fn list_gpu() -> uie_core::Result<()> {
+    let probe = LiveGgmlAcceleratorProbe::detect();
+    eprintln!(
+        "supports_gpu_offload={} present={:?}",
+        probe.supports_gpu_offload(),
+        probe.present_kinds()
+    );
+    for line in LiveGgmlAcceleratorProbe::format_device_lines() {
+        println!("{line}");
+    }
     Ok(())
 }
 

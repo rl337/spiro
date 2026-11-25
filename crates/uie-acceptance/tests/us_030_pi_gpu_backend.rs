@@ -127,6 +127,25 @@ fn us_030_injector_override_probe() {
 }
 
 #[test]
+fn us_030_prefer_pi_gpu_over_host_gpu_for_offload() {
+    let probe =
+        FakeAcceleratorProbe::with_kinds([AcceleratorKind::PiGpu, AcceleratorKind::HostGpu]);
+    assert_eq!(
+        AcceleratorKind::preferred_gguf_offload(probe.as_ref()),
+        Some(AcceleratorKind::PiGpu)
+    );
+}
+
+#[test]
+fn us_030_host_gpu_lab_offload_when_no_pi() {
+    let probe = FakeAcceleratorProbe::with_kinds([AcceleratorKind::HostGpu]);
+    assert_eq!(
+        AcceleratorKind::preferred_gguf_offload(probe.as_ref()),
+        Some(AcceleratorKind::HostGpu)
+    );
+}
+
+#[test]
 #[ignore = "US-030 live: requires Pi GPU hardware"]
 fn us_030_live_pi_gpu_infer_when_present() {
     unimplemented!("skip unless Pi GPU injectable reports available");

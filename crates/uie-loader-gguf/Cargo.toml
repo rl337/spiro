@@ -6,6 +6,11 @@ edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 
+[features]
+default = []
+# Pi GPU / desktop Vulkan offload via llama.cpp (US-030). Enable on crystalline builds.
+vulkan = ["llama-cpp-2/vulkan"]
+
 [dependencies]
 uie-core = { path = "../uie-core" }
 uie-telemetry = { path = "../uie-telemetry" }

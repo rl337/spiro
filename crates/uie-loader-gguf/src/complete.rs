@@ -63,7 +63,14 @@ pub fn complete_with_engine_budgeted(
 ) -> Result<CompleteResult> {
     let vocab = engine.model.vocab();
     let tokens = vocab.tokenize(prompt.as_bytes(), true, true);
-    run_generation(&engine.backend, &engine.model, tokens, opts, budget)
+    run_generation(
+        &engine.backend,
+        &engine.model,
+        tokens,
+        opts,
+        budget,
+        engine.gpu_offload_active(),
+    )
 }
 
 pub fn complete_from_prompt(
@@ -117,9 +124,11 @@ fn run_generation(
     tokens: Vec<LlamaToken>,
     opts: &CompleteOptions,
     budget: &dyn InferenceStateBudget,
+    gpu_offload_active: bool,
 ) -> Result<CompleteResult> {
     let run_started = Instant::now();
-    let device = if std::env::var("UIE_GGUF_GPU").is_ok_and(|v| v == "1") {
+    // Telemetry follows load-time offload (US-030); never invent GPU from ambient env.
+    let device = if gpu_offload_active {
         ComputeDevice::Gpu
     } else {
         ComputeDevice::Cpu
