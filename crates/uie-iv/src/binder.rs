@@ -2,6 +2,9 @@
 
 use std::sync::Arc;
 
+use uie_core::accelerator::AcceleratorProbe;
+use uie_core::resource::{InferenceStateBudget, MemoryBudget};
+
 use crate::error::IvError;
 use crate::uie::loaders::ModelLoaderSet;
 use crate::uie::profile::AcceptanceProfile;
@@ -10,6 +13,9 @@ use crate::uie::profile::AcceptanceProfile;
 pub struct Binder {
     pub(crate) acceptance_profile: Option<Arc<dyn AcceptanceProfile>>,
     pub(crate) loader_set: Option<Arc<dyn ModelLoaderSet>>,
+    pub(crate) memory_budget: Option<Arc<dyn MemoryBudget>>,
+    pub(crate) inference_state_budget: Option<Arc<dyn InferenceStateBudget>>,
+    pub(crate) accelerator_probe: Option<Arc<dyn AcceleratorProbe>>,
 }
 
 impl Binder {
@@ -32,11 +38,53 @@ impl Binder {
         Ok(())
     }
 
+    pub fn bind_memory_budget(&mut self, budget: Arc<dyn MemoryBudget>) -> Result<(), IvError> {
+        if self.memory_budget.is_some() {
+            return Err(IvError::Duplicate("memory_budget"));
+        }
+        self.memory_budget = Some(budget);
+        Ok(())
+    }
+
+    pub fn bind_inference_state_budget(
+        &mut self,
+        budget: Arc<dyn InferenceStateBudget>,
+    ) -> Result<(), IvError> {
+        if self.inference_state_budget.is_some() {
+            return Err(IvError::Duplicate("inference_state_budget"));
+        }
+        self.inference_state_budget = Some(budget);
+        Ok(())
+    }
+
     pub fn override_acceptance_profile(&mut self, profile: Arc<dyn AcceptanceProfile>) {
         self.acceptance_profile = Some(profile);
     }
 
     pub fn override_loader_set(&mut self, set: Arc<dyn ModelLoaderSet>) {
         self.loader_set = Some(set);
+    }
+
+    pub fn override_memory_budget(&mut self, budget: Arc<dyn MemoryBudget>) {
+        self.memory_budget = Some(budget);
+    }
+
+    pub fn override_inference_state_budget(&mut self, budget: Arc<dyn InferenceStateBudget>) {
+        self.inference_state_budget = Some(budget);
+    }
+
+    pub fn bind_accelerator_probe(
+        &mut self,
+        probe: Arc<dyn AcceleratorProbe>,
+    ) -> Result<(), IvError> {
+        if self.accelerator_probe.is_some() {
+            return Err(IvError::Duplicate("accelerator_probe"));
+        }
+        self.accelerator_probe.replace(probe);
+        Ok(())
+    }
+
+    pub fn override_accelerator_probe(&mut self, probe: Arc<dyn AcceleratorProbe>) {
+        self.accelerator_probe = Some(probe);
     }
 }

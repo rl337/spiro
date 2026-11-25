@@ -2,7 +2,12 @@
 
 This repository began as a small Python Spirograph generator (`spiro.py`). It is being evolved into a **universal inference engine** written in Rust, with the original drawing retained as a reference workload.
 
-**Documentation:** user stories, [acceptance tests](./docs/acceptance-tests.md), and a glossary live in [`docs/`](./docs/README.md) (`US-001` … `US-022`).
+**Mandate:** build a **good inference engine at any scale**. That goal does not
+change for edge work — but when we must **compromise**, we favor **edge and
+embedded performance** (WASM, Raspberry Pi–class ARM, tight RAM/CPU) over
+datacenter-only assumptions. See [`docs/mandate.md`](./docs/mandate.md).
+
+**Documentation:** user stories, [acceptance tests](./docs/acceptance-tests.md), and a glossary live in [`docs/`](./docs/README.md).
 
 ## Current layout
 
@@ -86,5 +91,5 @@ flowchart TB
 
 1. **Real model loaders** — ONNX / SafeTensors / GGUF implementing `ModelLoader`.
 2. **Graph executor** — wire `Session` I/O to `Backend::execute` for each `Op` in `ExecutionPlan`.
-3. **Backend plugins** — dynamic registration (`BackendRegistry`) and optional `uie-backend-*` crates.
+3. **Backend plugins** — dynamic registration (`BackendRegistry`) and optional `uie-backend-*` crates (CPU today; **Pi GPU** [US-030](docs/stories/030-pi-gpu-backend.md) and **NPU** [US-031](docs/stories/031-npu-backend.md) when hardware is available).
 4. **Python bridge** — optional PyO3 crate wrapping `uie-core` so `spiro.py` can call the Rust runtime.

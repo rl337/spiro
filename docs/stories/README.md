@@ -2,6 +2,8 @@
 
 Each story has an ID (`US-*`) so you can cite it in issues and PRs. Terms link to the [glossary](../glossary.md). Personas are [30 Rock first names](../personas.md).
 
+Product mandate ([docs/mandate.md](../mandate.md)): good inference **at any scale**; when we must compromise, prefer **edge/embedded** performance.
+
 ## Foundation (shipped / partial)
 
 | ID | Title | Personas | Status |
@@ -44,6 +46,19 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 | [US-024](./024-dependency-injection.md) | Dependency injection (uie-iv / pyiv-style) | Jack, Pete | shipped |
 | [US-026](./026-browser-wasm-inference.md) | Browser WASM inference (ONNX MNIST) | Pete, Liz | shipped |
 
+## Edge resources & measurement (planned)
+
+Derived from Trouble inspiration (`docs/inspiration/`); see the [implementation plan](../inspiration/implementation-plan-edge-2026-11-24.md).
+
+| ID | Title | Personas | Status |
+|----|--------|----------|--------|
+| [US-025](./025-bounded-model-admission.md) | Bounded model admission & residency | Jack, Liz | partial |
+| [US-027](./027-bounded-inference-state.md) | Bounded inference state | Liz, Pete | partial |
+| [US-028](./028-constrained-benchmark-controls.md) | Constrained benchmarks & trustworthy comparisons | Pete, Jack | partial |
+| [US-029](./029-capability-aware-kernels.md) | Capability-aware optimized execution | Pete, Toofer | partial |
+| [US-030](./030-pi-gpu-backend.md) | Raspberry Pi GPU backend | Pete, Jack | planned (hardware-gated) |
+| [US-031](./031-npu-backend.md) | NPU / on-device accelerator backend | Pete, Jack | planned (hardware-gated) |
+
 ## Acceptance tests
 
 See [acceptance-tests.md](../acceptance-tests.md) and [contributing.md](../contributing.md). Every story must list at least one Rust or Python test in its **Acceptance tests** section, and that test must include telemetry or event-capture assertions (enforced by `scripts/verify-story-governance.py`).
@@ -58,3 +73,4 @@ See [acceptance-tests.md](../acceptance-tests.md) and [contributing.md](../contr
 - **`uie-catalog`, `config/model_roots.example.yaml`:** US-021  
 - **`uie-pipeline`:** US-022  
 - **`uie-acceptance`, `python/acceptance/`:** all US-*  
+- **Edge (planned):** US-025 admission, US-027 state, US-028 bench controls, US-029 kernels, US-030 Pi GPU, US-031 NPU — see [`docs/inspiration/implementation-plan-edge-2026-11-24.md`](../inspiration/implementation-plan-edge-2026-11-24.md)

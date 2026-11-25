@@ -28,6 +28,38 @@ pub enum Error {
 
     #[error("io: {0}")]
     Io(String),
+
+    /// Model admission refused by a [memory budget](crate::resource::MemoryBudget) (US-025).
+    #[error(
+        "admission rejected: need {estimate_bytes} bytes, remaining {remaining_bytes} ({budget_source}): {reason}"
+    )]
+    AdmissionRejected {
+        estimate_bytes: u64,
+        remaining_bytes: u64,
+        budget_source: String,
+        reason: String,
+    },
+
+    /// Context / KV state refused by an [inference state budget](crate::resource::InferenceStateBudget) (US-027).
+    #[error(
+        "state budget rejected: prompt {prompt_tokens} + new {max_new_tokens} exceeds limit {limit_tokens}: {reason}"
+    )]
+    StateBudgetRejected {
+        prompt_tokens: u32,
+        max_new_tokens: u32,
+        limit_tokens: u32,
+        reason: String,
+    },
+
+    /// Budget offered a shorter `n_ctx` — caller must re-request; never silent truncate (US-027).
+    #[error(
+        "state budget negotiate: requested span {requested} offered n_ctx {offered_n_ctx}: {reason}"
+    )]
+    StateBudgetNegotiate {
+        requested: u32,
+        offered_n_ctx: u32,
+        reason: String,
+    },
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

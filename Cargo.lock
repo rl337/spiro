@@ -1939,6 +1939,7 @@ dependencies = [
  "tracing-subscriber",
  "uie-catalog",
  "uie-core",
+ "uie-iv",
  "uie-loader-gguf",
 ]
 

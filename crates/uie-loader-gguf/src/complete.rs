@@ -1,6 +1,7 @@
 //! Text completion via llama.cpp (prompt in, token ids + text out).
 
 use std::num::NonZeroU32;
+use std::sync::Arc;
 
 use encoding_rs::UTF_8;
 use llama_cpp_2::context::params::LlamaContextParams;
@@ -11,10 +12,16 @@ use llama_cpp_2::sampling::LlamaSampler;
 use llama_cpp_2::token::LlamaToken;
 use std::time::Instant;
 use uie_core::error::{Error, Result};
+use uie_core::resource::{
+    resolve_context_n_ctx, ContextRequest, InferenceStateBudget, UnlimitedInferenceStateBudget,
+};
 use uie_telemetry::{ComputeDevice, InferMetrics};
 
 use crate::engine::GgufEngine;
 
+/// GGUF completion knobs. `context_tokens` maps to llama.cpp `n_ctx` (US-010).
+/// Prefer [`complete_with_engine_budgeted`] so [US-027](../../../../docs/stories/027-bounded-inference-state.md)
+/// can [`InferenceStateBudget::admit`] before `new_context` — never silently shrink prompts.
 #[derive(Debug, Clone)]
 pub struct CompleteOptions {
     pub max_new_tokens: u32,
@@ -44,9 +51,19 @@ pub fn complete_with_engine(
     prompt: &str,
     opts: &CompleteOptions,
 ) -> Result<CompleteResult> {
+    complete_with_engine_budgeted(engine, prompt, opts, &UnlimitedInferenceStateBudget)
+}
+
+/// Complete after admitting context against an injected [`InferenceStateBudget`] (US-027).
+pub fn complete_with_engine_budgeted(
+    engine: &GgufEngine,
+    prompt: &str,
+    opts: &CompleteOptions,
+    budget: &dyn InferenceStateBudget,
+) -> Result<CompleteResult> {
     let vocab = engine.model.vocab();
     let tokens = vocab.tokenize(prompt.as_bytes(), true, true);
-    run_generation(&engine.backend, &engine.model, tokens, opts)
+    run_generation(&engine.backend, &engine.model, tokens, opts, budget)
 }
 
 pub fn complete_from_prompt(
@@ -57,6 +74,15 @@ pub fn complete_from_prompt(
     complete_with_engine(engine, prompt, opts)
 }
 
+pub fn complete_from_prompt_budgeted(
+    engine: &GgufEngine,
+    prompt: &str,
+    opts: &CompleteOptions,
+    budget: &dyn InferenceStateBudget,
+) -> Result<CompleteResult> {
+    complete_with_engine_budgeted(engine, prompt, opts, budget)
+}
+
 /// One user chat turn: apply the model's chat template, then generate completion tokens.
 pub fn complete_chat_user_message(
     engine: &GgufEngine,
@@ -65,6 +91,16 @@ pub fn complete_chat_user_message(
 ) -> Result<CompleteResult> {
     let prompt = crate::chat::format_user_message_engine(engine, user_message)?;
     complete_with_engine(engine, &prompt, opts)
+}
+
+pub fn complete_chat_user_message_budgeted(
+    engine: &GgufEngine,
+    user_message: &str,
+    opts: &CompleteOptions,
+    budget: &dyn InferenceStateBudget,
+) -> Result<CompleteResult> {
+    let prompt = crate::chat::format_user_message_engine(engine, user_message)?;
+    complete_with_engine_budgeted(engine, &prompt, opts, budget)
 }
 
 fn build_sampler(temperature: f32) -> LlamaSampler {
@@ -80,6 +116,7 @@ fn run_generation(
     model: &LlamaModel,
     tokens: Vec<LlamaToken>,
     opts: &CompleteOptions,
+    budget: &dyn InferenceStateBudget,
 ) -> Result<CompleteResult> {
     let run_started = Instant::now();
     let device = if std::env::var("UIE_GGUF_GPU").is_ok_and(|v| v == "1") {
@@ -88,33 +125,44 @@ fn run_generation(
         ComputeDevice::Cpu
     };
 
-    let ctx_tokens = NonZeroU32::new(opts.context_tokens.max(256))
-        .ok_or_else(|| Error::InvalidShape("context_tokens must be > 0".into()))?;
-    let ctx_params = LlamaContextParams::default().with_n_ctx(Some(ctx_tokens));
-    let mut ctx = model
-        .new_context(backend, ctx_params)
-        .map_err(|e| Error::Runtime(format!("llama context: {e}")))?;
-
-    let max_gen = opts
-        .max_new_tokens
-        .min(opts.context_tokens.saturating_sub(64));
     if tokens.is_empty() {
         return Err(Error::Runtime("empty prompt tokens".into()));
     }
-    let prompt_len = tokens.len() as i32;
+    let prompt_len = tokens.len() as u32;
+    let req = ContextRequest {
+        prompt_tokens: prompt_len,
+        max_new_tokens: opts.max_new_tokens,
+    };
+    let (n_ctx, admission) = resolve_context_n_ctx(budget, &req, opts.context_tokens)?;
+    let ctx_tokens = NonZeroU32::new(n_ctx)
+        .ok_or_else(|| Error::InvalidShape("context_tokens must be > 0".into()))?;
+    let ctx_params = LlamaContextParams::default().with_n_ctx(Some(ctx_tokens));
+    let mut ctx = match model.new_context(backend, ctx_params) {
+        Ok(c) => c,
+        Err(e) => {
+            budget.release(&admission);
+            return Err(Error::Runtime(format!("llama context: {e}")));
+        }
+    };
 
-    let batch_cap = (prompt_len as usize).max(64);
+    let max_gen = opts.max_new_tokens.min(n_ctx.saturating_sub(64));
+    let prompt_len_i32 = tokens.len() as i32;
+
+    let batch_cap = (prompt_len_i32 as usize).max(64);
     let mut batch = LlamaBatch::new(batch_cap, 1);
-    let last_index = prompt_len - 1;
+    let last_index = prompt_len_i32 - 1;
     for (i, token) in (0_i32..).zip(tokens.iter().copied()) {
         let is_last = i == last_index;
-        batch
-            .add(token, i, &[0], is_last)
-            .map_err(|e| Error::Runtime(format!("batch add: {e}")))?;
+        if let Err(e) = batch.add(token, i, &[0], is_last) {
+            budget.release(&admission);
+            return Err(Error::Runtime(format!("batch add: {e}")));
+        }
     }
     let prefill_t0 = Instant::now();
-    ctx.decode(&mut batch)
-        .map_err(|e| Error::Runtime(format!("decode prompt: {e}")))?;
+    if let Err(e) = ctx.decode(&mut batch) {
+        budget.release(&admission);
+        return Err(Error::Runtime(format!("decode prompt: {e}")));
+    }
     let prefill_ms = prefill_t0.elapsed().as_secs_f64() * 1000.0;
 
     let mut sampler = build_sampler(opts.temperature);
@@ -149,11 +197,14 @@ fn run_generation(
         }
 
         batch.clear();
-        batch
-            .add(token, n_cur, &[0], true)
-            .map_err(|e| Error::Runtime(format!("batch add: {e}")))?;
-        ctx.decode(&mut batch)
-            .map_err(|e| Error::Runtime(format!("decode token: {e}")))?;
+        if let Err(e) = batch.add(token, n_cur, &[0], true) {
+            budget.release(&admission);
+            return Err(Error::Runtime(format!("batch add: {e}")));
+        }
+        if let Err(e) = ctx.decode(&mut batch) {
+            budget.release(&admission);
+            return Err(Error::Runtime(format!("decode token: {e}")));
+        }
         n_cur += 1;
     }
 
@@ -177,9 +228,23 @@ fn run_generation(
     };
     metrics.recompute_rates();
 
+    // Drop context before releasing budget residency accounting.
+    drop(ctx);
+    budget.release(&admission);
+
     Ok(CompleteResult {
         text: output_text,
         token_ids: new_token_ids,
         metrics,
     })
+}
+
+/// Convenience for callers that hold an `Arc` budget.
+pub fn complete_with_arc_budget(
+    engine: &GgufEngine,
+    prompt: &str,
+    opts: &CompleteOptions,
+    budget: &Arc<dyn InferenceStateBudget>,
+) -> Result<CompleteResult> {
+    complete_with_engine_budgeted(engine, prompt, opts, budget.as_ref())
 }

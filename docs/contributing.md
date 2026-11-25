@@ -1,5 +1,9 @@
 # Contributing to UIE (Spiro)
 
+**Mandate:** [docs/mandate.md](./mandate.md) — good inference at any scale. That
+trajectory is unchanged; when a design must compromise, prefer edge/embedded
+performance (WASM, Pi-class ARM) over datacenter-only assumptions.
+
 ## Check-ins and user stories
 
 Every change that touches product code must map to a **[user story](stories/README.md)** (`US-0NN`).

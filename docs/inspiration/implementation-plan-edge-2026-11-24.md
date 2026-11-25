@@ -1,0 +1,108 @@
+# Implementation plan: edge resource + measurement stories
+
+**Branch / PR:** work on `inspiration/trouble-measurement-controls-2026-11-24` (#22).  
+**Status:** Phases 1–4 CI paths implemented (`partial` stories); live/hardware follow-ups open.  
+**Mandate:** [`docs/mandate.md`](../mandate.md) — any-scale inference; when compromising, prefer edge/embedded.  
+**Inputs:** [`trouble-edge-inference-2026-11-24.md`](./trouble-edge-inference-2026-11-24.md), [`trouble-measurement-controls-2026-11-24.md`](./trouble-measurement-controls-2026-11-24.md), [`inference-optimizations.md`](./inference-optimizations.md).
+
+## Story map (EDGE → US)
+
+| Provisional | Story | One-line |
+|-------------|-------|----------|
+| EDGE-MEM-01 | [US-025](../stories/025-bounded-model-admission.md) | Admit / reject / evict idle under injected memory budget |
+| EDGE-STATE-02 | [US-027](../stories/027-bounded-inference-state.md) | Bound KV/context; no silent truncation |
+| EDGE-BENCH-03 + controls | [US-028](../stories/028-constrained-benchmark-controls.md) | Frozen workloads + control/candidate/control brackets |
+| EDGE-ARM-04 | [US-029](../stories/029-capability-aware-kernels.md) | Probe → dispatch / fallback; no illegal insn |
+
+US-026 (WASM MNIST) stays the small Chromium gate; it is not replaced by these stories.
+
+## Principles
+
+1. **DI-first** ([US-024](../stories/024-dependency-injection.md)): `MemoryBudget`, clocks, and capability probes are injectables owned by modules — not call-site `UIE_*` branches.
+2. **Extend, don’t fork:** US-028 grows [US-023](../stories/023-inference-telemetry.md) / e2e JSONL; US-025 grows host cache in `uie-ipc`; US-027 prefers llama.cpp controls before a second KV stack.
+3. **CI before Pi:** every story ships deterministic fake providers first; live cgroup / Pi 4–5 is opt-in.
+4. **Technique backlog is not scope:** MoE SSD offload, speculative decode, WebGPU kernels, etc. stay in [`inference-optimizations.md`](./inference-optimizations.md) until a story claims them.
+
+## Phased delivery
+
+### Phase 0 — Docs & contracts (this change set)
+
+- [x] Inspiration tree on #22’s branch
+- [x] US-025 / 027 / 028 / 029 stories + glossary terms
+- [x] Acceptance files with contract `StoryEventLog` + `#[ignore]` behavioral stubs
+- [x] Governance + acceptance index rows
+
+### Phase 1 — US-025 admission (first product cut)
+
+**Why first:** inspected gap — path-keyed host cache with no capacity / eviction; prevents live bench chaos.
+
+1. [x] Define `MemoryBudget` / `Reservation` in `uie-core::resource`; bind via `uie-iv`.
+2. [x] Fake provider for CI: fixed capacity, deterministic events.
+3. [x] Wire `InferenceEngineHost::with_budget` / `load_cached`: estimate → reserve → load → commit / release on failure.
+4. [x] Policy: hard reject when `evict_idle_on_pressure=false`; idle eviction when `true`.
+5. [x] Acceptance: reject / reserve+evict / failed-load release with `StoryEventLog`.
+6. [ ] Live: cgroup v2 reader — follow-up when Linux lab access is ready.
+
+**Exit:** CI green with fake budget; US-025 marked `partial` for the fake path.
+
+### Phase 2 — US-028 trustworthy comparison (extends US-023)
+
+**Why second:** makes Phase 1 / later opts measurable without importing GPU folklore.
+
+1. [x] `WorkloadFingerprint` + `evaluate_aba` in `uie-telemetry::bracket`.
+2. [x] Fixture rates: drift vs eligible win; incomplete when rates unknown.
+3. [x] Token accounting from usage; chunk counts ignored; unknown ≠ 0.
+4. [x] Negative-control flag blocks promotion.
+5. [ ] Optional live A/B/A script for Pi; no numeric SLO until baselines exist.
+
+**Exit:** CI bracket tests green; US-023 remains the per-run schema source of truth.
+
+### Phase 3 — US-027 bounded state
+
+**Depends on:** Phase 1 for “model already admitted”; audit llama.cpp `n_ctx` / KV first.
+
+1. [x] Document GGUF `context_tokens` → `n_ctx`; add `InferenceStateBudget` (no second KV stack).
+2. [x] Fake CI budget: accept / reject / negotiate (no silent truncation); release on cancel.
+3. [ ] Optional prefix cache with exact keys — deferred.
+4. [x] Acceptance behavioral tests for reject / negotiate / release.
+5. [x] Call `admit` from budgeted GGUF complete + `uie-llm` via injected state budget (before `new_context`).
+
+### Phase 4 — US-029 capability kernels
+
+**Depends on:** Phase 2 to prove wins; prefer Tract/llama.cpp/ONNX before new NEON kernels.
+
+1. [x] `CapabilityProbe` / `FakeCapabilityProbe` + `select_kernel` / `select_kernel_traced`.
+2. [x] Dispatch + fallback events; `require_feature` → explicit unsupported; numeric match fixture.
+3. [ ] Pi live / real NEON — optional follow-up.
+
+### Phase 5 — Pi GPU + NPU backends (hardware-gated)
+
+**Stories:** [US-030](../stories/030-pi-gpu-backend.md), [US-031](../stories/031-npu-backend.md).  
+**Depends on:** Phase 4 probes; actual **hardware access** before live work.  
+**Status:** deferred until silicon/SDK access — contract acceptance markers only on mainline.
+
+1. [x] Extend accelerator probes for “Pi GPU present” / “NPU present” (CI fakes + stub Backend).
+2. [x] Register probe via DI (`OverrideFakeAcceleratorProbeModule`); stub backends share `Backend` trait.
+3. Prefer existing EP / llama.cpp / Vulkan (or vendor NPU runtime) over greenfield kernels — deferred to live silicon.
+4. Live acceptance stays opt-in in `.env` / injectables — no CI failure when silicon is absent.
+5. Measure with US-028 brackets; never treat cloud-GPU numbers as Pi GPU/NPU forecasts.
+
+## Deferred from the Troublescan (until a story claims them)
+
+| Theme | Examples | Parked under |
+|-------|----------|--------------|
+| MoE offload / SSD stream | InferSSD, tandem.cpp, FreeToken | technique backlog |
+| Speculative decode / draft KV | Nemotron Bolt, Lafa, EXL3 | backlog; US-028 notes future metrics |
+| PagedAttention ports | vLLM mini-engines | consider only after US-027 baseline |
+| WebGPU flash/dequant | browser kernels | after US-026 WebGPU reservation |
+
+## Suggested experimental matrix (live, later)
+
+Container caps from the edge note: 256/512 MiB (1 CPU), 1 GiB (2), 2/4 GiB (4). Stub → MNIST → small GGUF. Admission failures are expected for unsuitable combos, not bench failures.
+
+## Definition of done (per story)
+
+1. Story status → `partial` / `shipped` with real acceptance (not only contract markers).
+2. Governance + `./scripts/acceptance-ci.sh` green.
+3. Inspiration EDGE ids cross-linked to the shipped US (leave EDGE text as provenance).
+4. No secrets or absolute machine paths in-tree — use `.env` / injectables.

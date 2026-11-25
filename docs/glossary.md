@@ -4,6 +4,14 @@ Alphabetical list of terms used in [user stories](./stories/README.md). Anchors 
 
 ---
 
+### Capability probe {#capability-probe}
+
+A **capability probe** detects CPU/GPU features (e.g. NEON, dot-product) before selecting an optimized kernel path, so missing features fall back or error explicitly instead of trapping ([US-029](./stories/029-capability-aware-kernels.md)).
+
+**See also:** [US-003](./stories/003-backends-cpu.md), [US-029](./stories/029-capability-aware-kernels.md)
+
+---
+
 ### Chatbot {#chatbot}
 
 A **chatbot** is an application that keeps conversation state and repeatedly asks a [large language model](#large-language-model) for the next [completion](#completion). In UIE, Liz’s target design binds `prompt` and history in a [session](#session) ([US-010](./stories/010-llm-text-completions.md)).
@@ -36,6 +44,14 @@ An **execution trace** is a structured record of one inference run: phase timing
 
 ---
 
+### Inference state {#inference-state}
+
+**Inference state** is the per-session working memory of a running model—typically KV cache, scratch, and related buffers—distinct from weight residency. Bounded by [US-027](./stories/027-bounded-inference-state.md).
+
+**See also:** [US-004](./stories/004-runtime-sessions.md), [US-010](./stories/010-llm-text-completions.md), [US-027](./stories/027-bounded-inference-state.md)
+
+---
+
 ### Infer metrics {#infer-metrics}
 
 **Infer metrics** are aggregate numbers for a run: prompt/completion token counts, **time to first token (TTFT)**, prefill vs decode latency, tokens/sec, and summed time on CPU vs GPU. Used to evaluate quantization, batching, and kernel swaps.
@@ -52,6 +68,14 @@ A **byte channel** is UIE’s transport for inference: clients and the engine ex
 
 ---
 
+### Benchmark bracket {#benchmark-bracket}
+
+A **benchmark bracket** is a controlled **control / candidate / control** experiment pair used to decide whether an optimization is an eligible win, drift/inconclusive, or invalid ([US-028](./stories/028-constrained-benchmark-controls.md)).
+
+**See also:** [US-023](./stories/023-inference-telemetry.md), [US-028](./stories/028-constrained-benchmark-controls.md)
+
+---
+
 ### Backend {#backend}
 
 A **backend** is the piece that actually runs compute: it allocates memory and (eventually) executes individual operations. UIE talks to backends through a shared interface so the same [runtime](#inference-runtime) can target CPU or accelerators later.
@@ -65,6 +89,14 @@ A **backend** is the piece that actually runs compute: it allocates memory and (
 The **CPU backend** is the reference [backend](#backend) that runs on the host machine. It is always available and implements a small set of [operations](#operation) today (for example filling a [tensor](#tensor) with a constant).
 
 **See also:** [US-003](./stories/003-backends-cpu.md)
+
+---
+
+### NPU {#npu}
+
+An **NPU** (neural processing unit) is an on-device accelerator specialized for neural-net inference (distinct from a general GPU). UIE plans an NPU [backend](#backend) when hardware/SDK access exists ([US-031](./stories/031-npu-backend.md)).
+
+**See also:** [US-030](./stories/030-pi-gpu-backend.md), [US-031](./stories/031-npu-backend.md), [mandate](./mandate.md)
 
 ---
 
@@ -161,6 +193,14 @@ A **large language model** (LLM) predicts language from context—typically from
 An **I/O spec** names a model input or output: [tensor](#tensor) [shape](#shape), [data type](#datatype), and a label. Loaders use specs so callers know what to pass in.
 
 **See also:** [US-007](./stories/007-models-loaders.md)
+
+---
+
+### Memory budget {#memory-budget}
+
+A **memory budget** is a configured capacity (often cgroup `memory.max` live, or a fake provider in CI) used to admit or reject model loads and to bound residency in the host cache ([US-025](./stories/025-bounded-model-admission.md)).
+
+**See also:** [US-025](./stories/025-bounded-model-admission.md), [US-024](./stories/024-dependency-injection.md)
 
 ---
 
@@ -300,9 +340,17 @@ A **composition root** binds CI vs live implementations through [`uie-iv`](../cr
 
 ## UIE {#uie}
 
-**UIE** (Universal Inference Engine) is the Rust workspace in this repo: shared core (`uie-core`), demos (`uie-spiro`, `uie-mnist`), and loader crates (`uie-loader-onnx`).
+**UIE** (Universal Inference Engine) is the Rust workspace in this repo: shared core (`uie-core`), demos (`uie-spiro`, `uie-mnist`), loaders, IPC/serve, and WASM surfaces. The [mandate](./mandate.md) is good inference **at any scale**; when designs must compromise, prefer **edge and embedded** performance.
 
-**See also:** [US-001](./stories/001-why-uie.md)
+**See also:** [US-001](./stories/001-why-uie.md), [mandate](./mandate.md)
+
+---
+
+### Edge compute {#edge-compute}
+
+**Edge compute** here means inference on resource-constrained hosts close to the user or device—e.g. Raspberry Pi–class ARM boards, containers with tight cgroup limits, and **embedded WASM** in the browser. It is not a separate product track: it is the **compromise direction** when any-scale designs must choose (see [mandate](./mandate.md)).
+
+**See also:** [US-025](./stories/025-bounded-model-admission.md), [US-026](./stories/026-browser-wasm-inference.md), [US-028](./stories/028-constrained-benchmark-controls.md)
 
 ---
 

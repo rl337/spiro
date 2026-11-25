@@ -1,0 +1,18 @@
+# Edge compromise direction
+
+Product mandate ([`docs/mandate.md`](../../docs/mandate.md)): build a **good
+inference engine at any scale**. That trajectory does not change.
+
+**When a design must compromise**, prefer **edge / embedded performance**
+(tight RAM/CPU, WASM, Raspberry Pi–class ARM) over datacenter-only assumptions.
+
+When adding features, loaders, backends, or acceptance:
+
+- Keep one engine story across scales — do not fork a “cloud engine.”
+- If you must choose (API shape, default budgets, what CI gates, what to defer),
+  choose the option that stays viable on edge/embedded hosts.
+- Park datacenter-only techniques in [`docs/inspiration/`](../../docs/inspiration/)
+  until a user story claims them.
+- **Pi GPU** ([US-030](../../docs/stories/030-pi-gpu-backend.md)) and **NPU**
+  ([US-031](../../docs/stories/031-npu-backend.md)) are on the roadmap but
+  **hardware-gated** — keep probes/fallbacks honest; do not fail CI when silicon is absent.

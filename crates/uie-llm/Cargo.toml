@@ -13,6 +13,7 @@ path = "src/main.rs"
 [dependencies]
 uie-catalog = { path = "../uie-catalog" }
 uie-core = { path = "../uie-core" }
+uie-iv = { path = "../uie-iv" }
 uie-loader-gguf = { path = "../uie-loader-gguf" }
 tracing-subscriber = "0.3"
 tracing.workspace = true
