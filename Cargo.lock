@@ -1852,6 +1852,7 @@ dependencies = [
  "tempfile",
  "uie-catalog",
  "uie-core",
+ "uie-embeddings",
  "uie-ipc",
  "uie-iv",
  "uie-loader-gguf",
@@ -1904,6 +1905,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "uie-embeddings"
+version = "0.1.0"
+dependencies = [
+ "tracing",
+ "uie-core",
+ "uie-telemetry",
+]
+
+[[package]]
 name = "uie-ipc"
 version = "0.1.0"
 dependencies = [
@@ -1924,6 +1934,7 @@ dependencies = [
  "thiserror",
  "tracing",
  "uie-core",
+ "uie-embeddings",
  "uie-loader-gguf",
  "uie-loader-onnx",
  "uie-loader-safetensors",
@@ -2033,6 +2044,8 @@ dependencies = [
 name = "uie-stub-models"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "serde_json",
  "thiserror",
  "tracing",
  "uie-core",

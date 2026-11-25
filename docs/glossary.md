@@ -300,6 +300,14 @@ A **system-one model** is the deliberate “second pass” in a two-stage setup�
 
 ---
 
+### Text embedding {#text-embedding}
+
+A **text embedding** maps a UTF-8 string to a fixed-length L2-normalized `f32` vector for similarity search. UIE exposes this as an in-process library ([US-033](./stories/033-text-embeddings.md)) for hosts such as weirdness; CI uses a deterministic stub, not a hash-fallback on load failure.
+
+**See also:** [US-033](./stories/033-text-embeddings.md), [text-embeddings.md](./requirements/text-embeddings.md)
+
+---
+
 ### Text-to-image {#text-to-image}
 
 **Text-to-image** maps a text [prompt](#prompt) to an image [tensor](#tensor), usually via a [diffusion model](#diffusion-model) ([US-012](./stories/012-diffusion-text-to-image.md)).

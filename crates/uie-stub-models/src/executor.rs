@@ -130,6 +130,17 @@ fn io_specs(kind: ModalityKind) -> (Vec<IoSpec>, Vec<IoSpec>) {
         }
         ModalityKind::AudioToAudio => (vec![waveform_in.clone()], vec![waveform_in]),
         ModalityKind::ImageToImage => (vec![pixel_values_sd.clone()], vec![pixel_values_sd]),
+        ModalityKind::ImageFilter => {
+            let filter_json = IoSpec {
+                name: "filter_json".into(),
+                shape: Shape::new([4096]),
+                dtype: DataType::U8,
+            };
+            (
+                vec![pixel_values_sd.clone(), filter_json],
+                vec![image_out],
+            )
+        }
     }
 }
 

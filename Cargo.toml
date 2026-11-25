@@ -19,6 +19,7 @@ members = [
     "crates/uie-iv",
     "crates/uie-e2e",
     "crates/uie-wasm",
+    "crates/uie-embeddings",
 ]
 default-members = ["crates/uie-spiro"]
 

@@ -16,6 +16,7 @@ safetensors = ["dep:uie-loader-safetensors"]
 [dependencies]
 uie-core = { path = "../uie-core" }
 uie-stub-models = { path = "../uie-stub-models" }
+uie-embeddings = { path = "../uie-embeddings" }
 uie-loader-onnx = { path = "../uie-loader-onnx", optional = true }
 uie-loader-gguf = { path = "../uie-loader-gguf", optional = true }
 uie-loader-safetensors = { path = "../uie-loader-safetensors", optional = true }

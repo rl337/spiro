@@ -66,6 +66,16 @@ pub fn validate_stub_inputs(kind: ModalityKind, specs: &[IoSpec], inputs: &[Tens
                 DIFFUSION_WIDTH,
             )?;
         }
+        ModalityKind::ImageFilter => {
+            expect_nchw_image(
+                &inputs[0],
+                "pixel_values",
+                3,
+                DIFFUSION_HEIGHT,
+                DIFFUSION_WIDTH,
+            )?;
+            crate::filter::expect_filter_json(&inputs[1])?;
+        }
     }
 
     Ok(())

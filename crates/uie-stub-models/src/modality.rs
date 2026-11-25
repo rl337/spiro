@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 use uie_core::error::{Error, Result};
 
-/// Modality covered by user stories US-010 – US-019.
+/// Modality covered by stub user stories (US-010 – US-019, US-032).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ModalityKind {
     /// US-010: text → text (LLM completion).
@@ -24,10 +24,12 @@ pub enum ModalityKind {
     AudioToAudio,
     /// US-019: image → image.
     ImageToImage,
+    /// US-032: image + structured JSON filters → image (img2img-shaped stub).
+    ImageFilter,
 }
 
 impl ModalityKind {
-    pub const ALL: [Self; 9] = [
+    pub const ALL: [Self; 10] = [
         Self::LlmTextCompletion,
         Self::Judge,
         Self::DiffusionTextToImage,
@@ -37,6 +39,7 @@ impl ModalityKind {
         Self::MultimodalTextImageToText,
         Self::AudioToAudio,
         Self::ImageToImage,
+        Self::ImageFilter,
     ];
 
     pub fn story_id(self) -> &'static str {
@@ -50,6 +53,7 @@ impl ModalityKind {
             Self::MultimodalTextImageToText => "US-017",
             Self::AudioToAudio => "US-018",
             Self::ImageToImage => "US-019",
+            Self::ImageFilter => "US-032",
         }
     }
 
@@ -64,6 +68,7 @@ impl ModalityKind {
             Self::MultimodalTextImageToText => "vlm",
             Self::AudioToAudio => "audio_to_audio",
             Self::ImageToImage => "image_to_image",
+            Self::ImageFilter => "image_filter",
         }
     }
 
@@ -97,6 +102,7 @@ impl FromStr for ModalityKind {
             "vlm" | "multimodal" | "text_image_to_text" => Ok(Self::MultimodalTextImageToText),
             "audio_to_audio" | "a2a" => Ok(Self::AudioToAudio),
             "image_to_image" | "i2i" | "img2img" => Ok(Self::ImageToImage),
+            "image_filter" | "filter" | "i2i_filter" => Ok(Self::ImageFilter),
             other => Err(Error::ModelLoad(format!("unknown stub modality `{other}`"))),
         }
     }

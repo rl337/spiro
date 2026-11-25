@@ -10,6 +10,7 @@ use uie_core::resource::{
     FakeInferenceStateBudget, FakeMemoryBudget, UnlimitedInferenceStateBudget,
     UnlimitedMemoryBudget,
 };
+use uie_embeddings::StubTextEmbedder;
 
 use crate::uie::profile::{
     acceptance_mode_from_env, profile_for_mode, serve_loader_mode_from_env, AcceptanceMode,
@@ -31,6 +32,7 @@ impl Module for AcceptanceEnvModule {
         let _ = binder.bind_memory_budget(Arc::new(UnlimitedMemoryBudget));
         let _ = binder.bind_inference_state_budget(Arc::new(UnlimitedInferenceStateBudget));
         let _ = binder.bind_accelerator_probe(FakeAcceleratorProbe::empty());
+        let _ = binder.bind_text_embedder(Arc::new(StubTextEmbedder::with_defaults()));
     }
 }
 
@@ -47,6 +49,7 @@ impl Module for ServeEnvModule {
         let _ = binder.bind_memory_budget(Arc::new(UnlimitedMemoryBudget));
         let _ = binder.bind_inference_state_budget(Arc::new(UnlimitedInferenceStateBudget));
         let _ = binder.bind_accelerator_probe(FakeAcceleratorProbe::empty());
+        let _ = binder.bind_text_embedder(Arc::new(StubTextEmbedder::with_defaults()));
     }
 }
 
@@ -67,6 +70,7 @@ impl Module for OverrideCiModule {
     fn install(&self, binder: &mut Binder) {
         binder.override_acceptance_profile(profile_for_mode(AcceptanceMode::Ci));
         binder.override_loader_set(Arc::new(StubOnlyLoaderSet));
+        binder.override_text_embedder(Arc::new(StubTextEmbedder::with_defaults()));
     }
 }
 

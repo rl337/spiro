@@ -29,5 +29,6 @@ uie-loader-gguf = { path = "../uie-loader-gguf", optional = true }
 uie-catalog = { path = "../uie-catalog" }
 uie-pipeline = { path = "../uie-pipeline" }
 uie-stub-models = { path = "../uie-stub-models" }
+uie-embeddings = { path = "../uie-embeddings" }
 serde_json = { workspace = true }
 tempfile = "3.14"

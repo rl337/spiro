@@ -34,6 +34,8 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 | [US-017](./017-multimodal-text-image-to-text.md) | Multimodal chat | Liz | Text + Image → Text |
 | [US-018](./018-audio-to-audio.md) | Audio-to-audio | Pete | Audio → Audio |
 | [US-019](./019-image-to-image.md) | Image-to-image / inpainting | Tracy | Image → Image |
+| [US-032](./032-image-filter-stub.md) | Image filter stub (JSON + image) | Tracy, Pete | Image + JSON → Image |
+| [US-033](./033-text-embeddings.md) | In-process text embeddings | Liz, Pete | Text → Vector |
 
 ## Platform (shipped)
 
@@ -68,7 +70,8 @@ See [acceptance-tests.md](../acceptance-tests.md) and [contributing.md](../contr
 - **`uie-core`:** US-002 – US-007  
 - **`uie-spiro`:** US-008  
 - **`uie-loader-onnx`, `uie-mnist`, `models/`:** US-009  
-- **Future loaders / demos:** US-010 – US-019
+- **Future loaders / demos:** US-010 – US-019, US-032  
+- **`uie-embeddings`:** US-033
 - **`uie-ipc`, `uie-serve`, `python/`:** US-020  
 - **`uie-catalog`, `config/model_roots.example.yaml`:** US-021  
 - **`uie-pipeline`:** US-022  

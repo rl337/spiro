@@ -52,6 +52,10 @@ pub fn sample_input(kind: ModalityKind) -> Result<Vec<Tensor>> {
         ]),
         ModalityKind::AudioToAudio => Ok(vec![audio_16k_one_second()?]),
         ModalityKind::ImageToImage => Ok(vec![pixel_values_nchw(DIFFUSION_HEIGHT)?]),
+        ModalityKind::ImageFilter => Ok(vec![
+            pixel_values_nchw(DIFFUSION_HEIGHT)?,
+            crate::filter::sample_filter_json()?,
+        ]),
     }
 }
 
@@ -66,7 +70,10 @@ mod tests {
             let inputs = sample_input(kind).unwrap();
             assert!(!inputs.is_empty());
             for t in &inputs {
-                assert!(matches!(t.dtype(), DataType::F32 | DataType::I32));
+                assert!(matches!(
+                    t.dtype(),
+                    DataType::F32 | DataType::I32 | DataType::U8
+                ));
             }
         }
     }

@@ -7,6 +7,7 @@ use uie_core::model::ModelLoader;
 use uie_core::resource::{
     InferenceStateBudget, MemoryBudget, UnlimitedInferenceStateBudget, UnlimitedMemoryBudget,
 };
+use uie_embeddings::{StubTextEmbedder, TextEmbedder};
 
 use crate::binder::Binder;
 use crate::error::IvError;
@@ -21,6 +22,7 @@ pub struct Injector {
     memory_budget: Arc<dyn MemoryBudget>,
     inference_state_budget: Arc<dyn InferenceStateBudget>,
     accelerator_probe: Arc<dyn AcceleratorProbe>,
+    text_embedder: Arc<dyn TextEmbedder>,
 }
 
 impl Injector {
@@ -46,6 +48,10 @@ impl Injector {
             accelerator_probe: binder
                 .accelerator_probe
                 .unwrap_or_else(|| FakeAcceleratorProbe::empty() as Arc<dyn AcceleratorProbe>),
+            // Default: CI stub embedder (EMB-09); live weights require an explicit bind.
+            text_embedder: binder
+                .text_embedder
+                .unwrap_or_else(|| Arc::new(StubTextEmbedder::with_defaults())),
         })
     }
 
@@ -70,5 +76,10 @@ impl Injector {
     /// Injected accelerator probe (US-030 / US-031); defaults to empty (CPU-only).
     pub fn accelerator_probe(&self) -> Arc<dyn AcceleratorProbe> {
         Arc::clone(&self.accelerator_probe)
+    }
+
+    /// Injected text embedder (US-033); defaults to [`StubTextEmbedder`].
+    pub fn text_embedder(&self) -> Arc<dyn TextEmbedder> {
+        Arc::clone(&self.text_embedder)
     }
 }

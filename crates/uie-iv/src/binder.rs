@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 use uie_core::accelerator::AcceleratorProbe;
 use uie_core::resource::{InferenceStateBudget, MemoryBudget};
+use uie_embeddings::TextEmbedder;
 
 use crate::error::IvError;
 use crate::uie::loaders::ModelLoaderSet;
@@ -16,6 +17,7 @@ pub struct Binder {
     pub(crate) memory_budget: Option<Arc<dyn MemoryBudget>>,
     pub(crate) inference_state_budget: Option<Arc<dyn InferenceStateBudget>>,
     pub(crate) accelerator_probe: Option<Arc<dyn AcceleratorProbe>>,
+    pub(crate) text_embedder: Option<Arc<dyn TextEmbedder>>,
 }
 
 impl Binder {
@@ -86,5 +88,17 @@ impl Binder {
 
     pub fn override_accelerator_probe(&mut self, probe: Arc<dyn AcceleratorProbe>) {
         self.accelerator_probe = Some(probe);
+    }
+
+    pub fn bind_text_embedder(&mut self, embedder: Arc<dyn TextEmbedder>) -> Result<(), IvError> {
+        if self.text_embedder.is_some() {
+            return Err(IvError::Duplicate("text_embedder"));
+        }
+        self.text_embedder = Some(embedder);
+        Ok(())
+    }
+
+    pub fn override_text_embedder(&mut self, embedder: Arc<dyn TextEmbedder>) {
+        self.text_embedder = Some(embedder);
     }
 }

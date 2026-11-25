@@ -1,0 +1,15 @@
+[package]
+name = "uie-embeddings"
+description = "In-process text → vector embedder (US-033; weirdness host contract)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+uie-core = { path = "../uie-core" }
+uie-telemetry = { path = "../uie-telemetry" }
+tracing.workspace = true
+
+[dev-dependencies]

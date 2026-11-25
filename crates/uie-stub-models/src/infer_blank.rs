@@ -9,6 +9,7 @@ use crate::conventions::{
     CLIP_IMAGE_SIZE, DIFFUSION_HEIGHT, DIFFUSION_WIDTH, MAX_ASR_TEXT_TOKENS, MAX_CONTEXT_TOKENS,
     MAX_NEW_TOKENS, SAMPLE_RATE_ASR, TTS_OUTPUT_SAMPLES, VLM_IMAGE_SIZE,
 };
+use crate::filter::{apply_filters_nchw, expect_filter_json};
 use crate::modality::ModalityKind;
 use crate::validate::{
     expect_audio_waveform, expect_clip_embeddings, expect_nchw_image, expect_token_batch_seq,
@@ -71,6 +72,17 @@ pub fn infer_blank(kind: ModalityKind, inputs: &[Tensor]) -> Result<Vec<Tensor>>
                 DIFFUSION_WIDTH,
             )?;
             Ok(vec![diffusion_image_blank_nchw()?])
+        }
+        ModalityKind::ImageFilter => {
+            expect_nchw_image(
+                &inputs[0],
+                "pixel_values",
+                3,
+                DIFFUSION_HEIGHT,
+                DIFFUSION_WIDTH,
+            )?;
+            let req = expect_filter_json(&inputs[1])?;
+            Ok(vec![apply_filters_nchw(&inputs[0], &req)?])
         }
     }
 }

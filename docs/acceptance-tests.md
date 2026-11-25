@@ -105,6 +105,8 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 | US-029 | `us_029_capability_kernels.rs` | — | probe/dispatch/fallback; real NEON later |
 | US-030 | `us_030_pi_gpu_backend.rs` | — | planned; live gated on Pi GPU access |
 | US-031 | `us_031_npu_backend.rs` | — | planned; live gated on NPU access |
+| US-032 | `us_032_image_filter.rs` | — | JSON filters + NCHW image stub |
+| US-033 | `us_033_text_embeddings.rs` | — | in-process stub embedder + telemetry |
 
 Additional crate tests (also cited in stories):
 

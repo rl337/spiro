@@ -43,7 +43,9 @@ pub fn apply_stub_infer_metrics(
                 metrics.completion_tokens = token_seq_len(t);
             }
         }
-        ModalityKind::DiffusionTextToImage | ModalityKind::ImageToImage => {
+        ModalityKind::DiffusionTextToImage
+        | ModalityKind::ImageToImage
+        | ModalityKind::ImageFilter => {
             metrics.prompt_tokens = 1;
             metrics.completion_tokens = 1;
         }
