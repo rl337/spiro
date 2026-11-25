@@ -2,8 +2,8 @@
 
 use std::sync::Arc;
 
-use uie_core::model::ModelLoader;
 use uie_core::accelerator::{AcceleratorProbe, FakeAcceleratorProbe};
+use uie_core::model::ModelLoader;
 use uie_core::resource::{
     InferenceStateBudget, MemoryBudget, UnlimitedInferenceStateBudget, UnlimitedMemoryBudget,
 };
@@ -43,9 +43,9 @@ impl Injector {
                 .inference_state_budget
                 .unwrap_or_else(|| Arc::new(UnlimitedInferenceStateBudget)),
             // Default: no accelerators present (CI-safe); tests override with fakes.
-            accelerator_probe: binder.accelerator_probe.unwrap_or_else(|| {
-                FakeAcceleratorProbe::empty() as Arc<dyn AcceleratorProbe>
-            }),
+            accelerator_probe: binder
+                .accelerator_probe
+                .unwrap_or_else(|| FakeAcceleratorProbe::empty() as Arc<dyn AcceleratorProbe>),
         })
     }
 

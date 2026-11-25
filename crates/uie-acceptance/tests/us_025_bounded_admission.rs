@@ -55,12 +55,11 @@ fn us_025_reject_when_over_budget() {
     log.record("admission_contract_estimate");
     assert!(estimate.bytes > 1, "fixture stub should be > 1 byte");
 
-    let err = host
-        .handle_message(uie_ipc::IpcMessage::Infer {
-            request_id: "acc-025-reject".into(),
-            model_path: path.display().to_string(),
-            inputs: vec![],
-        });
+    let err = host.handle_message(uie_ipc::IpcMessage::Infer {
+        request_id: "acc-025-reject".into(),
+        model_path: path.display().to_string(),
+        inputs: vec![],
+    });
     match err {
         uie_ipc::IpcMessage::Error { message } => {
             assert!(
@@ -74,7 +73,9 @@ fn us_025_reject_when_over_budget() {
 
     let events = budget.take_events();
     assert!(
-        events.iter().any(|e| matches!(e, AdmissionEvent::Reject { .. })),
+        events
+            .iter()
+            .any(|e| matches!(e, AdmissionEvent::Reject { .. })),
         "expected Reject event, got {events:?}"
     );
     // No successful reserve should remain outstanding without release/commit.
@@ -119,9 +120,7 @@ fn us_025_reserve_commit_and_evict_idle() {
             .unwrap()
             .iter()
             .enumerate()
-            .map(|(i, t)| {
-                uie_ipc::TensorPayload::from_tensor(&format!("in{i}"), t).unwrap()
-            })
+            .map(|(i, t)| uie_ipc::TensorPayload::from_tensor(format!("in{i}"), t).unwrap())
             .collect(),
     });
     assert!(
@@ -146,9 +145,7 @@ fn us_025_reserve_commit_and_evict_idle() {
             .unwrap()
             .iter()
             .enumerate()
-            .map(|(i, t)| {
-                uie_ipc::TensorPayload::from_tensor(&format!("in{i}"), t).unwrap()
-            })
+            .map(|(i, t)| uie_ipc::TensorPayload::from_tensor(format!("in{i}"), t).unwrap())
             .collect(),
     });
     assert!(

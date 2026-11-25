@@ -6,9 +6,7 @@ use uie_core::resource::{
 };
 use uie_core::Error;
 use uie_iv::{
-    uie::{
-        AcceptanceEnvModule, OverrideCiModule, OverrideFakeInferenceStateBudgetModule,
-    },
+    uie::{AcceptanceEnvModule, OverrideCiModule, OverrideFakeInferenceStateBudgetModule},
     Injector,
 };
 
@@ -56,7 +54,9 @@ fn us_027_reject_over_context_budget() {
     log.record("state_contract_no_silent_truncation");
 
     let events = budget.take_events();
-    assert!(events.iter().any(|e| matches!(e, StateEvent::Reject { .. })));
+    assert!(events
+        .iter()
+        .any(|e| matches!(e, StateEvent::Reject { .. })));
     assert!(
         !events
             .iter()
@@ -123,8 +123,12 @@ fn us_027_accept_within_and_release_on_cancel() {
     log.record("state_contract_release_on_cancel");
 
     let events = budget.take_events();
-    assert!(events.iter().any(|e| matches!(e, StateEvent::Accept { .. })));
-    assert!(events.iter().any(|e| matches!(e, StateEvent::Release { .. })));
+    assert!(events
+        .iter()
+        .any(|e| matches!(e, StateEvent::Accept { .. })));
+    assert!(events
+        .iter()
+        .any(|e| matches!(e, StateEvent::Release { .. })));
 
     assert_story_events(
         &log,

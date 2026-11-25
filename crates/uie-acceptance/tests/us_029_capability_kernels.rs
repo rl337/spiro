@@ -41,8 +41,12 @@ fn us_029_fallback_when_feature_missing() {
     log.record("kernel_contract_no_illegal_instruction");
 
     let events = probe.take_events();
-    assert!(events.iter().any(|e| matches!(e, CapabilityEvent::Probe { present: false, .. })));
-    assert!(events.iter().any(|e| matches!(e, CapabilityEvent::Fallback { .. })));
+    assert!(events
+        .iter()
+        .any(|e| matches!(e, CapabilityEvent::Probe { present: false, .. })));
+    assert!(events
+        .iter()
+        .any(|e| matches!(e, CapabilityEvent::Fallback { .. })));
 
     assert_story_events(
         &log,

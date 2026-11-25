@@ -54,11 +54,29 @@ pub struct Reservation {
 /// Decision recorded for observability / StoryEventLog mapping.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AdmissionEvent {
-    Reserve { id: u64, bytes: u64, source: String },
-    Reject { bytes: u64, remaining: u64, source: String },
-    Release { id: u64, bytes: u64 },
-    Commit { id: u64, bytes: u64, key: String },
-    ReleaseResidency { key: String, bytes: u64 },
+    Reserve {
+        id: u64,
+        bytes: u64,
+        source: String,
+    },
+    Reject {
+        bytes: u64,
+        remaining: u64,
+        source: String,
+    },
+    Release {
+        id: u64,
+        bytes: u64,
+    },
+    Commit {
+        id: u64,
+        bytes: u64,
+        key: String,
+    },
+    ReleaseResidency {
+        key: String,
+        bytes: u64,
+    },
 }
 
 /// Capacity gate for model admission (cgroup live; fake in CI).
@@ -151,7 +169,10 @@ impl MemoryBudget for FakeMemoryBudget {
     fn remaining_bytes(&self) -> Option<u64> {
         let reserved = *self.reserved.lock().ok()?;
         let committed = self.committed.lock().ok()?;
-        Some(self.capacity.saturating_sub(self.used_locked(reserved, &committed)))
+        Some(
+            self.capacity
+                .saturating_sub(self.used_locked(reserved, &committed)),
+        )
     }
 
     fn try_reserve(&self, estimate: &MemoryEstimate) -> Result<Reservation> {
@@ -177,10 +198,7 @@ impl MemoryBudget for FakeMemoryBudget {
                 budget_source: self.budget_source().into(),
                 reason: format!(
                     "estimate {} exceeds remaining {} (capacity {}, source={})",
-                    estimate.bytes,
-                    remaining,
-                    self.capacity,
-                    estimate.source
+                    estimate.bytes, remaining, self.capacity, estimate.source
                 ),
             });
         }
@@ -237,7 +255,10 @@ impl MemoryBudget for FakeMemoryBudget {
     }
 
     fn take_events(&self) -> Vec<AdmissionEvent> {
-        self.events.lock().map(|mut g| std::mem::take(&mut *g)).unwrap_or_default()
+        self.events
+            .lock()
+            .map(|mut g| std::mem::take(&mut *g))
+            .unwrap_or_default()
     }
 }
 
@@ -264,10 +285,23 @@ pub enum StateAdmission {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum StateEvent {
-    Accept { prompt: u32, max_new: u32, n_ctx: u32 },
-    Negotiate { requested: u32, offered: u32 },
-    Reject { prompt: u32, max_new: u32, limit: u32 },
-    Release { n_ctx: u32 },
+    Accept {
+        prompt: u32,
+        max_new: u32,
+        n_ctx: u32,
+    },
+    Negotiate {
+        requested: u32,
+        offered: u32,
+    },
+    Reject {
+        prompt: u32,
+        max_new: u32,
+        limit: u32,
+    },
+    Release {
+        n_ctx: u32,
+    },
 }
 
 /// Bounds per-session KV / context (US-027). Separate from weight [`MemoryBudget`].
@@ -454,7 +488,9 @@ mod tests {
         let err = b.try_reserve(&MemoryEstimate::exact(50, "b")).unwrap_err();
         assert!(matches!(err, Error::AdmissionRejected { .. }));
         let ev = b.take_events();
-        assert!(ev.iter().any(|e| matches!(e, AdmissionEvent::Reject { .. })));
+        assert!(ev
+            .iter()
+            .any(|e| matches!(e, AdmissionEvent::Reject { .. })));
     }
 
     #[test]

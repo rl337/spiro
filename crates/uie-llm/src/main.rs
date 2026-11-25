@@ -75,9 +75,8 @@ fn main() -> uie_core::Result<()> {
     }
 
     // US-027: admit context via injected InferenceStateBudget before llama new_context.
-    let inj: Injector = serve_injector().map_err(|e| {
-        uie_core::Error::Runtime(format!("injector: {e}"))
-    })?;
+    let inj: Injector =
+        serve_injector().map_err(|e| uie_core::Error::Runtime(format!("injector: {e}")))?;
     let state_budget = inj.inference_state_budget();
     let result = if chat_mode {
         complete_gguf_file_chat_budgeted(&model_path, &prompt, &opts, state_budget.as_ref())?

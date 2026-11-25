@@ -51,12 +51,7 @@ pub fn complete_with_engine(
     prompt: &str,
     opts: &CompleteOptions,
 ) -> Result<CompleteResult> {
-    complete_with_engine_budgeted(
-        engine,
-        prompt,
-        opts,
-        &UnlimitedInferenceStateBudget,
-    )
+    complete_with_engine_budgeted(engine, prompt, opts, &UnlimitedInferenceStateBudget)
 }
 
 /// Complete after admitting context against an injected [`InferenceStateBudget`] (US-027).

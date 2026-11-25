@@ -91,13 +91,10 @@ pub fn select_kernel(
     preferred: Option<CpuFeature>,
 ) -> DispatchDecision {
     match preferred {
-        None => {
-            let d = DispatchDecision {
-                path: KernelPath::Scalar,
-                reason: "no optimized path requested".into(),
-            };
-            d
-        }
+        None => DispatchDecision {
+            path: KernelPath::Scalar,
+            reason: "no optimized path requested".into(),
+        },
         Some(feature) if probe.has(feature) => DispatchDecision {
             path: KernelPath::Optimized { feature },
             reason: format!("feature {feature:?} present"),
@@ -187,7 +184,9 @@ mod tests {
         let d = select_kernel_traced(&probe, Some(CpuFeature::Neon));
         assert_eq!(d.path, KernelPath::Scalar);
         let ev = probe.take_events();
-        assert!(ev.iter().any(|e| matches!(e, CapabilityEvent::Fallback { .. })));
+        assert!(ev
+            .iter()
+            .any(|e| matches!(e, CapabilityEvent::Fallback { .. })));
     }
 
     #[test]

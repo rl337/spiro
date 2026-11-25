@@ -7,7 +7,8 @@ use crate::module::Module;
 use crate::uie::loaders::{loader_set_for_serve, LiveLoaderSet, StubOnlyLoaderSet};
 use uie_core::accelerator::{AcceleratorKind, FakeAcceleratorProbe};
 use uie_core::resource::{
-    FakeInferenceStateBudget, FakeMemoryBudget, UnlimitedInferenceStateBudget, UnlimitedMemoryBudget,
+    FakeInferenceStateBudget, FakeMemoryBudget, UnlimitedInferenceStateBudget,
+    UnlimitedMemoryBudget,
 };
 
 use crate::uie::profile::{
