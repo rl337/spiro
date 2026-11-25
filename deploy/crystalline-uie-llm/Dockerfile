@@ -14,6 +14,7 @@ RUN apt-get update \
       libclang-dev \
       libvulkan-dev \
       glslang-tools \
+      glslc \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
