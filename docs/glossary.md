@@ -52,6 +52,14 @@ An **execution trace** is a structured record of one inference run: phase timing
 
 ---
 
+### In-process host {#in-process-host}
+
+An **in-process host** is a sibling product (e.g. weirdness) that depends on Spiro UIE crates inside its own binary—via path dependency or git subtree—and resolves loaders/embedders through a [composition root](#composition-root), instead of calling `uie-serve` or the [byte channel](#byte-channel) on the hot path ([US-034](./stories/034-in-process-host.md)).
+
+**See also:** [US-034](./stories/034-in-process-host.md), [US-035](./stories/035-host-stub-bindings.md), [US-036](./stories/036-host-live-model-di.md), [in-process-host.md](./requirements/in-process-host.md)
+
+---
+
 ### Infer metrics {#infer-metrics}
 
 **Infer metrics** are aggregate numbers for a run: prompt/completion token counts, **time to first token (TTFT)**, prefill vs decode latency, tokens/sec, and summed time on CPU vs GPU. Used to evaluate quantization, batching, and kernel swaps.
@@ -273,6 +281,14 @@ A **prompt** is the input text (or [token](#token) sequence) you give an LLM or 
 A **session** is a workspace for one run: named [tensors](#tensor) bound to strings (like `"canvas"` or `"input"`). The [runtime](#inference-runtime) can read and write those bindings as ops or models execute.
 
 **See also:** [US-004](./stories/004-runtime-sessions.md)
+
+---
+
+### Stub model {#stub-model}
+
+A **stub model** is a deterministic stand-in for real weights (`.stub` modalities or `StubTextEmbedder`) used in CI and host tests. Stub ids are stable and must not be advertised as live reference model ids ([US-035](./stories/035-host-stub-bindings.md)).
+
+**See also:** [US-007](./stories/007-models-loaders.md), [US-033](./stories/033-text-embeddings.md), [US-035](./stories/035-host-stub-bindings.md)
 
 ---
 

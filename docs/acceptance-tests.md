@@ -107,6 +107,9 @@ UIE_ACCEPTANCE_MODE=live cargo test -p uie-acceptance
 | US-031 | `us_031_npu_backend.rs` | — | planned; live gated on NPU access |
 | US-032 | `us_032_image_filter.rs` | — | JSON filters + NCHW image stub |
 | US-033 | `us_033_text_embeddings.rs` | — | in-process stub embedder + telemetry |
+| US-034 | `us_034_in_process_host.rs` | — | host-shaped injector + stub stack |
+| US-035 | `us_035_host_stub_bindings.rs` | — | OverrideCi stub loaders/embedder |
+| US-036 | `us_036_host_live_model_di.rs` | — | live override contract; weights gated |
 
 Additional crate tests (also cited in stories):
 

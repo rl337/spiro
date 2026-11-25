@@ -25,6 +25,9 @@
 - [US-023](./023-inference-telemetry.md) — execution recorder phases
 - [US-024](./024-dependency-injection.md) — composition root binds the embedder
 - [US-025](./025-bounded-model-admission.md) — live load must fit memory budget
+- [US-034](./034-in-process-host.md) — in-process host umbrella
+- [US-035](./035-host-stub-bindings.md) — stub bindings for host CI
+- [US-036](./036-host-live-model-di.md) — live weights via DI
 
 ## Terms used
 

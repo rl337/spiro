@@ -37,6 +37,16 @@ Start with [US-015](./015-modality-catalog.md) for the input → output map.
 | [US-032](./032-image-filter-stub.md) | Image filter stub (JSON + image) | Tracy, Pete | Image + JSON → Image |
 | [US-033](./033-text-embeddings.md) | In-process text embeddings | Liz, Pete | Text → Vector |
 
+## In-process hosts (subtree / path consumers)
+
+Sibling products (e.g. [weirdness](https://github.com/rl337/weirdness)) that embed UIE crates in-process. Contract: [in-process-host.md](../requirements/in-process-host.md).
+
+| ID | Title | Personas | Status |
+|----|--------|----------|--------|
+| [US-034](./034-in-process-host.md) | In-process host consumers | Liz, Jack | partial |
+| [US-035](./035-host-stub-bindings.md) | Host stub bindings for testability | Jack, Liz | partial |
+| [US-036](./036-host-live-model-di.md) | Host live models via DI configuration | Pete, Liz | planned |
+
 ## Platform (shipped)
 
 | ID | Title | Personas | Status |
@@ -72,6 +82,7 @@ See [acceptance-tests.md](../acceptance-tests.md) and [contributing.md](../contr
 - **`uie-loader-onnx`, `uie-mnist`, `models/`:** US-009  
 - **Future loaders / demos:** US-010 – US-019, US-032  
 - **`uie-embeddings`:** US-033
+- **In-process hosts:** US-034 – US-036 ([requirements](../requirements/in-process-host.md))
 - **`uie-ipc`, `uie-serve`, `python/`:** US-020  
 - **`uie-catalog`, `config/model_roots.example.yaml`:** US-021  
 - **`uie-pipeline`:** US-022  

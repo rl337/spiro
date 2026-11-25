@@ -9,6 +9,7 @@ Product goal (any-scale; edge as compromise direction): [`docs/mandate.md`](../m
 | [../mandate.md](../mandate.md) | **Product mandate** — any-scale inference; compromise toward edge/embedded |
 | [dependency-injection.md](./dependency-injection.md) | **DI-first (pyiv / uie-iv)** — composition root, modules, env binding |
 | [text-embeddings.md](./text-embeddings.md) | **Text → vector** library contract for an in-process host (weirdness, Pi 5 CPU) |
+| [in-process-host.md](./in-process-host.md) | **Host embedding** — subtree/path consumers; stubs in CI; live weights via DI |
 | [validation-and-ci.md](./validation-and-ci.md) | Static checks, acceptance CI, Bugbot gate |
 
 Agents: read relevant requirement docs before adding shared services, loaders, or CI vs live wiring.
